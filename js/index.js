@@ -82,14 +82,19 @@ $(function() {
 	});
 
 	$('.search-app-li > a').click(function() {
-		$(this).parent().toggleClass('show-input');
+		$(this).parent().toggleClass('show-input');		
+		setTimeout(() => {
+			if ($(this).parent().hasClass('show-input')) {		
+				$('#search-in-menu').focus();
+			}
+		}, 500);
 	});
 
-	$('#start-menu-item').on('click', 'li.app > a.name', function() {
+	$('#menu-list').on('click', 'li.app > a.name', function() {
 		var parent = $(this).parent();
 		// on first menu click add last position button
 		if (!lastMenuApp) {
-			$('#start-menu-item > ul').append('<li><a href="javascript:;" onclick="showLastMenuPosition()">מיקום לחיצה אחרונה</a></li>');
+			$('#menu-list > ul').append('<li><a href="javascript:;" onclick="showLastMenuPosition()">מיקום לחיצה אחרונה</a></li>');
 		}
 		lastMenuApp = parent;
 		var apm = parent.data('apm');
@@ -210,7 +215,7 @@ $(function() {
 		$(form).find('.form-control.error').removeClass('error');
 	});
 
-	$('#start-menu-item').on('click', 'li.app > a.add-to-favorites', function() {
+	$('#menu-list').on('click', 'li.app > a.add-to-favorites', function() {
 		var data = $(this).closest('li').data('data');
 		var item = JSON.parse(data);
 		if (!$(this).hasClass('favorite')) {
@@ -425,21 +430,25 @@ function getPageData() {
 	});    	       
 }
 
-function setMenu(data) {		    		  	    		
-	var liElement = $('<li></li>'); 		    		
-	addSubMenu(liElement, data);
+function setMenu(data) {		    	
+	for (let i = 0; i < data.length; i++) {
+		const rootItem = data[i];
+		var liElement = $(`<li><a href="javascript:;"><i class="fa fa-lg fa-home"></i> <span class="menu-item-parent">${rootItem.TXT}</span></a></li>`); 		    		
+		addSubMenu(liElement, rootItem.MENU);
+		// $('#menu-list').append(liElement);
+		$('#menu-list > .search-app-li').before(liElement);
+		
+	}
 	
-	var menu = $(liElement).find('> ul');
-	$('#start-menu-item > ul').remove();
-	$('#start-menu-item').append(menu);
+	// $('#menu-list > ul').remove();
 	
-	$('#start-menu-item > ul > li:last-child').attr('id', 'favorites-menu-item')
-											  .find('.add-to-favorites').remove();	
+	$('#menu-list > li:not(.search-app-li):last').attr('id', 'favorites-menu-item')
+											  											 .find('.add-to-favorites').remove();	
 
 	setMenuSearch();
 	
 	// moving the child menu so it won't get out of the bottom of the page. 
-    $('nav #start-menu-item ul li').on('mouseenter', function() {
+    $('nav #menu-list ul li').on('mouseenter', function() {
     	var list = $(this).find('> ul'); 
     	if (list.length > 0 && !$(list).hasClass('re-positioned')) {
 	    	var listHeight = $(list).height();  	
@@ -758,8 +767,8 @@ function showLastMenuPosition() {
 		lastMenuApp.parentsUntil('nav', 'li').addClass('show-list');
 		
 		// disabling the menu for 2 seconds except the last menu position.
-		$('#start-menu-item li:visible').addClass('disabled');
-		$('#start-menu-item').addClass('disabled');
+		$('#menu-list li:visible').addClass('disabled');
+		$('#menu-list').addClass('disabled');
 		// removeing disalbe from the "siblings" of last app
 		lastMenuApp.parent().find('li:visible').removeClass('disabled');
 		lastMenuApp.parentsUntil('nav', 'li').removeClass('disabled');

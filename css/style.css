@@ -306,7 +306,7 @@ body {
 #left-panel nav .search-app-li > input.search-app {
     display: inline-block;
     float: left;
-    transition: width 0.5s;    
+    transition: 0.5s;    
     width: 0px;
     opacity: 0;           
 }
@@ -325,7 +325,7 @@ body {
     content: none !important;
 }
 
-#start-menu-item li.app a:after {
+#menu-list li.app a:after {
     content: none !important;
 }
 
@@ -552,16 +552,16 @@ nav li.disabled {
     overflow-x: hidden;
 }
 
-#start-menu-item li.app {
+#menu-list li.app {
     display: flex;
 }
 
-#start-menu-item li.app > a.name {
+#menu-list li.app > a.name {
     flex-grow: 1;
     padding-right: 5px!important;
 }
 
-#start-menu-item li.app > a.add-to-favorites {
+#menu-list li.app > a.add-to-favorites {
     float: right;
     padding-left: 3px !important;
     padding-right: 5px !important;
@@ -572,11 +572,11 @@ nav li.disabled {
                 color 0s;
 }
 
-#start-menu-item li.app > a.add-to-favorites > i {
+#menu-list li.app > a.add-to-favorites > i {
     margin-left: 0;
 }
 
-#start-menu-item li.app > a.add-to-favorites:hover > i {
+#menu-list li.app > a.add-to-favorites:hover > i {
     font-size: 1.3em !important;    
     /*font-weight: bold;*/
     top: 2px;
@@ -584,7 +584,7 @@ nav li.disabled {
     text-shadow: #ddd 0 0 10px;
 }
 
-#start-menu-item li.app > a.add-to-favorites.favorite > i {
+#menu-list li.app > a.add-to-favorites.favorite > i {
     color: #9bb3e9;
     font-size: 1.2em !important;
     top: 1px;

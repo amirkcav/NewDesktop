@@ -19,15 +19,15 @@
 			<button id="edit-page" class="btn btn-default regular-state">מצב עריכה</button>
 		</div>
 	    <nav>
-	    	<ul>
-	    		<li id="start-menu-item">
+	    	<ul id="menu-list">
+	    		<!-- <li id="start-menu-item">
 	    			<a href="javascript:;"><i class="fa fa-lg fa-home"></i> <span class="menu-item-parent">התחל</span></a>
 	    			<ul>	    			
 	    				<li>
 	    					<a class="name" href="javascript:;">התפריט נטען. אנא המתן...</a>
 	    				</li>
 	    			</ul>
-    			</li>
+    			</li> -->
     			<li class="search-app-li">
     				<a href="javascript:;"><i class="fa fa-lg fa-search"></i> <span class="menu-item-parent">חפש בתפריט</span></a>
     				<input id="search-in-menu" class="search-app form-control" type="text" name="param" placeholder="חפש בתפריט">
