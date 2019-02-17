@@ -124,9 +124,10 @@ body.background5 {
 
 #info-squares-section {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column wrap;
     float: right;
-    box-sizing: content-box;
+    box-sizing: border-box; /*content-box;*/
+    height: 100%;
 }
 
 #info-squares-section .info-square {
@@ -191,7 +192,7 @@ body.background5 {
 
 #graphs-section {
     display: flex;
-    width: 100%;
+    /* width: 100%; */
 }
 
 #graphs-section .tableGauge {
@@ -283,7 +284,7 @@ body {
 }
 
 #info-squares-section .sort-item {
-    width: 250px;
+    width: 50%; /*250px;*/
     height: 100px;    
 }
 
@@ -408,7 +409,12 @@ body {
 }
 
 #top-row {
-    /*height: calc(100% - 375px);*/
+    /* height: calc(100% - 375px); */
+    height: 50%;
+}
+
+#bottom-row {
+    height: 50%;
 }
 
 #departments-section {
@@ -735,10 +741,56 @@ nav li.disabled {
     display: block;
 }
 
+/***     NEW      *****/
+#shortcuts-section > .department {
+    width: calc(14% - 20px);
+}
 
+.list-section {
+    height: 100%;
+}
 
+.list-section > ul.bordered-list {
+    background: #f6f6f6;
+    border: 1px solid #666;
+    height: calc(100% - 35px);
+    padding-top: 12px;
+    margin-top: -1.7rem;
+    border-radius: 10px;
+}
 
+.list-section > .section-title {
+    background: #f6f6f6;
+    padding: 2px 5px;
+    font-weight: bold;
+    font-size: 1.7rem;
+    margin-right: 10px;
+}
 
+.list-section > ul {
+    list-style: none;
+    padding-right: 0;
+}
 
+#last-apps-section > ul {
+    overflow: auto;
+}
 
+#last-apps-section li {
+    font-size: 13px;
+    /* padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px; */
+    border-bottom: 1px solid #999;
+    transition: 0.3s;
+}
 
+#last-apps-section li > a {
+    width: 100%;
+    display: inline-block;
+    padding: 10px 15px 10px 5px;
+}
+
+#last-apps-section li:hover {
+    background: #eee;
+}

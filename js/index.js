@@ -8,21 +8,18 @@ var graphsArea;
 var notShortcutPos = 0;
 
 var uiLayout = { 
-     'departments': { count: 6, data: [
-	     { TXT: 'תפריט ACCD', icon: 'fa fa-2x fa-money', LOC: 1 },
-	     { TXT: 'תפריט SVDK', icon: 'fa fa-2x fa-truck', LOC: 2 },
-	     { TXT: 'תפריט MLID', icon: 'fa fa-2x fa-cubes', LOC: 3 },
-	     { TXT: 'תפריט SYS', icon: 'fa fa-2x fa-gears', LOC: 4 },
-	     { TXT: 'תפריט MLIV', icon: 'fa fa-2x fa-cubes', LOC: 5 },
-	 ]}, 
-     'shortcuts': { count: 12, data: []}, 
-     'info-squares': { count: 9, data: [
+     
+     'shortcuts': { count: 21, data: []}, 
+     'info-squares': { count: 6, data: [
          { COD: 1, TXT: 'מכירות יומי', VAL: '72,527', LOC: 1 },
          { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422', LOC: 2 },
      ]},
-//     'graphs': { x: 7, data: [ { COD: 'G1', LOC: 1 }, { COD: 'G2', LOC: 2 }, { COD: 'G3', LOC: 3 }, { COD: 'G4', LOC: 4 } , { COD: 'G5', LOC: 5 },
-//     		    			   { COD: 'G3', LOC: 6 } , { COD: 'G1', LOC: 7 } ]}
-     'graphs': { count: 7, data: [ { COD: 'G1', LOC: 1 }, { COD: 'G2', LOC: 2 }, { COD: 'G3', LOC: 3 }, { COD: 'G4', LOC: 5 } ]}
+		 'graphs': { count: 4, data: [ { COD: 'G1', LOC: 1 }, { COD: 'G2', LOC: 2 }, { COD: 'G3', LOC: 3 } ]}, // { COD: 'G4', LOC: 5 }
+		 'last-apps': { data: [ 
+			 { TXT: 'איפיון חיפוש קריאה', UCI: 'CVH', APM: 'SRVQ:WH1' },
+			 { TXT: 'פעילות לטלפנית', UCI: 'SVK', APM: 'TLPN:' },
+			 { TXT: 'סוכנים למסופון', UCI: 'SVK', APM: 'MCRRO:' } 
+			]}
 };
 
 var allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי', VAL: '342,099' } ];
@@ -37,6 +34,7 @@ $(function() {
 	shortcutsArea = $('#shortcuts-section');
 	infoSquaresArea = $('#info-squares-section');
 	graphsArea = $('#graphs-section');
+	lastAppsArea = $('#last-apps-section > ul');
 
 	$('#add-shortcut-form').validate();    
 
@@ -99,7 +97,8 @@ $(function() {
 		lastMenuApp = parent;
 		var apm = parent.data('apm');
 		var uci = parent.data('uci');
-		runApp(apm, uci);
+		var appText = JSON.parse(parent.data('data')).TXT;
+		runApp(apm, uci, appText);
 	});
 
 	$('#graphs-section, #shortcuts-section, #info-squares-section').on('click', '.delete-shortcut[data-toggle="popover"]', function(e){
@@ -132,7 +131,8 @@ $(function() {
 		if (!$('body').hasClass('editing')) {
 			var apm = $(this).data('apm');
 			var uci = $(this).data('uci');
-			runApp(apm, uci);
+			var appText = $(this).text().trim();
+			runApp(apm, uci, appText);
 		}
 		else {
 			var graphData = JSON.parse($(this).parent().data('data'));
@@ -355,7 +355,8 @@ $(function() {
 			if (infoData.APM) {
 				var apm = infoData.APM;
 				var uci = infoData.UCI;
-				runApp(apm, uci);
+				var appText = infoData.TXT;
+				runApp(apm, uci, appText);
 			}
 		}
 		else {    		
@@ -397,6 +398,12 @@ $(function() {
 	            }
 	    	});
 		}
+	});
+
+	lastAppsArea.on('click', 'li.last-app > a', function() {
+		var apm = $(this).data('apm');
+		var uci = $(this).data('uci');
+		runApp(apm, uci);
 	});
 
 });
@@ -625,7 +632,7 @@ function setMenuSearch() {
 		source: menuApps,
 		select: function( event, ui ) {
 			var itemData = ui.item;
-			runApp(itemData.APM, itemData.UCI);
+			runApp(itemData.APM, itemData.UCI, itemData.TXT);
 			$(this).val('');
 			$(this).blur();
 			return false;
@@ -655,66 +662,72 @@ function addShortcut(data) {
 	placeholderItem.replaceWith(template);
 }
 
-function runApp(apm, uci) {
+function runApp(apm, uci, text) {
 	var apmArr = apm.split(':');
 	var ap = apmArr[0];
 	var pm = apmArr[1];
+	// add to last apps
+	if (text && text.length > 0) {
+		var currApp = { TXT: text, UCI: uci, APM: apm };
+		addToLastApps(currApp);		
+		renderArea(lastAppsArea, uiLayout['last-apps']);
+	}
+	// run app.
 	if (window.app) {
 		app.openApplication(ap, pm, uci, '', '');
 	}
 	else {
-		console.log(stringFormat('{0}:{1}:{2}', ap, pm, uci));
+		console.log(stringFormat('Run App - {0}:{1}:{2}', ap, pm, uci));
 	}
 }
 
 function renderArea(area, areaData) {
 	var data = areaData.data;
-	//var width = 100 / columns;
 	
+	// area with sorting
 	$(area).find('.sort-item:not(.template-item)').remove();	
+	// area without sorting
+	$(area).find('.list-item:not(.template-item)').remove();	
 
 	// set area width
 	var newItem = $(area).find('.template-item');
-	/*var itemWidth = $(newItem).measure( function(){ return this.outerWidth(true); }, area);
-	$(area).width(itemWidth * columns);*/ 
 	
 	// add items
-	//for (j = 0; j < columns; j++) {
-		for (i = 1; i <= areaData.count; i++) {
-			var template = newItem.clone();
-			template.removeClass('template-item');
-			var currPosition = i; //j * rows + i;
-			var existingItem = data.filter(function(a) { return a.LOC == currPosition });
-			// if there is an item with null as position, add it. (POS = null means it's a shortcut with no determined position).
-			if (existingItem.length == 0) {
-				var nullPositionItems = data.filter(function(a) { return a.LOC == null || a.LOC > areaData.count });
-				if (nullPositionItems.length > 0) {
-					var nullPositionItem = nullPositionItems[0];
-					nullPositionItem.LOC = currPosition;
-					existingItem.push(nullPositionItem);
-				}
-			}			
-			// add an existing item
-			if (existingItem.length > 0) {			
-				$(template).addClass('active')
-						   .data('data', JSON.stringify(existingItem[0]));
-				setTemplateFields(template, existingItem[0]);
-				$(template).find('a').data('apm', existingItem[0].APM)
-						   			 .data('uci', existingItem[0].UCI);
+	var itemsNumber = areaData.count ? areaData.count : areaData.data.length; 
+	for (i = 1; i <= itemsNumber; i++) {
+		var template = newItem.clone();
+		template.removeClass('template-item');
+		var currPosition = i; //j * rows + i;
+		var existingItem = data.filter(function(a) { return a.LOC == currPosition });
+		// if there is an item with null as position, add it. (POS = null means it's a shortcut with no determined position).
+		if (existingItem.length == 0) {
+			var nullPositionItems = data.filter(function(a) { return a.LOC == null || a.LOC > areaData.count });
+			if (nullPositionItems.length > 0) {
+				var nullPositionItem = nullPositionItems[0];
+				nullPositionItem.LOC = currPosition;
+				existingItem.push(nullPositionItem);
 			}
-			// add a placeholder for sorting
-			else {
-				$(template).addClass('editing-item-placeholder')
-						   .find('.add-item-button').data('position', currPosition);
-				$(template).find('.set-tooltip-field').removeClass('set-tooltip-field');
-			}
-			$(template).attr('original-position', currPosition);
-			// adding sorting placeholders only to sort areas.
-			if (existingItem.length > 0 || $(area).hasClass('sort-area')) {
-				$(area).append(template);				
-			}
+		}			
+		// add an existing item
+		if (existingItem.length > 0) {			
+			$(template).addClass('active')
+							.data('data', JSON.stringify(existingItem[0]));
+			setTemplateFields(template, existingItem[0]);
+			$(template).find('a').data('apm', existingItem[0].APM)
+										.data('uci', existingItem[0].UCI);
 		}
-	//}
+		// add a placeholder for sorting
+		else {
+			$(template).addClass('editing-item-placeholder')
+							.find('.add-item-button').data('position', currPosition);
+			$(template).find('.set-tooltip-field').removeClass('set-tooltip-field');
+		}
+		$(template).attr('original-position', currPosition);
+		// adding sorting placeholders only to sort areas.
+		if (existingItem.length > 0 || $(area).hasClass('sort-area')) {
+			$(area).append(template);				
+		}
+	}
 	$(area).find('.set-tooltip-field').each(function(i, o) {
 		setTooltip(o);
 	});
@@ -823,7 +836,7 @@ function removeGraph(elem) {
 }
 
 function renderAllAreas(useTimeout) {
-	$('.items-section').each(function() { 		
+	$('.items-section, .list-section > ul').each(function() { 		
 		var areaName = $(this).data('area-name');
 		renderArea(this, uiLayout[areaName]);		
 	});
@@ -920,5 +933,20 @@ function drawGraph(graphData, divId, graphHeight) {
 	//	 more types removed for now 
 		default:
 			return;
+	}
+}
+
+function resetArrayLocations(arr) {
+	for (let ij = 0; ij < arr.length; ij++) {
+		const element = arr[ij];
+		element.LOC = ij + 1;
+	}
+}
+
+function addToLastApps(newApp) {
+	var currLastApp = uiLayout['last-apps'].data[0];
+	if (!currLastApp || currLastApp.TXT != currApp.TXT) {
+		uiLayout['last-apps'].data.unshift(currApp);
+		resetArrayLocations(uiLayout['last-apps'].data);
 	}
 }
