@@ -117,11 +117,11 @@ Array.prototype.indexOfByProperty = function (compareProperty, value) {
     return -1;
 }
 
-function setSelectOptions(optionsData, select) {
+function setSelectOptions(optionsData, select, textProp = 'TXT', valueProp = 'COD') {
 	var options = [];
     for (var i = 0; i < optionsData.length; i++) {
     	var info = optionsData[i];
-    	var newOption = new Option(info.TXT, info.COD);
+    	var newOption = new Option(info[textProp], info[valueProp]);
     	$(newOption).data('data', JSON.stringify(info));
     	options.push(newOption);
     }

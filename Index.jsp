@@ -35,7 +35,7 @@
 			
 			<div id="top-row" class="row">
 
-				<div id="last-apps-section" class="col-lg-2 list-section">
+				<div id="last-apps-section" class="col-lg-2 list-section menu-style">
 					<label class="section-title">יישומים אחרונים</label>	
 					<ul class=" bordered-list" data-area-name="last-apps">
 						<li class="last-app list-item template-item">
@@ -59,7 +59,7 @@
 					</div>
 				</div>
 
-				<div id="messages-section" class="col-lg-3 list-section" >
+				<div id="messages-section" class="col-lg-3 list-section list-style" >
 					<label class="section-title">הודעות מערכת</label>	
 					<ul class="bordered-list" data-area-name="last-apps">
 						<li class="last-app list-item template-item">
@@ -72,9 +72,9 @@
 			
 			<div id="bottom-row" class="row">
 		
-				<div id="last-docs-section" class="col-lg-2 list-section" >
+				<div id="last-docs-section" class="col-lg-2 list-section menu-style" >
 					<label class="section-title">מסמכים אחרונים</label>	
-					<ul class="bordered-list" data-area-name="last-apps">
+					<ul class="bordered-list" data-area-name="last-docs">
 						<li class="last-app list-item template-item">
 							<a href="javascript:;" class="template-field set-tooltip-field" data-field="TXT"></a>
 						</li>
@@ -206,7 +206,7 @@
                             <label>בחר גרף</label>
                             <select id="add-graph-select" name="add-graph-select" class="search-app form-control" required></select>
                         </div>       
-                        <label class="add-graph-error">אין מקום לגרף זה במיקום זה.</label>                    
+                        <label class="add-graph-error"></label>                    
                     </form>
                 </div>
                 <div class="modal-footer">

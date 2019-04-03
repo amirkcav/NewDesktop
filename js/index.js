@@ -6,24 +6,31 @@ var shortcutsArea;
 var infoSquaresArea;
 var graphsArea;
 var notShortcutPos = 0;
+// used in the graphs for table
+var user_lang = 'HB';
 
-var uiLayout = { 
-     
-     'shortcuts': { count: 21, data: []}, 
-     'info-squares': { count: 6, data: [
-         { COD: 1, TXT: 'מכירות יומי', VAL: '72,527', LOC: 1 },
-         { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422', LOC: 2 },
-     ]},
-		 'graphs': { count: 4, data: [ { COD: 'G1', LOC: 1 }, { COD: 'G2', LOC: 2 }, { COD: 'G3', LOC: 3 } ]}, // { COD: 'G4', LOC: 5 }
-		 'last-apps': { data: [ 
-			 { TXT: 'איפיון חיפוש קריאה', UCI: 'CVH', APM: 'SRVQ:WH1' },
-			 { TXT: 'פעילות לטלפנית', UCI: 'SVK', APM: 'TLPN:' },
-			 { TXT: 'סוכנים למסופון', UCI: 'SVK', APM: 'MCRRO:' } 
-			]}
-};
+// var uiLayout = {      
+//      'shortcuts': { count: 21, data: []}, 
+//      'info-squares': { count: 6, data: [
+//          { COD: 1, TXT: 'מכירות יומי', VAL: '72,527', LOC: 1 },
+//          { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422', LOC: 2 },
+//      ]},
+// 		 'graphs': { count: 4, data: [ { COD: 'G1', LOC: 1 }, { COD: 'G2', LOC: 2 }, { COD: 'G3', LOC: 3 } ]}, // { COD: 'G4', LOC: 5 }
+// 		 'last-apps': { data: [ 
+// 			 { TXT: 'איפיון חיפוש קריאה', UCI: 'CVH', APM: 'SRVQ:WH1' },
+// 			 { TXT: 'פעילות לטלפנית', UCI: 'SVK', APM: 'TLPN:' },
+// 			 { TXT: 'סוכנים למסופון', UCI: 'SVK', APM: 'MCRRO:' } 
+// 			]},
+// 			'last-docs': { data: [
+// 				{ DATE: '15.2.19', TXT: 'פריט 142677', UCI: 'CVH', APM: 'SRVQ:WH1' },
+// 				{ TXT: 'הזמנה 31283', UCI: 'SVK', APM: 'TLPN:' },
+// 			 	{ TXT: 'מכירות ינואר 2019', UCI: 'SVK', APM: 'MCRRO:' },
+// 			 	{ TXT: 'מלאי לקוח 77244', UCI: 'SVK', APM: 'MCRRO:' } 
+// 			]}
+// };
 
 var allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי', VAL: '342,099' } ];
-var allGraphsOptions = [ { COD: 'G1', TXT: 'גרף חוגה' }, { COD: 'G2', TXT: 'גרף פאי1' }, { COD: 'G3', TXT: 'גרף באר1' }, { COD: 'G4', TXT: 'גרף באר2' }, { COD: 'G5', TXT: 'גרף פאי2' } ];
+var allGraphsOptions; // = [ { COD: 'G1', TXT: 'גרף חוגה' }, { COD: 'G2', TXT: 'גרף פאי1' }, { COD: 'G3', TXT: 'גרף באר1' }, { COD: 'G4', TXT: 'גרף באר2' }, { COD: 'G5', TXT: 'גרף פאי2' } ];
 
 var originalLayout;
 
@@ -40,7 +47,6 @@ $(function() {
 
 	// set info square options (for add popup)
 	setSelectOptions(allInfoSquaresOptions, $('#add-info-square-select'));
-	setSelectOptions(allGraphsOptions, $('#add-graph-select'));
 
 	$('#edit-page').click(function() {
 		sort();
@@ -51,6 +57,24 @@ $(function() {
 		originalLayout = cloneObject(uiLayout);
 		$('.sort-area').sortable('destroy');
 		$('body').removeClass('editing');
+
+		var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPSAV";    	
+    var data = JSON.stringify({ data: uiLayout }); 
+    $.ajax({
+			type : 'POST',
+			url : url,
+			data: data,
+			contentType : 'application/json',
+			dataType : 'json',
+			success : function(data) {
+				//debugger;
+				var r = 3;
+    	},
+			error: function(data) {
+				alert(data.responseText);    		
+			}
+    });  
+
 	});
 	
 	$('#cancel-edit-page').click(function() {
@@ -269,29 +293,44 @@ $(function() {
 		obj.LOC = position;
 		
 		// is editing an existing shortcut
-		var itemInPosition = uiLayout.graphs.data.filter(function(a) { return a.LOC == obj.LOC })[0];    			    		    
+		var itemInPosition = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == obj.LOC })[0] : undefined;    			    		    
 		if (itemInPosition) {
 			//uiLayout.shortcuts.data.pop(itemInPosition);
 			var index = uiLayout.graphs.data.indexOf(itemInPosition);
 			uiLayout.graphs.data.splice(index, 1);
 		}
 
-		var graphData = getGrpahData(obj.COD);
-		if (graphData.chartSize == 'large') {
-			var positionForChart = checkPositionForChart(position);
-			if (positionForChart == -1) {
-				$('#add-graph-modal .add-graph-error').fadeIn();
-				return;
+		// var graphData = getGrpahData(obj.COD);
+		var button = this;
+		$.ajax({
+			type : 'GET',
+			url : `mcall?_ROUTINE=CBIGRF&_NS=CAV&_LABEL=RUN&GRF=${ obj.code }&TFK=MNG&USERNAME=SID`,
+			contentType : 'application/json',
+			dataType : 'json',
+			success : function(data) {
+				graphData = data;
+				if (graphData.chartSize == 'large') {
+					var positionForChart = checkPositionForChart(position);
+					if (positionForChart == -1) {
+						$('#add-graph-modal .add-graph-error').text('אין מקום לגרף זה במיקום זה.').fadeIn();
+						return;
+					}
+					else {
+						obj.LOC = positionForChart;
+					}	    		
+				}    	
+				obj.data = graphData; 
+				uiLayout['graphs'].data.push(obj);
+				//refreshCharts();
+				renderCharts();
+				$(button).closest('.modal').modal('hide');    
+			},
+			error: function(data) {
+				// alert(data.responseText);   
+				var error = data.responseText ? data.responseText : 'אירעה שגיאה בטעינת הגרף.';
+				$('#add-graph-modal .add-graph-error').text(error).fadeIn();
 			}
-			else {
-				obj.LOC = positionForChart;
-			}	    		
-		}    	
-		obj.data = graphData; 
-		uiLayout['graphs'].data.push(obj);
-		//refreshCharts();
-		renderCharts();
-		$(this).closest('.modal').modal('hide');    
+		});				
 	});
 
 	$('#add-graph-modal').on('hidden.bs.modal', function() {
@@ -318,18 +357,22 @@ $(function() {
 			$('#large-graph-modal').toggleClass('large', graphData.data.chartSize == 'large');
 			$('#large-graph-modal').find('.modal-header > h3').html(graphData.data.titles.head);
 			$('#large-graph-modal .modal-body').addClass('loading');
+			if (graphData.type === 'table') {
+				$('#change-graph-mode-button').addClass('hidden');
+			}
 			$('#large-graph-modal').modal('show');
 		}
 	});
 	
 	$('#large-graph-modal').on('shown.bs.modal', function() {
-		var graphData = JSON.parse($(this).data('data'));
-	drawGraph(graphData.data, 'large-graph-div', 500);
-	$('#large-graph-modal .modal-body').removeClass('loading');
+		var graphData = JSON.parse($(this).data('data'));		
+		drawGraph(graphData.data, 'large-graph-div', 500);
+		$('#large-graph-modal .modal-body').removeClass('loading');		
 	});
 
 	$('#large-graph-modal').on('hidden.bs.modal', function() {
 		$('#large-graph-div').html('');
+		$('#change-graph-mode-button').removeClass('hidden');		
 		$(this).find('.modal-header > h3').html('');
 		$(this).find('.modal-body').removeClass('table-mode')
 										.addClass('graph-mode');
@@ -410,31 +453,69 @@ $(function() {
 
 function getPageData() {
 	// get menu data
-	var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=ZZ&OPC=AMIRK";
-    $.ajax({
-			type : 'POST',
-			url : url,
-			contentType : 'application/json',
-			dataType : 'json',
-			success : function(data) {
-					// get the shortcuts from the favorites
-				uiLayout.shortcuts.data = data[data.length - 1].MENU;
+	var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=ZZ";
+	$.ajax({
+		type : 'POST',
+		url : url,
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			// 	// get the shortcuts from the favorites
+			// uiLayout.shortcuts.data = data[data.length - 1].MENU;
 
-				// save the original layout to be able to cancel changes.
-				originalLayout = cloneObject(uiLayout);
+			// // save the original layout to be able to cancel changes.
+			// originalLayout = cloneObject(uiLayout);
 
-    		renderAllAreas(true);
-	    	
-    		// rendreing the menu is heavy. using timeout so all the page data would be rendered first.
-    		setTimeout(function() {
-    			setMenu(data);
-    		}, 500);
-	    	
-    	},
-      error: function(data) {
+			// renderAllAreas(true);
+			
+			// rendreing the menu is heavy. using timeout so all the page data would be rendered first.
+			setTimeout(function() {
+				setMenu(data);
+			}, 500);
+		},
+		error: function(data) {
 			alert(data.responseText);    		
 		}
-	});    	       
+	});
+	
+	// get page data
+	var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPGET";    	
+	// var data = JSON.stringify({ data: uiLayout }); 
+	$.ajax({
+		type : 'POST',
+		url : url,
+		// data: data,
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			// uiLayout.shortcuts.data = data[data.length - 1].MENU;
+			uiLayout = data.data;
+			// save the original layout to be able to cancel changes.
+			originalLayout = cloneObject(uiLayout);
+
+			renderAllAreas(true);
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
+	});
+
+	// get available graphs 
+	var url = "mcall?_NS=CAV&_ROUTINE=CBIGRF&_LABEL=GETALLGRF";
+	$.ajax({
+		type : 'GET',
+		url : url,
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			// currently showing only graphs from SVK (the second chracter of the graph name is the UCI).
+			allGraphsOptions = data.graphList.filter((g) => g.code[1] === 'S').sort((ga, gb) => ga.name.localeCompare(gb.name) );
+			setSelectOptions(allGraphsOptions, $('#add-graph-select'), 'name', 'code');
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
+	});
 }
 
 function setMenu(data) {		    	
@@ -486,7 +567,7 @@ function renderCharts(useTimeout) {
 	$('#graphs-section').find('.sort-item:not(.template-item)').remove();
 	var newItem = $('#graphs-section').find('.template-item');
 	var graphPosition = 0;
-	var i = 0;
+	// var i = 0;
 	while (graphPosition < uiLayout.graphs.count) {
 		var template = newItem.clone();
 		template.removeClass('template-item');
@@ -494,29 +575,35 @@ function renderCharts(useTimeout) {
 		template.find('> .graph-div').attr('id', divId);
 		template.find('.add-item-button').data('position', graphPosition + 1);
 		template.data('position', graphPosition + 1);
-		var graph = uiLayout.graphs.data.filter(function(a) { return a.LOC == graphPosition + 1 })[0];		
+		var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == graphPosition + 1 })[0] : undefined;		
 		if (!graph) {
 			template.addClass('editing-item-placeholder');
-			$('#graphs-section').append(template);
-			graphPosition++;
+			// $('#graphs-section').append(template);
+			// graphPosition++;
 		}
 		else {
-			template.addClass('active');			
-			var graphData = getGrpahData(graph.COD);
-			graph.data = graphData;
-			$(template).find('.graph-title > label').html(graphData.titles.head);
-			$(template).data('data', JSON.stringify(graph));
-			$('#graphs-section').append(template);
-			//drawGraph(graphData, divId);			
-			if (graphData.chartSize == 'large') {
-				graphPosition += 2;
-			}
-			else {
-				graphPosition++;
-			}
+			// template.addClass('active');			
+			// var graphData = getGrpahData(graph.COD);
+			getGrpahData(graph, function(graphWithData) {
+				graph = graphWithData;
+				template = $('#graph' + graph.LOC).parent();
+				template.addClass('active');			
+				$(template).find('.graph-title > label').html(graph.data.titles.head);
+				$(template).data('data', JSON.stringify(graph));
+				// $('#graphs-section').append(template);
+				drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
+				if (graph.data.chartSize == 'large') {
+					$('#graph' + (graph.LOC + 1)).parent().remove();
+				}
+				// else {
+				// 	graphPosition++;
+				// }
+			});
+			// graphPosition++;
 		}
-		
-		i++;
+		$('#graphs-section').append(template);
+		graphPosition++;
+		// i++;
 	}
 	sortArea($('#graphs-section'));
 	// set the width of the graphs
@@ -530,7 +617,7 @@ function calculateChartsWidth() {
 	var percent = 100 / uiLayout.graphs.count;
 	// setting the width for each graph
 	for (var i = 0; i < uiLayout.graphs.count; i++) {
-		var graph = uiLayout.graphs.data.filter(function(a) { return a.LOC == i + 1 })[0];
+		var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == i + 1 })[0] : undefined;
 		var _width;
 		if (graph && graph.data.chartSize == 'large') {
 			_width = 2 * percent + '%';
@@ -739,12 +826,12 @@ function sortArea(area) {
 		containment: "parent", //'.sort-area',
 		placeholder: 'sorting-placeholder',
 		forcePlaceholderSize: true,
-	    forceHelperSize: true,
-	    scroll: false,
-	    cursor: "move",
-	    tolerance: "pointer",
-	    delay: 50,
-	    stop: function(event, ui) {
+		forceHelperSize: true,
+		scroll: false,
+		cursor: "move",
+		tolerance: "pointer",
+		delay: 50,
+		stop: function(event, ui) {
 			updatePositions(event.target);
 		}
 	});
@@ -877,26 +964,40 @@ function renderMenuFavorites() {
 	$('#favorites-menu-item .add-to-favorites').remove();
 }
 
-function getGrpahData(graphCode) {
-	var graphData = {};
-	switch (graphCode) {
-		case 'G1':
-			graphData = {"cols":{"x":{"title":"מכירות","type":"string"},"y":[{"title":"ערך","type":"number"}]},"green":{"from":457092,"to":794942},"links":[{"chartCode":"GSGD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":20180207}],"place":"prev","text":"ליום הקודם"}],"red":{"from":0,"to":397471},"ticks":{"major":1,"minor":5},"titles":{"chart":"181%","head":"הזמנות יומי - נטו<BR>ליום ה 08.02.18 מול היעד"},"type":"gauge","valsInterval":{"max":794942,"maxPercent":200,"middle":397471,"min":0},"values":[{"val":718276,"zoomParam":[{"key":"INDEX","value":718276},{"key":"DATE","value":20180208}]}],"yellow":{"from":397471,"to":457092},"zoom":{"chartCode":"GSTD3"}};
-			break;
-		case 'G2':
-			graphData = {"cols":{"x":{"title":null,"type":"string"},"y":[{"title":"ערך","type":"number"}]},"links":[{"chartCode":"GSPD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":null}],"place":"exel","text":"ליום אקסל"},{"chartCode":"GSPD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":20180207}],"place":"prev","text":"ליום הקודם"}],"options":{"3D":true},"titles":{"chart":"ליום ה 08.02.18","head":"התפלגות הזמנות לפי מודלים מובילים<BR>"},"type":"pie","values":[{"color":null,"title":"שרשרת","unit":null,"vals":[669553],"zoomParam":[{"key":"INDEX","value":":1"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אחר","unit":null,"vals":[48241],"zoomParam":[{"key":"INDEX","value":"OTHER"},{"key":"DATE","value":20180208}]}],"zoom":{"chartCode":"GSTD1"}}; 
-			break;
-		case 'G3':
-			graphData = {"chartColor":["blue","green"],"chartSize":"large","cols":{"x":{"title":"סוכן","type":"string"},"y":[{"show":1,"title":"יעד","type":"number"},{"show":1,"title":"ביצוע","type":"number"}]},"links":[{"chartCode":"GSBD4","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":null}],"place":"exel","text":"ליום אקסל"},{"chartCode":"GSBD4","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":20180207}],"place":"prev","text":"ליום הקודם"}],"titles":{"axis":{"x":"סוכן","y":null,"y2":null},"chart":"ליום ה 08.02.18","head":"יעד מול ביצוע לסוכן"},"type":"bar","values":[{"color":null,"title":"מחסן ראשי(לשיווק)","unit":null,"vals":[34563.03357142857,352171.09],"zoomParam":[{"key":"INDEX","value":"RO:1"},{"key":"DATE","value":20180208}]},{"color":null,"title":"נתנאל לוי 0522432807","unit":null,"vals":[19844.505357142858,28055.49],"zoomParam":[{"key":"INDEX","value":"RO:11"},{"key":"DATE","value":20180208}]},{"color":null,"title":"חדד דינה 052-2550543","unit":null,"vals":[10064.16107142857,19242.73],"zoomParam":[{"key":"INDEX","value":"RO:18"},{"key":"DATE","value":20180208}]},{"color":null,"title":"עינבל סויסה 0526574989","unit":null,"vals":[16026.648571428572,34706.03],"zoomParam":[{"key":"INDEX","value":"RO:19"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אילנה סיבוני 052-5595058","unit":null,"vals":[14816.081428571428,14920.53],"zoomParam":[{"key":"INDEX","value":"RO:20"},{"key":"DATE","value":20180208}]},{"color":null,"title":"גיא חיה 052-2308641","unit":null,"vals":[26845.361785714285,19603.16],"zoomParam":[{"key":"INDEX","value":"RO:21"},{"key":"DATE","value":20180208}]},{"color":null,"title":"תאופיק חסנין","unit":null,"vals":[2338.644642857143,3405.98],"zoomParam":[{"key":"INDEX","value":"RO:24"},{"key":"DATE","value":20180208}]},{"color":null,"title":"זיו שושן 052-6574985","unit":null,"vals":[20481.323214285716,24496],"zoomParam":[{"key":"INDEX","value":"RO:26"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אבי יאיש 052-6573025","unit":null,"vals":[17899.75857142857,10060.35],"zoomParam":[{"key":"INDEX","value":"RO:27"},{"key":"DATE","value":20180208}]},{"color":null,"title":"מורן מדמוני","unit":null,"vals":[127.80428571428571,4205.98],"zoomParam":[{"key":"INDEX","value":"RO:28"},{"key":"DATE","value":20180208}]},{"color":null,"title":"מיטל כוכבי 052-7226820","unit":null,"vals":[1768.3757142857144,634.1],"zoomParam":[{"key":"INDEX","value":"RO:29"},{"key":"DATE","value":20180208}]},{"color":null,"title":"סוכן ביוטי סטור רמבם","unit":null,"vals":[7215.506785714286,6942.68],"zoomParam":[{"key":"INDEX","value":"RO:3"},{"key":"DATE","value":20180208}]},{"color":null,"title":"דימרי מאיר 052-3264636","unit":null,"vals":[25672.465714285714,9539.22],"zoomParam":[{"key":"INDEX","value":"RO:30"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אילנה איסחקוב 052-5595062","unit":null,"vals":[16530.54107142857,74650.66],"zoomParam":[{"key":"INDEX","value":"RO:4"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ללוש שי 052-2537053","unit":null,"vals":[25636.998571428572,18227.35],"zoomParam":[{"key":"INDEX","value":"RO:40"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ליאת אבו (0525411370)","unit":null,"vals":[11467.675714285715,18374.01],"zoomParam":[{"key":"INDEX","value":"RO:41"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ענת אזולאי 054-6567127","unit":null,"vals":[8640.5375,9671.14],"zoomParam":[{"key":"INDEX","value":"RO:44"},{"key":"DATE","value":20180208}]},{"color":null,"title":"חדד גדי 052-8525267","unit":null,"vals":[8817.070357142857,95535.6],"zoomParam":[{"key":"INDEX","value":"RO:45"},{"key":"DATE","value":20180208}]},{"color":null,"title":"נטלי איבגי 052-7955444","unit":null,"vals":[14406.142857142857,5771.74],"zoomParam":[{"key":"INDEX","value":"RO:46"},{"key":"DATE","value":20180208}]},{"color":null,"title":"מרגלית בן שיטרית 0526578231","unit":null,"vals":[13560.345357142856,30499.21],"zoomParam":[{"key":"INDEX","value":"RO:49"},{"key":"DATE","value":20180208}]},{"color":null,"title":"שרית טויטו","unit":null,"vals":[21056.2275,4639.01],"zoomParam":[{"key":"INDEX","value":"RO:5"},{"key":"DATE","value":20180208}]},{"color":null,"title":"פרלי מגול 052-8973968","unit":null,"vals":[165.1407142857143,2088.04],"zoomParam":[{"key":"INDEX","value":"RO:51"},{"key":"DATE","value":20180208}]},{"color":null,"title":"רונן כהן-0526036015","unit":null,"vals":[0,1914.87],"zoomParam":[{"key":"INDEX","value":"RO:57"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אדוארדו פורזקנסקי","unit":null,"vals":[6066.055357142857,3849],"zoomParam":[{"key":"INDEX","value":"RO:6"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ניסים קלרית.052-6578231","unit":null,"vals":[19855.342857142856,14557.44],"zoomParam":[{"key":"INDEX","value":"RO:60"},{"key":"DATE","value":20180208}]},{"color":null,"title":"מגי סקר 052-3127012","unit":null,"vals":[11959.606071428572,33390.77],"zoomParam":[{"key":"INDEX","value":"RO:63"},{"key":"DATE","value":20180208}]},{"color":null,"title":"שני מיארה 052-2211889","unit":null,"vals":[5516.653928571429,1048],"zoomParam":[{"key":"INDEX","value":"RO:64"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אלינור לוי 0528812770","unit":null,"vals":[5389.9575,3852.76],"zoomParam":[{"key":"INDEX","value":"RO:69"},{"key":"DATE","value":20180208}]},{"color":null,"title":"סוכן אינטרנט","unit":null,"vals":[1660.3635714285715,3916.24],"zoomParam":[{"key":"INDEX","value":"RO:70"},{"key":"DATE","value":20180208}]},{"color":null,"title":"חורי מזל (נתנאל)","unit":null,"vals":[4041.302142857143,1152.14],"zoomParam":[{"key":"INDEX","value":"RO:73"},{"key":"DATE","value":20180208}]},{"color":null,"title":"שני סוכן עובדים ודיילות","unit":null,"vals":[751.9546428571429,2817.6],"zoomParam":[{"key":"INDEX","value":"RO:8"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ללא סוכן","unit":null,"vals":[0,231.83],"zoomParam":[{"key":"INDEX","value":"RO:ZZZ"},{"key":"DATE","value":20180208}]}],"zoom":{"chartCode":"GSTD2"},"chartCode":"GSBD4"}; 
-			break;
-		case 'G4':
-			graphData = {"chartColor":["blue","green"],"chartSize":"large","cols":{"x":{"title":"סוכן","type":"string"},"y":[{"show":1,"title":"יעד","type":"number"},{"show":1,"title":"ביצוע","type":"number"}]},"links":[{"chartCode":"GSBD4","param":[{"key":"JB","value":"BI5960894"},{"key":"DATE","value":null}],"place":"exel","text":"ליום אקסל"},{"chartCode":"GSBD4","param":[{"key":"JB","value":"BI5960894"},{"key":"DATE","value":20180220}],"place":"prev","text":"ליום הקודם"}],"titles":{"axis":{"x":"סוכן","y":null,"y2":null},"chart":"ליום ד 21.02.18","head":"יעד מול ביצוע לסוכן"},"type":"bar","values":[{"color":null,"title":"מחסן ראשי(לשיווק)","unit":null,"vals":[34563.03357142857,94507.58],"zoomParam":[{"key":"INDEX","value":"RO:1"},{"key":"DATE","value":20180221}]},{"color":null,"title":"נתנאל לוי 0522432807","unit":null,"vals":[19844.505357142858,18812.82],"zoomParam":[{"key":"INDEX","value":"RO:11"},{"key":"DATE","value":20180221}]},{"color":null,"title":"חדד דינה 052-2550543","unit":null,"vals":[10064.16107142857,15663.73],"zoomParam":[{"key":"INDEX","value":"RO:18"},{"key":"DATE","value":20180221}]},{"color":null,"title":"עינבל סויסה 0526574989","unit":null,"vals":[16026.648571428572,18887.9],"zoomParam":[{"key":"INDEX","value":"RO:19"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אילנה סיבוני 052-5595058","unit":null,"vals":[14816.081428571428,6752.99],"zoomParam":[{"key":"INDEX","value":"RO:20"},{"key":"DATE","value":20180221}]},{"color":null,"title":"גיא חיה 052-2308641","unit":null,"vals":[26845.361785714285,30082.59],"zoomParam":[{"key":"INDEX","value":"RO:21"},{"key":"DATE","value":20180221}]},{"color":null,"title":"תאופיק חסנין","unit":null,"vals":[2338.644642857143,10409.38],"zoomParam":[{"key":"INDEX","value":"RO:24"},{"key":"DATE","value":20180221}]},{"color":null,"title":"זיו שושן 052-6574985","unit":null,"vals":[20481.323214285716,8987.7],"zoomParam":[{"key":"INDEX","value":"RO:26"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אבי יאיש 052-6573025","unit":null,"vals":[17899.75857142857,8550.5],"zoomParam":[{"key":"INDEX","value":"RO:27"},{"key":"DATE","value":20180221}]},{"color":null,"title":"סוכן ביוטי סטור רמבם","unit":null,"vals":[7215.506785714286,13079.48],"zoomParam":[{"key":"INDEX","value":"RO:3"},{"key":"DATE","value":20180221}]},{"color":null,"title":"דימרי מאיר 052-3264636","unit":null,"vals":[25672.465714285714,18148.72],"zoomParam":[{"key":"INDEX","value":"RO:30"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אילנה איסחקוב 052-5595062","unit":null,"vals":[16530.54107142857,49699.14],"zoomParam":[{"key":"INDEX","value":"RO:4"},{"key":"DATE","value":20180221}]},{"color":null,"title":"ללוש שי 052-2537053","unit":null,"vals":[25636.998571428572,19310.91],"zoomParam":[{"key":"INDEX","value":"RO:40"},{"key":"DATE","value":20180221}]},{"color":null,"title":"ליאת אבו (0525411370)","unit":null,"vals":[11467.675714285715,9631.1],"zoomParam":[{"key":"INDEX","value":"RO:41"},{"key":"DATE","value":20180221}]},{"color":null,"title":"ענת אזולאי 054-6567127","unit":null,"vals":[8640.5375,5387.18],"zoomParam":[{"key":"INDEX","value":"RO:44"},{"key":"DATE","value":20180221}]},{"color":null,"title":"חדד גדי 052-8525267","unit":null,"vals":[9605.845714285715,47028.91],"zoomParam":[{"key":"INDEX","value":"RO:45"},{"key":"DATE","value":20180221}]},{"color":null,"title":"נטלי איבגי 052-7955444","unit":null,"vals":[14406.142857142857,10683.67],"zoomParam":[{"key":"INDEX","value":"RO:46"},{"key":"DATE","value":20180221}]},{"color":null,"title":"מרגלית בן שיטרית 0526578231","unit":null,"vals":[13475.210714285715,23176.92],"zoomParam":[{"key":"INDEX","value":"RO:49"},{"key":"DATE","value":20180221}]},{"color":null,"title":"שרית טויטו","unit":null,"vals":[21056.2275,25301.71],"zoomParam":[{"key":"INDEX","value":"RO:5"},{"key":"DATE","value":20180221}]},{"color":null,"title":"פרלי מגול 052-8973968","unit":null,"vals":[165.1407142857143,493.17],"zoomParam":[{"key":"INDEX","value":"RO:51"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אדוארדו פורזקנסקי","unit":null,"vals":[4908.418571428571,117.76],"zoomParam":[{"key":"INDEX","value":"RO:6"},{"key":"DATE","value":20180221}]},{"color":null,"title":"ניסים קלרית.052-6578231","unit":null,"vals":[19855.342857142856,2822.22],"zoomParam":[{"key":"INDEX","value":"RO:60"},{"key":"DATE","value":20180221}]},{"color":null,"title":"מגי סקר 052-3127012","unit":null,"vals":[11959.606071428572,3560.69],"zoomParam":[{"key":"INDEX","value":"RO:63"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אלינור לוי 0528812770","unit":null,"vals":[5389.9575,763.25],"zoomParam":[{"key":"INDEX","value":"RO:69"},{"key":"DATE","value":20180221}]},{"color":null,"title":"סוכן אינטרנט","unit":null,"vals":[1660.3635714285715,5271.09],"zoomParam":[{"key":"INDEX","value":"RO:70"},{"key":"DATE","value":20180221}]},{"color":null,"title":"שני סוכן עובדים ודיילות","unit":null,"vals":[751.9546428571429,1704.5],"zoomParam":[{"key":"INDEX","value":"RO:8"},{"key":"DATE","value":20180221}]}],"zoom":{"chartCode":"GSTD2"}}; 
-			break;
-		case 'G5':
-			graphData = {"cols":{"x":{"title":null,"type":"string"},"y":[{"title":"ערך","type":"number"}]},"links":[{"chartCode":"GSPD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":null}],"place":"exel","text":"ליום אקסל"},{"chartCode":"GSPD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":14180207}],"place":"prev","text":"ליום הקודם"}],"options":{"3D":true},"titles":{"chart":"ליום א 25.02.18","head":"התפלגות הזמנות לפי מודלים מובילים<BR>"},"type":"pie","values":[{"color":null,"title":"שרשרת","unit":null,"vals":[114882],"zoomParam":[{"key":"INDEX","value":":1"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אחר","unit":null,"vals":[83102],"zoomParam":[{"key":"INDEX","value":"OTHER"},{"key":"DATE","value":20180208}]}, {"color":null,"title":"נתון נוסף","unit":null,"vals":[96577],"zoomParam":[{"key":"INDEX","value":":1"},{"key":"DATE","value":20180208}]}],"zoom":{"chartCode":"GSTD1"}}; 
-			break;
-	}
-	return graphData;
+function getGrpahData(graph, handler) {
+	var url = `mcall?_ROUTINE=CBIGRF&_NS=CAV&_LABEL=RUN&GRF=${ graph.code }&TFK=MNG&USERNAME=SID`;    	
+	$.ajax({
+		type : 'GET',
+		url : url,
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			graph.data = data;
+			handler(graph);
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
+	});
+	// var graphData = {};
+	// switch (graphCode) {
+	// 	case 'G1':
+	// 		graphData = {"cols":{"x":{"title":"מכירות","type":"string"},"y":[{"title":"ערך","type":"number"}]},"green":{"from":457092,"to":794942},"links":[{"chartCode":"GSGD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":20180207}],"place":"prev","text":"ליום הקודם"}],"red":{"from":0,"to":397471},"ticks":{"major":1,"minor":5},"titles":{"chart":"181%","head":"הזמנות יומי - נטו<BR>ליום ה 08.02.18 מול היעד"},"type":"gauge","valsInterval":{"max":794942,"maxPercent":200,"middle":397471,"min":0},"values":[{"val":718276,"zoomParam":[{"key":"INDEX","value":718276},{"key":"DATE","value":20180208}]}],"yellow":{"from":397471,"to":457092},"zoom":{"chartCode":"GSTD3"}};
+	// 		break;
+	// 	case 'G2':
+	// 		graphData = {"cols":{"x":{"title":null,"type":"string"},"y":[{"title":"ערך","type":"number"}]},"links":[{"chartCode":"GSPD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":null}],"place":"exel","text":"ליום אקסל"},{"chartCode":"GSPD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":20180207}],"place":"prev","text":"ליום הקודם"}],"options":{"3D":true},"titles":{"chart":"ליום ה 08.02.18","head":"התפלגות הזמנות לפי מודלים מובילים<BR>"},"type":"pie","values":[{"color":null,"title":"שרשרת","unit":null,"vals":[669553],"zoomParam":[{"key":"INDEX","value":":1"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אחר","unit":null,"vals":[48241],"zoomParam":[{"key":"INDEX","value":"OTHER"},{"key":"DATE","value":20180208}]}],"zoom":{"chartCode":"GSTD1"}}; 
+	// 		break;
+	// 	case 'G3':
+	// 		graphData = {"chartColor":["blue","green"],"chartSize":"large","cols":{"x":{"title":"סוכן","type":"string"},"y":[{"show":1,"title":"יעד","type":"number"},{"show":1,"title":"ביצוע","type":"number"}]},"links":[{"chartCode":"GSBD4","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":null}],"place":"exel","text":"ליום אקסל"},{"chartCode":"GSBD4","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":20180207}],"place":"prev","text":"ליום הקודם"}],"titles":{"axis":{"x":"סוכן","y":null,"y2":null},"chart":"ליום ה 08.02.18","head":"יעד מול ביצוע לסוכן"},"type":"bar","values":[{"color":null,"title":"מחסן ראשי(לשיווק)","unit":null,"vals":[34563.03357142857,352171.09],"zoomParam":[{"key":"INDEX","value":"RO:1"},{"key":"DATE","value":20180208}]},{"color":null,"title":"נתנאל לוי 0522432807","unit":null,"vals":[19844.505357142858,28055.49],"zoomParam":[{"key":"INDEX","value":"RO:11"},{"key":"DATE","value":20180208}]},{"color":null,"title":"חדד דינה 052-2550543","unit":null,"vals":[10064.16107142857,19242.73],"zoomParam":[{"key":"INDEX","value":"RO:18"},{"key":"DATE","value":20180208}]},{"color":null,"title":"עינבל סויסה 0526574989","unit":null,"vals":[16026.648571428572,34706.03],"zoomParam":[{"key":"INDEX","value":"RO:19"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אילנה סיבוני 052-5595058","unit":null,"vals":[14816.081428571428,14920.53],"zoomParam":[{"key":"INDEX","value":"RO:20"},{"key":"DATE","value":20180208}]},{"color":null,"title":"גיא חיה 052-2308641","unit":null,"vals":[26845.361785714285,19603.16],"zoomParam":[{"key":"INDEX","value":"RO:21"},{"key":"DATE","value":20180208}]},{"color":null,"title":"תאופיק חסנין","unit":null,"vals":[2338.644642857143,3405.98],"zoomParam":[{"key":"INDEX","value":"RO:24"},{"key":"DATE","value":20180208}]},{"color":null,"title":"זיו שושן 052-6574985","unit":null,"vals":[20481.323214285716,24496],"zoomParam":[{"key":"INDEX","value":"RO:26"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אבי יאיש 052-6573025","unit":null,"vals":[17899.75857142857,10060.35],"zoomParam":[{"key":"INDEX","value":"RO:27"},{"key":"DATE","value":20180208}]},{"color":null,"title":"מורן מדמוני","unit":null,"vals":[127.80428571428571,4205.98],"zoomParam":[{"key":"INDEX","value":"RO:28"},{"key":"DATE","value":20180208}]},{"color":null,"title":"מיטל כוכבי 052-7226820","unit":null,"vals":[1768.3757142857144,634.1],"zoomParam":[{"key":"INDEX","value":"RO:29"},{"key":"DATE","value":20180208}]},{"color":null,"title":"סוכן ביוטי סטור רמבם","unit":null,"vals":[7215.506785714286,6942.68],"zoomParam":[{"key":"INDEX","value":"RO:3"},{"key":"DATE","value":20180208}]},{"color":null,"title":"דימרי מאיר 052-3264636","unit":null,"vals":[25672.465714285714,9539.22],"zoomParam":[{"key":"INDEX","value":"RO:30"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אילנה איסחקוב 052-5595062","unit":null,"vals":[16530.54107142857,74650.66],"zoomParam":[{"key":"INDEX","value":"RO:4"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ללוש שי 052-2537053","unit":null,"vals":[25636.998571428572,18227.35],"zoomParam":[{"key":"INDEX","value":"RO:40"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ליאת אבו (0525411370)","unit":null,"vals":[11467.675714285715,18374.01],"zoomParam":[{"key":"INDEX","value":"RO:41"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ענת אזולאי 054-6567127","unit":null,"vals":[8640.5375,9671.14],"zoomParam":[{"key":"INDEX","value":"RO:44"},{"key":"DATE","value":20180208}]},{"color":null,"title":"חדד גדי 052-8525267","unit":null,"vals":[8817.070357142857,95535.6],"zoomParam":[{"key":"INDEX","value":"RO:45"},{"key":"DATE","value":20180208}]},{"color":null,"title":"נטלי איבגי 052-7955444","unit":null,"vals":[14406.142857142857,5771.74],"zoomParam":[{"key":"INDEX","value":"RO:46"},{"key":"DATE","value":20180208}]},{"color":null,"title":"מרגלית בן שיטרית 0526578231","unit":null,"vals":[13560.345357142856,30499.21],"zoomParam":[{"key":"INDEX","value":"RO:49"},{"key":"DATE","value":20180208}]},{"color":null,"title":"שרית טויטו","unit":null,"vals":[21056.2275,4639.01],"zoomParam":[{"key":"INDEX","value":"RO:5"},{"key":"DATE","value":20180208}]},{"color":null,"title":"פרלי מגול 052-8973968","unit":null,"vals":[165.1407142857143,2088.04],"zoomParam":[{"key":"INDEX","value":"RO:51"},{"key":"DATE","value":20180208}]},{"color":null,"title":"רונן כהן-0526036015","unit":null,"vals":[0,1914.87],"zoomParam":[{"key":"INDEX","value":"RO:57"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אדוארדו פורזקנסקי","unit":null,"vals":[6066.055357142857,3849],"zoomParam":[{"key":"INDEX","value":"RO:6"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ניסים קלרית.052-6578231","unit":null,"vals":[19855.342857142856,14557.44],"zoomParam":[{"key":"INDEX","value":"RO:60"},{"key":"DATE","value":20180208}]},{"color":null,"title":"מגי סקר 052-3127012","unit":null,"vals":[11959.606071428572,33390.77],"zoomParam":[{"key":"INDEX","value":"RO:63"},{"key":"DATE","value":20180208}]},{"color":null,"title":"שני מיארה 052-2211889","unit":null,"vals":[5516.653928571429,1048],"zoomParam":[{"key":"INDEX","value":"RO:64"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אלינור לוי 0528812770","unit":null,"vals":[5389.9575,3852.76],"zoomParam":[{"key":"INDEX","value":"RO:69"},{"key":"DATE","value":20180208}]},{"color":null,"title":"סוכן אינטרנט","unit":null,"vals":[1660.3635714285715,3916.24],"zoomParam":[{"key":"INDEX","value":"RO:70"},{"key":"DATE","value":20180208}]},{"color":null,"title":"חורי מזל (נתנאל)","unit":null,"vals":[4041.302142857143,1152.14],"zoomParam":[{"key":"INDEX","value":"RO:73"},{"key":"DATE","value":20180208}]},{"color":null,"title":"שני סוכן עובדים ודיילות","unit":null,"vals":[751.9546428571429,2817.6],"zoomParam":[{"key":"INDEX","value":"RO:8"},{"key":"DATE","value":20180208}]},{"color":null,"title":"ללא סוכן","unit":null,"vals":[0,231.83],"zoomParam":[{"key":"INDEX","value":"RO:ZZZ"},{"key":"DATE","value":20180208}]}],"zoom":{"chartCode":"GSTD2"},"chartCode":"GSBD4"}; 
+	// 		break;
+	// 	case 'G4':
+	// 		graphData = {"chartColor":["blue","green"],"chartSize":"large","cols":{"x":{"title":"סוכן","type":"string"},"y":[{"show":1,"title":"יעד","type":"number"},{"show":1,"title":"ביצוע","type":"number"}]},"links":[{"chartCode":"GSBD4","param":[{"key":"JB","value":"BI5960894"},{"key":"DATE","value":null}],"place":"exel","text":"ליום אקסל"},{"chartCode":"GSBD4","param":[{"key":"JB","value":"BI5960894"},{"key":"DATE","value":20180220}],"place":"prev","text":"ליום הקודם"}],"titles":{"axis":{"x":"סוכן","y":null,"y2":null},"chart":"ליום ד 21.02.18","head":"יעד מול ביצוע לסוכן"},"type":"bar","values":[{"color":null,"title":"מחסן ראשי(לשיווק)","unit":null,"vals":[34563.03357142857,94507.58],"zoomParam":[{"key":"INDEX","value":"RO:1"},{"key":"DATE","value":20180221}]},{"color":null,"title":"נתנאל לוי 0522432807","unit":null,"vals":[19844.505357142858,18812.82],"zoomParam":[{"key":"INDEX","value":"RO:11"},{"key":"DATE","value":20180221}]},{"color":null,"title":"חדד דינה 052-2550543","unit":null,"vals":[10064.16107142857,15663.73],"zoomParam":[{"key":"INDEX","value":"RO:18"},{"key":"DATE","value":20180221}]},{"color":null,"title":"עינבל סויסה 0526574989","unit":null,"vals":[16026.648571428572,18887.9],"zoomParam":[{"key":"INDEX","value":"RO:19"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אילנה סיבוני 052-5595058","unit":null,"vals":[14816.081428571428,6752.99],"zoomParam":[{"key":"INDEX","value":"RO:20"},{"key":"DATE","value":20180221}]},{"color":null,"title":"גיא חיה 052-2308641","unit":null,"vals":[26845.361785714285,30082.59],"zoomParam":[{"key":"INDEX","value":"RO:21"},{"key":"DATE","value":20180221}]},{"color":null,"title":"תאופיק חסנין","unit":null,"vals":[2338.644642857143,10409.38],"zoomParam":[{"key":"INDEX","value":"RO:24"},{"key":"DATE","value":20180221}]},{"color":null,"title":"זיו שושן 052-6574985","unit":null,"vals":[20481.323214285716,8987.7],"zoomParam":[{"key":"INDEX","value":"RO:26"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אבי יאיש 052-6573025","unit":null,"vals":[17899.75857142857,8550.5],"zoomParam":[{"key":"INDEX","value":"RO:27"},{"key":"DATE","value":20180221}]},{"color":null,"title":"סוכן ביוטי סטור רמבם","unit":null,"vals":[7215.506785714286,13079.48],"zoomParam":[{"key":"INDEX","value":"RO:3"},{"key":"DATE","value":20180221}]},{"color":null,"title":"דימרי מאיר 052-3264636","unit":null,"vals":[25672.465714285714,18148.72],"zoomParam":[{"key":"INDEX","value":"RO:30"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אילנה איסחקוב 052-5595062","unit":null,"vals":[16530.54107142857,49699.14],"zoomParam":[{"key":"INDEX","value":"RO:4"},{"key":"DATE","value":20180221}]},{"color":null,"title":"ללוש שי 052-2537053","unit":null,"vals":[25636.998571428572,19310.91],"zoomParam":[{"key":"INDEX","value":"RO:40"},{"key":"DATE","value":20180221}]},{"color":null,"title":"ליאת אבו (0525411370)","unit":null,"vals":[11467.675714285715,9631.1],"zoomParam":[{"key":"INDEX","value":"RO:41"},{"key":"DATE","value":20180221}]},{"color":null,"title":"ענת אזולאי 054-6567127","unit":null,"vals":[8640.5375,5387.18],"zoomParam":[{"key":"INDEX","value":"RO:44"},{"key":"DATE","value":20180221}]},{"color":null,"title":"חדד גדי 052-8525267","unit":null,"vals":[9605.845714285715,47028.91],"zoomParam":[{"key":"INDEX","value":"RO:45"},{"key":"DATE","value":20180221}]},{"color":null,"title":"נטלי איבגי 052-7955444","unit":null,"vals":[14406.142857142857,10683.67],"zoomParam":[{"key":"INDEX","value":"RO:46"},{"key":"DATE","value":20180221}]},{"color":null,"title":"מרגלית בן שיטרית 0526578231","unit":null,"vals":[13475.210714285715,23176.92],"zoomParam":[{"key":"INDEX","value":"RO:49"},{"key":"DATE","value":20180221}]},{"color":null,"title":"שרית טויטו","unit":null,"vals":[21056.2275,25301.71],"zoomParam":[{"key":"INDEX","value":"RO:5"},{"key":"DATE","value":20180221}]},{"color":null,"title":"פרלי מגול 052-8973968","unit":null,"vals":[165.1407142857143,493.17],"zoomParam":[{"key":"INDEX","value":"RO:51"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אדוארדו פורזקנסקי","unit":null,"vals":[4908.418571428571,117.76],"zoomParam":[{"key":"INDEX","value":"RO:6"},{"key":"DATE","value":20180221}]},{"color":null,"title":"ניסים קלרית.052-6578231","unit":null,"vals":[19855.342857142856,2822.22],"zoomParam":[{"key":"INDEX","value":"RO:60"},{"key":"DATE","value":20180221}]},{"color":null,"title":"מגי סקר 052-3127012","unit":null,"vals":[11959.606071428572,3560.69],"zoomParam":[{"key":"INDEX","value":"RO:63"},{"key":"DATE","value":20180221}]},{"color":null,"title":"אלינור לוי 0528812770","unit":null,"vals":[5389.9575,763.25],"zoomParam":[{"key":"INDEX","value":"RO:69"},{"key":"DATE","value":20180221}]},{"color":null,"title":"סוכן אינטרנט","unit":null,"vals":[1660.3635714285715,5271.09],"zoomParam":[{"key":"INDEX","value":"RO:70"},{"key":"DATE","value":20180221}]},{"color":null,"title":"שני סוכן עובדים ודיילות","unit":null,"vals":[751.9546428571429,1704.5],"zoomParam":[{"key":"INDEX","value":"RO:8"},{"key":"DATE","value":20180221}]}],"zoom":{"chartCode":"GSTD2"}}; 
+	// 		break;
+	// 	case 'G5':
+	// 		graphData = {"cols":{"x":{"title":null,"type":"string"},"y":[{"title":"ערך","type":"number"}]},"links":[{"chartCode":"GSPD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":null}],"place":"exel","text":"ליום אקסל"},{"chartCode":"GSPD1","param":[{"key":"JB","value":"BI9579755"},{"key":"DATE","value":14180207}],"place":"prev","text":"ליום הקודם"}],"options":{"3D":true},"titles":{"chart":"ליום א 25.02.18","head":"התפלגות הזמנות לפי מודלים מובילים<BR>"},"type":"pie","values":[{"color":null,"title":"שרשרת","unit":null,"vals":[114882],"zoomParam":[{"key":"INDEX","value":":1"},{"key":"DATE","value":20180208}]},{"color":null,"title":"אחר","unit":null,"vals":[83102],"zoomParam":[{"key":"INDEX","value":"OTHER"},{"key":"DATE","value":20180208}]}, {"color":null,"title":"נתון נוסף","unit":null,"vals":[96577],"zoomParam":[{"key":"INDEX","value":":1"},{"key":"DATE","value":20180208}]}],"zoom":{"chartCode":"GSTD1"}}; 
+	// 		break;
+	// }
+	// return graphData;
 }
 
 function checkPositionForChart(position) {
@@ -930,6 +1031,9 @@ function drawGraph(graphData, divId, graphHeight) {
 		case "gauge":
 			drawGauge(graphData, divId, 0, graphHeight);
 			break;
+		case "table":
+			drawTable(graphData, divId);
+			break;
 	//	 more types removed for now 
 		default:
 			return;
@@ -944,9 +1048,28 @@ function resetArrayLocations(arr) {
 }
 
 function addToLastApps(newApp) {
-	var currLastApp = uiLayout['last-apps'].data[0];
-	if (!currLastApp || currLastApp.TXT != currApp.TXT) {
-		uiLayout['last-apps'].data.unshift(currApp);
+	var prevApp = uiLayout['last-apps'].data[0];
+	if (!prevApp || prevApp.TXT != newApp.TXT) {
+		uiLayout['last-apps'].data.unshift(newApp);
 		resetArrayLocations(uiLayout['last-apps'].data);
 	}
+}
+
+function getLP() {
+	var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPGET";    	
+	// var data = JSON.stringify({ data: uiLayout }); 
+	$.ajax({
+		type : 'POST',
+		url : url,
+		// data: data,
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			//debugger;
+			var r = 3;
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
+	});  
 }
