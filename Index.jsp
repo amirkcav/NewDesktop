@@ -85,7 +85,7 @@
 					<div class="info-square item-scale sort-item template-item">
 						<a class="info-square-button" href="javascript:;">
 							<label class="sum"><span class="sign">₪</span><span class="template-field" data-field="VAL"></span></label>
-							<label class="title template-field" data-field="TXT"></label>
+							<label class="title template-field set-tooltip-field" data-field="TXT"></label>
 						</a>
 						<a href="#add-info-square-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
 							<span>+</span>
@@ -119,6 +119,7 @@
 	
 	<script src="js/plugin/moment/moment.min.js"></script>
 	<script src="js/plugin/chartjs/chart.min.js"></script>
+	<script src="js/plugin/select2/dist/js/select2.js"></script>
 	
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript">

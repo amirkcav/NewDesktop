@@ -133,11 +133,12 @@ body.background5 {
 #info-squares-section .info-square {
     /* width: 250px; */
     margin: 10px;
-    padding: 10px 20px;
+    padding: 10px;
     border: 3px solid #999;
     text-align: center;
     background: white;
     position: relative;
+    /* overflow: hidden; */
 }
 
 #info-squares-section .info-square label {
@@ -147,12 +148,18 @@ body.background5 {
 }
 
 #info-squares-section .info-square label.sum {
-    font-size: 2.5em;
+    font-size: 2.2em;
     min-width: 100px;    
 }
 
 #info-squares-section .info-square label.sum > span.sign {
     transform: scale(0.95);
+}
+
+#info-squares-section .info-square label.title { 
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 #graphs-section .graph {
@@ -633,6 +640,10 @@ nav li.disabled {
     flex-direction: column;
 }
 
+#graphs-section .graph > .graph-title > label {
+    overflow: hidden;
+}
+
 #graphs-section .graph.editing-item-placeholder > .graph-title {
     display: none;    
 }
@@ -811,4 +822,16 @@ nav li.disabled {
 
 .sort-area {
     direction: rtl;
+}
+
+.select2-container .select2-choice .select2-arrow b:before, .select2-selection__arrow b:before {
+    content: none;
+}
+
+#add-graph-modal .graph-option-label {
+    direction: rtl;
+}
+
+#add-graph-modal .graph-option-label i.fa {
+    font-size: 1.5rem;
 }

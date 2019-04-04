@@ -1,0 +1,1 @@
+scp Index.jsp cache.cav.local:/cav/tomcat7/webapps/zjBoard/

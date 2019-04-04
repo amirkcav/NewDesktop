@@ -6,6 +6,10 @@ var shortcutsArea;
 var infoSquaresArea;
 var graphsArea;
 var notShortcutPos = 0;
+var hebrewPeriods = {
+	monthly: 'חודשי',
+	daily: 'יומי'
+}
 // used in the graphs for table
 var user_lang = 'HB';
 
@@ -29,7 +33,7 @@ var user_lang = 'HB';
 // 			]}
 // };
 
-var allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי', VAL: '342,099' } ];
+var allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
 var allGraphsOptions; // = [ { COD: 'G1', TXT: 'גרף חוגה' }, { COD: 'G2', TXT: 'גרף פאי1' }, { COD: 'G3', TXT: 'גרף באר1' }, { COD: 'G4', TXT: 'גרף באר2' }, { COD: 'G5', TXT: 'גרף פאי2' } ];
 
 var originalLayout;
@@ -65,7 +69,7 @@ $(function() {
 			url : url,
 			data: data,
 			contentType : 'application/json',
-			dataType : 'json',
+			// dataType : 'json',
 			success : function(data) {
 				//debugger;
 				var r = 3;
@@ -230,7 +234,7 @@ $(function() {
 		
 		//e.stopPropagation();
 	});
-
+	
 	// reset form data when modal is closed
 	$('.modal.reset-on-close').on('hidden.bs.modal', function(){
 		var form = $(this).find('form');
@@ -289,7 +293,7 @@ $(function() {
 	$('#add-graph-modal').on('click', '#add-graph-modal-button', function() {
 		var selectedOption = $('#add-graph-select').find('option:selected');
 		var position = $(this).data('position');
-		var obj = JSON.parse(selectedOption.data('data'));
+		var obj = $('#add-graph-select').select2('data')[0]; //JSON.parse(selectedOption.data('data'));
 		obj.LOC = position;
 		
 		// is editing an existing shortcut
@@ -312,7 +316,7 @@ $(function() {
 				if (graphData.chartSize == 'large') {
 					var positionForChart = checkPositionForChart(position);
 					if (positionForChart == -1) {
-						$('#add-graph-modal .add-graph-error').text('אין מקום לגרף זה במיקום זה.').fadeIn();
+						$('#add-graph-modal .add-graph-error').text('אין מקום לגרף זה (גודל כפול) במיקום זה.').fadeIn();
 						return;
 					}
 					else {
@@ -331,6 +335,20 @@ $(function() {
 				$('#add-graph-modal .add-graph-error').text(error).fadeIn();
 			}
 		});				
+	});
+
+	$('#add-graph-modal').on('shown.bs.modal', function() {
+		$('#add-graph-select').select2({
+			data: allGraphsOptions,
+			dropdownParent: $('#add-graph-modal'),
+			placeholder: "בחר גרף",
+			templateResult: (opt) => {
+				return $(`<label class="graph-option-label"><i class="fa fa-${ getGraphIcon(opt.type) }"></i> ${ opt.text } [${ hebrewPeriods[opt.period] }]</label>`);
+			},
+			templateSelection: (opt) => {
+				return $(`<label class="graph-option-label"><i class="fa fa-${ getGraphIcon(opt.type) }"></i> ${ opt.text } [${ hebrewPeriods[opt.period] }]</label>`);
+			},
+		});
 	});
 
 	$('#add-graph-modal').on('hidden.bs.modal', function() {
@@ -510,7 +528,21 @@ function getPageData() {
 		success : function(data) {
 			// currently showing only graphs from SVK (the second chracter of the graph name is the UCI).
 			allGraphsOptions = data.graphList.filter((g) => g.code[1] === 'S').sort((ga, gb) => ga.name.localeCompare(gb.name) );
-			setSelectOptions(allGraphsOptions, $('#add-graph-select'), 'name', 'code');
+			allGraphsOptions = $.map(allGraphsOptions, function (obj) {
+				obj.id = obj.id || obj.code;
+				obj.text = obj.text || obj.name;
+				return obj;
+			});
+
+			//setSelectOptions(allGraphsOptions, $('#add-graph-select'), 'name', 'code');
+			// var options = [];
+			// for (var i = 0; i < allGraphsOptions.length; i++) {
+			// 	var info = allGraphsOptions[i];
+			// 	var newOption = new Option(info.name, info.code);
+			// 	$(newOption).data('data', info /*JSON.stringify(info)*/);
+			// 	options.push(newOption);
+			// }
+			// $('#add-graph-select').append(options);
 		},
 		error: function(data) {
 			alert(data.responseText);    		
@@ -578,32 +610,29 @@ function renderCharts(useTimeout) {
 		var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == graphPosition + 1 })[0] : undefined;		
 		if (!graph) {
 			template.addClass('editing-item-placeholder');
-			// $('#graphs-section').append(template);
-			// graphPosition++;
 		}
 		else {
-			// template.addClass('active');			
-			// var graphData = getGrpahData(graph.COD);
 			getGrpahData(graph, function(graphWithData) {
 				graph = graphWithData;
 				template = $('#graph' + graph.LOC).parent();
 				template.addClass('active');			
-				$(template).find('.graph-title > label').html(graph.data.titles.head);
-				$(template).data('data', JSON.stringify(graph));
-				// $('#graphs-section').append(template);
+				var header = graph.data.titles.head.replace(/<BR>/,' ').replace(/<BR >/,' ')
+				template.find('.graph-title > label').html(header);
+				// set tooltip if needed
+				setTooltip(template.find('.graph-title > label')[0]);
+				// if (template.find('.graph-title > label').prop('scrollHeight') > $(template).find('.graph-title > label').prop('clientHeight') + 10) {
+				// 	template.find('.graph-title > label').attr('title', header);
+				// }
+				template.data('data', JSON.stringify(graph));
 				drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
 				if (graph.data.chartSize == 'large') {
 					$('#graph' + (graph.LOC + 1)).parent().remove();
 				}
-				// else {
-				// 	graphPosition++;
-				// }
+				template.removeClass('loading');
 			});
-			// graphPosition++;
 		}
 		$('#graphs-section').append(template);
 		graphPosition++;
-		// i++;
 	}
 	sortArea($('#graphs-section'));
 	// set the width of the graphs
@@ -1072,4 +1101,26 @@ function getLP() {
 			alert(data.responseText);    		
 		}
 	});  
+}
+
+function getGraphIcon(graphType) {
+	var chartIconClass = '';
+	switch (graphType) {
+		case 'pie':
+			chartIconClass = 'pie-chart';
+			break;
+		case 'bar':
+			chartIconClass = 'bar-chart';
+			break;
+		case 'table':
+			chartIconClass = 'table';
+			break;
+		case 'gauge':
+			chartIconClass = 'tachometer';
+			break;
+		default:
+			var t = 4;
+			break;
+	}
+	return chartIconClass;
 }
