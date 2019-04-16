@@ -200,11 +200,20 @@ body.background5 {
 #graphs-section {
     display: flex;
     /* width: 100%; */
+    height: 100%;
 }
 
 #graphs-section .tableGauge {
     /*width: 100%;*/
     max-width: 200px;    
+}
+
+#graphs-section .graph-div {
+    height: calc(100% - 75px);
+}
+
+#graphs-section .graph-div .google-visualization-table {
+    height: 100%;
 }
 
 #graphs-section .graph-div > table {
@@ -716,7 +725,7 @@ nav li.disabled {
 }
 
 #large-graph-div .google-visualization-table-table th:first-child /* agent column */ {
-    width: 50%;
+    /* width: 50%; */
 }
 
 #large-graph-div .google-visualization-table-div-page {
@@ -839,24 +848,34 @@ nav li.disabled {
 
 /* smart notifications */
 #divSmallBoxes {
-    right: 17px;
-    top: 10px;
+    /* right: 17px;
+    top: 10px; */
+    width: 100%;
 }
 
 .smart-rtl .SmallBox .textoFull {
     padding-right: 20px;
 }
 
-.SmallBox {
+#divSmallBoxes .SmallBox {
     box-shadow: #666 0 0 5px 2px;
     padding: 5px;
+    margin: 0 auto;
+    position: relative;
+    top: 30px;
 }
 
-.SmallBox:hover {
+#divSmallBoxes .SmallBox:hover {
     border: 1px solid transparent;
     box-shadow: #888 0 0 8px 3px;
 }
 
-.SmallBox .miniPic {
+#divSmallBoxes .SmallBox .miniPic {
     bottom: 13px;
 }
+
+/* charts */
+.google-visualization-table-table th {
+    background: white;
+}
+
