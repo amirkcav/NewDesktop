@@ -63,6 +63,9 @@ $(function() {
 		$('body').removeClass('editing');
 
 		var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPSAV";    	
+		if (uiLayout.graphs.data) {
+			uiLayout.graphs.data.map((g) => { g.data = undefined; });
+		}
     var data = JSON.stringify({ data: uiLayout }); 
     $.ajax({
 			type : 'POST',
@@ -71,8 +74,18 @@ $(function() {
 			contentType : 'application/json',
 			// dataType : 'json',
 			success : function(data) {
-				//debugger;
-				var r = 3;
+				// currently returning "*** OK ***"
+				if (data && data.indexOf('OK') > -1) {
+					//alert('הנתונים נשמרו!');
+					$.smallBox({
+						title : "המידע נשמר בהצלחה!",
+						// content : "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+						color : "#6a6",
+						timeout: 3000,
+						sound: false,
+						iconSmall : "fa fa-check"
+					});
+				}
     	},
 			error: function(data) {
 				alert(data.responseText);    		
@@ -323,9 +336,11 @@ $(function() {
 						obj.LOC = positionForChart;
 					}	    		
 				}    	
-				obj.data = graphData; 
+				obj.data = { 'chartSize': graphData.chartSize }; 
+				if (!uiLayout['graphs'].data) {
+					uiLayout['graphs'].data = [];
+				}
 				uiLayout['graphs'].data.push(obj);
-				//refreshCharts();
 				renderCharts();
 				$(button).closest('.modal').modal('hide');    
 			},
@@ -618,27 +633,25 @@ function renderCharts(useTimeout) {
 				template.addClass('active');			
 				var header = graph.data.titles.head.replace(/<BR>/,' ').replace(/<BR >/,' ')
 				template.find('.graph-title > label').html(header);
-				// set tooltip if needed
 				setTooltip(template.find('.graph-title > label')[0]);
-				// if (template.find('.graph-title > label').prop('scrollHeight') > $(template).find('.graph-title > label').prop('clientHeight') + 10) {
-				// 	template.find('.graph-title > label').attr('title', header);
-				// }
 				template.data('data', JSON.stringify(graph));
-				drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
 				if (graph.data.chartSize == 'large') {
 					$('#graph' + (graph.LOC + 1)).parent().remove();
 				}
+				setChartWidth(graph);
+				drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
 				template.removeClass('loading');
 			});
 		}
+		template.css('width', 'calc(' + 100 / uiLayout.graphs.count + '% - 20px)')
 		$('#graphs-section').append(template);
 		graphPosition++;
 	}
 	sortArea($('#graphs-section'));
 	// set the width of the graphs
-	calculateChartsWidth();
+	//calculateChartsWidth();
 	// rerender the graphs to fit the new size
-	refreshCharts(useTimeout);
+	//refreshCharts(useTimeout);
 }
 
 function calculateChartsWidth() {	
@@ -661,6 +674,20 @@ function calculateChartsWidth() {
 			i++;
 		}		
 	}
+}
+
+function setChartWidth(currGraph) {	
+	// the percentage value of each width unit
+	var percent = 100 / uiLayout.graphs.count;
+	var _width;
+	if (currGraph && currGraph.data.chartSize == 'large') {
+		_width = 2 * percent + '%';
+	}
+	else {
+		_width = percent + '%';
+	}	
+	// 20px is for the radius (10px each size).
+	$('#graph' + currGraph.LOC).parent().css('width', 'calc(' + _width + ' - 20px)');
 }
 
 function refreshCharts(useTimeout) {
@@ -945,10 +972,11 @@ function removeGraph(elem) {
 	uiLayout['graphs'].data = $.grep(uiLayout['graphs'].data, function(o) {
 		return o.LOC != data.LOC;
 	});
-	parentElem.fadeOut(function(){
-		renderCharts();
-		sortArea(graphsArea);
-	});
+	resetGraph(parentElem);	
+	// parentElem.fadeOut(function(){
+	// 	// renderCharts();
+	// 	// sortArea(graphsArea);
+	// });
 }
 
 function renderAllAreas(useTimeout) {
@@ -1123,4 +1151,12 @@ function getGraphIcon(graphType) {
 			break;
 	}
 	return chartIconClass;
+}
+
+function resetGraph(graphToDelete) {
+	graphToDelete.addClass('editing-item-placeholder loading').removeClass('active');
+	graphToDelete.find('.graph-title > label').html('')
+																						.attr('title', '')
+																						.data('data', '');
+	graphToDelete.find('.graph-div').html('');
 }

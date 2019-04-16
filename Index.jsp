@@ -31,8 +31,8 @@
     <!-- MAIN PANEL -->
     <div id="main" role="main" class="narrow">
 
-        <div id="content">
-			
+        <div id="content">					
+
 			<div id="top-row" class="row">
 
 				<div id="last-apps-section" class="col-lg-2 list-section menu-style">

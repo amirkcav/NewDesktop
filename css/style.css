@@ -189,7 +189,7 @@ body.background5 {
 }
 
 .item-scale {
-    transition: 0.3s;
+    transition: transform 0.3s;
 }
 
 .item-scale:hover {
@@ -834,4 +834,29 @@ nav li.disabled {
 
 #add-graph-modal .graph-option-label i.fa {
     font-size: 1.5rem;
+}
+
+
+/* smart notifications */
+#divSmallBoxes {
+    right: 17px;
+    top: 10px;
+}
+
+.smart-rtl .SmallBox .textoFull {
+    padding-right: 20px;
+}
+
+.SmallBox {
+    box-shadow: #666 0 0 5px 2px;
+    padding: 5px;
+}
+
+.SmallBox:hover {
+    border: 1px solid transparent;
+    box-shadow: #888 0 0 8px 3px;
+}
+
+.SmallBox .miniPic {
+    bottom: 13px;
 }

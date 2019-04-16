@@ -25,6 +25,8 @@ $(function() {
 		// call the function
 		window[func](this);
 		
+		$(e.target).closest('.popover').popover('hide')
+		   		   .data("bs.popover").inState = {click: false, hover: false, focus: false};		
 		e.stopPropagation();
 	});
 	
