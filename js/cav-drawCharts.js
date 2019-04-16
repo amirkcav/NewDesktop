@@ -714,6 +714,10 @@ function drawTable(obj, divId) {
 		data.addColumn(colItem.type, colItem.title);
 	});
 	
+	if (!obj.values) {
+		obj.values = [];
+	}
+
 	data.addRows(obj.values.length);
 
 	$.each(obj.values, function(i, valItem) {

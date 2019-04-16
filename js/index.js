@@ -326,6 +326,12 @@ $(function() {
 			dataType : 'json',
 			success : function(data) {
 				graphData = data;
+				// check data validity
+				if (graphData.type === 'table' && (!graphData.cols || graphData.cols.length === 0)) {
+					this.error({});
+					return;
+				}
+				// handle large graph
 				if (graphData.chartSize == 'large') {
 					var positionForChart = checkPositionForChart(position);
 					if (positionForChart == -1) {
@@ -336,12 +342,14 @@ $(function() {
 						obj.LOC = positionForChart;
 					}	    		
 				}    	
-				obj.data = { 'chartSize': graphData.chartSize }; 
-				if (!uiLayout['graphs'].data) {
-					uiLayout['graphs'].data = [];
-				}
+				// if (!uiLayout['graphs'].data) {
+				// 	uiLayout['graphs'].data = [];
+				// }
 				uiLayout['graphs'].data.push(obj);
-				renderCharts();
+				// renderCharts();
+				obj.data = graphData;
+				obj.data.chartSize = graphData.chartSize; 
+				renderGraphData(obj);
 				$(button).closest('.modal').modal('hide');    
 			},
 			error: function(data) {
@@ -628,19 +636,7 @@ function renderCharts(useTimeout) {
 		}
 		else {
 			getGrpahData(graph, function(graphWithData) {
-				graph = graphWithData;
-				template = $('#graph' + graph.LOC).parent();
-				template.addClass('active');			
-				var header = graph.data.titles.head.replace(/<BR>/,' ').replace(/<BR >/,' ')
-				template.find('.graph-title > label').html(header);
-				setTooltip(template.find('.graph-title > label')[0]);
-				template.data('data', JSON.stringify(graph));
-				if (graph.data.chartSize == 'large') {
-					$('#graph' + (graph.LOC + 1)).parent().remove();
-				}
-				setChartWidth(graph);
-				drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
-				template.removeClass('loading');
+				renderGraphData(graphWithData);
 			});
 		}
 		template.css('width', 'calc(' + 100 / uiLayout.graphs.count + '% - 20px)')
@@ -652,6 +648,21 @@ function renderCharts(useTimeout) {
 	//calculateChartsWidth();
 	// rerender the graphs to fit the new size
 	//refreshCharts(useTimeout);
+}
+
+function renderGraphData(graph) {
+	template = $('#graph' + graph.LOC).parent();
+	template.addClass('active');			
+	var header = graph.data.titles.head.replace(/<BR>/,' ').replace(/<BR >/,' ')
+	template.find('.graph-title > label').html(header);
+	setTooltip(template.find('.graph-title > label')[0]);
+	template.data('data', JSON.stringify(graph));
+	if (graph.data.chartSize == 'large') {
+		$('#graph' + (graph.LOC + 1)).parent().remove();
+	}
+	setChartWidth(graph);
+	drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
+	template.removeClass('editing-item-placeholder loading');
 }
 
 function calculateChartsWidth() {	
