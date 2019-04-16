@@ -704,7 +704,7 @@ function drawSteppedArea(obj, divId, boxNumber) {
 /*******************************************************************************
  * Draw a Table Chart and put it in a <div>
  ******************************************************************************/
-function drawTable(obj, divId) {
+function drawTable(obj, divId, graphHeight) {
 	// Create and populate the data table.
 	var data = new google.visualization.DataTable();
 	var maxFilterValue = 0;
@@ -804,20 +804,19 @@ function drawTable(obj, divId) {
 	        'ui':{
 	        	'format': 'decimalSymbol'
 	        	}
-	        }
+					}
 	    });
-	    
 
 	    // Create a pie chart, passing some options
 	    var tableChart = new google.visualization.ChartWrapper({
 	      'chartType': 'Table',
 	      'containerId': 'divChart',
 	      'options': {
-	  		'page' : 'enable',
-	  		'pageSize' : 14,
-	  		'cssClassNames': cssClassNames,
-	  		'sortColumn': sortColumn,
-			'sortAscending': sortAscending 
+					'page' : 'enable',
+					'pageSize' : 14,
+					'cssClassNames': cssClassNames,
+					'sortColumn': sortColumn,
+					'sortAscending': sortAscending
 	      }
 	    });
 
@@ -837,9 +836,10 @@ function drawTable(obj, divId) {
 				// rtlTable : true,
 				cssClassNames: cssClassNames,
 				sortColumn: sortColumn,
-				sortAscending: sortAscending
+				sortAscending: sortAscending,
 				//showRowNumber: true
 				// showRowNumber : obj.options.showRowNumber
+				// 'height' : graphHeight ? graphHeight : 284
 			};
 		
 		// Create and draw the visualization.

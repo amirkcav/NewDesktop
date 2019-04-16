@@ -342,9 +342,9 @@ $(function() {
 						obj.LOC = positionForChart;
 					}	    		
 				}    	
-				// if (!uiLayout['graphs'].data) {
-				// 	uiLayout['graphs'].data = [];
-				// }
+				if (!uiLayout['graphs'].data) {
+					uiLayout['graphs'].data = [];
+				}
 				uiLayout['graphs'].data.push(obj);
 				// renderCharts();
 				obj.data = graphData;
@@ -394,8 +394,9 @@ $(function() {
 			$('#add-graph-modal').modal('show');
 		}
 		else {
-			$('#large-graph-modal').data('data', $(this).data('data'));	    	
-			$('#large-graph-modal').toggleClass('large', graphData.data.chartSize == 'large');
+			$('#large-graph-modal').data('data', $(this).data('data'));	    
+			const largeModal = graphData.data.chartSize == 'large' || (graphData.type === 'table' && graphData.data.cols.length > 4);
+			$('#large-graph-modal').toggleClass('large', largeModal);
 			$('#large-graph-modal').find('.modal-header > h3').html(graphData.data.titles.head);
 			$('#large-graph-modal .modal-body').addClass('loading');
 			if (graphData.type === 'table') {
@@ -407,7 +408,11 @@ $(function() {
 	
 	$('#large-graph-modal').on('shown.bs.modal', function() {
 		var graphData = JSON.parse($(this).data('data'));		
-		drawGraph(graphData.data, 'large-graph-div', 500);
+		let graphHeight = 500;
+		if (graphData.type === 'table') {
+			graphHeight = 600;
+		}
+		drawGraph(graphData.data, 'large-graph-div', graphHeight);
 		$('#large-graph-modal .modal-body').removeClass('loading');		
 	});
 
@@ -426,7 +431,11 @@ $(function() {
 			chartToTable(graphData.data, 'large-graph-div');
 		}
 		else if (modalBody.hasClass('table-mode')) {
-			drawGraph(graphData.data, 'large-graph-div', 500);
+			let graphHeight = 500;
+			if (graphData.type === 'table') {
+				graphHeight = 600;
+			}
+			drawGraph(graphData.data, 'large-graph-div', graphHeight);
 		}
 		
 		$(modalBody).toggleClass('graph-mode')
@@ -1100,7 +1109,7 @@ function drawGraph(graphData, divId, graphHeight) {
 			drawGauge(graphData, divId, 0, graphHeight);
 			break;
 		case "table":
-			drawTable(graphData, divId);
+			drawTable(graphData, divId, graphHeight);
 			break;
 	//	 more types removed for now 
 		default:
