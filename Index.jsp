@@ -81,7 +81,7 @@
 					</ul>			
 				</div>
 
-				<div id="info-squares-section" class="col-lg-3 clearfix sort-area items-section section" data-area-name="info-squares">
+				<div id="info-squares-section" class="col-lg-3 clearfix sort-area _items-section section" data-area-name="info-squares">
 					<div class="info-square item-scale sort-item template-item">
 						<a class="info-square-button" href="javascript:;">
 							<label class="sum"><span class="sign">₪</span><span class="template-field" data-field="VAL"></span></label>

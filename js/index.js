@@ -13,32 +13,20 @@ var hebrewPeriods = {
 // used in the graphs for table
 var user_lang = 'HB';
 
-// var uiLayout = {      
-//      'shortcuts': { count: 21, data: []}, 
-//      'info-squares': { count: 6, data: [
-//          { COD: 1, TXT: 'מכירות יומי', VAL: '72,527', LOC: 1 },
-//          { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422', LOC: 2 },
-//      ]},
-// 		 'graphs': { count: 4, data: [ { COD: 'G1', LOC: 1 }, { COD: 'G2', LOC: 2 }, { COD: 'G3', LOC: 3 } ]}, // { COD: 'G4', LOC: 5 }
-// 		 'last-apps': { data: [ 
-// 			 { TXT: 'איפיון חיפוש קריאה', UCI: 'CVH', APM: 'SRVQ:WH1' },
-// 			 { TXT: 'פעילות לטלפנית', UCI: 'SVK', APM: 'TLPN:' },
-// 			 { TXT: 'סוכנים למסופון', UCI: 'SVK', APM: 'MCRRO:' } 
-// 			]},
-// 			'last-docs': { data: [
-// 				{ DATE: '15.2.19', TXT: 'פריט 142677', UCI: 'CVH', APM: 'SRVQ:WH1' },
-// 				{ TXT: 'הזמנה 31283', UCI: 'SVK', APM: 'TLPN:' },
-// 			 	{ TXT: 'מכירות ינואר 2019', UCI: 'SVK', APM: 'MCRRO:' },
-// 			 	{ TXT: 'מלאי לקוח 77244', UCI: 'SVK', APM: 'MCRRO:' } 
-// 			]}
-// };
-
-var allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
+var allInfoSquaresOptions; // = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
 var allGraphsOptions; // = [ { COD: 'G1', TXT: 'גרף חוגה' }, { COD: 'G2', TXT: 'גרף פאי1' }, { COD: 'G3', TXT: 'גרף באר1' }, { COD: 'G4', TXT: 'גרף באר2' }, { COD: 'G5', TXT: 'גרף פאי2' } ];
 
 var originalLayout;
 
+var itemsCount = { 'shortcuts': 21, 'info-squares': 6, 'graphs': 4 }
+
 getPageData();
+
+var lastRefresh = new Date();
+setInterval(function() {
+	lastRefresh = new Date();
+	refreshPageData();
+}, 5 * 60 * 1000)
 
 $(function() {	
 
@@ -49,8 +37,8 @@ $(function() {
 
 	$('#add-shortcut-form').validate();    
 
-	// set info square options (for add popup)
-	setSelectOptions(allInfoSquaresOptions, $('#add-info-square-select'));
+	// // set info square options (for add popup)
+	// setSelectOptions(allInfoSquaresOptions, $('#add-info-square-select'));
 
 	$('#edit-page').click(function() {
 		sort();
@@ -62,9 +50,13 @@ $(function() {
 		$('.sort-area').sortable('destroy');
 		$('body').removeClass('editing');
 
-		var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPSAV";    	
+		var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPSAV";
+		// don't save the current values, just the selected types.
 		if (uiLayout.graphs.data) {
 			uiLayout.graphs.data.map((g) => { g.data = undefined; });
+		}
+		if (uiLayout['info-squares'].data) {
+			uiLayout['info-squares'].data.map((g) => { g.VAL = undefined; });
 		}
     var data = JSON.stringify({ data: uiLayout }); 
     $.ajax({
@@ -76,10 +68,9 @@ $(function() {
 			success : function(data) {
 				// currently returning "*** OK ***"
 				if (data && data.indexOf('OK') > -1) {
-					//alert('הנתונים נשמרו!');
 					$.smallBox({
 						title : "המידע נשמר בהצלחה!",
-						// content : "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+						// content : "...",
 						color : "#6a6",
 						timeout: 3000,
 						sound: false,
@@ -272,11 +263,12 @@ $(function() {
 	});    
 
 	$('#add-info-square-modal').on('click', '#add-info-square-modal-button', function() {
-		var selectedOption = $('#add-info-square-select').find('option:selected');
+		// var selectedOption = $('#add-info-square-select').find('option:selected');
 		var position = $(this).data('position');
-		var obj = JSON.parse(selectedOption.data('data'));    	
+		//var obj = JSON.parse(selectedOption.data('data'));    	
+		var obj = $('#add-info-square-select').select2('data')[0]
 		obj.LOC = position;
-					
+		// was an app chosen.
 		if ($('#info-square-application').val().length > 0) {
 			var selectedApp = JSON.parse($('#info-square-application').data('selected-item'));
 			obj.APM = selectedApp.APM;
@@ -297,9 +289,14 @@ $(function() {
 			uiLayout['info-squares'].data.splice(index, 1);
 		}
 
-		uiLayout['info-squares'].data.push(obj);			
-		renderArea(infoSquaresArea, uiLayout['info-squares']);
-		sortArea(infoSquaresArea);
+		uiLayout['info-squares'].data.push(obj);	
+		getInfoSquareData(obj, function(itemWithData) {
+			renderInfoSquareData(itemWithData);				
+			var elem = $('#info-' + itemWithData.LOC)
+			$(elem).removeClass('editing-item-placeholder');
+		});		
+		// renderArea(infoSquaresArea, uiLayout['info-squares']);
+		// sortArea(infoSquaresArea);
 		$(this).closest('.modal').modal('hide');
 	});
 
@@ -463,33 +460,39 @@ $(function() {
 	});
 
 	$('#add-info-square-modal').on('shown.bs.modal', function() {
+		$('#add-info-square-select').select2({
+			data: allInfoSquaresOptions,
+			dropdownParent: $('#add-info-square-modal'),
+			placeholder: "בחר נתון להצגה",
+		});
+		
 		if (!$('#info-square-application').hasClass('ui-autocomplete-input')) {
-	    	$('#info-square-application').autocomplete({
-	    		minLength: 2,
-	    		source: menuApps,
-	    		appendTo: '#add-info-square-modal', // '.search-app-parent',
-	    		select: function( event, ui ) {
-	    			var itemData = ui.item;
-	    			// needed for selection by moouse click.
-	    			$(this).val(itemData.label);
-	    			$(this).data('selected-item', JSON.stringify(itemData));
-	    			return false;
-	    		},
-	    		response: function(event, ui) {
-	                // ui.content is the array that's about to be sent to the response callback.
-	                if (ui.content.length === 0) {
-	                    $("#empty-message").text("No results found");
-	                } 
-	                else {
-	                    $("#empty-message").empty();
-	                }
-	            },
-	            change: function (event, ui) {
-	                if (!ui.item) {
-	                    this.value = '';
-	                }
-	            }
-	    	});
+			$('#info-square-application').autocomplete({
+				minLength: 2,
+				source: menuApps,
+				appendTo: '#add-info-square-modal', // '.search-app-parent',
+				select: function( event, ui ) {
+					var itemData = ui.item;
+					// needed for selection by moouse click.
+					$(this).val(itemData.label);
+					$(this).data('selected-item', JSON.stringify(itemData));
+					return false;
+				},
+				response: function(event, ui) {
+					// ui.content is the array that's about to be sent to the response callback.
+					if (ui.content.length === 0) {
+						$("#empty-message").text("No results found");
+					} 
+					else {
+						$("#empty-message").empty();
+					}
+				},
+				change: function (event, ui) {
+					if (!ui.item) {
+						this.value = '';
+					}
+				}
+			});
 		}
 	});
 
@@ -565,20 +568,19 @@ function getPageData() {
 				obj.text = obj.text || obj.name;
 				return obj;
 			});
-
-			//setSelectOptions(allGraphsOptions, $('#add-graph-select'), 'name', 'code');
-			// var options = [];
-			// for (var i = 0; i < allGraphsOptions.length; i++) {
-			// 	var info = allGraphsOptions[i];
-			// 	var newOption = new Option(info.name, info.code);
-			// 	$(newOption).data('data', info /*JSON.stringify(info)*/);
-			// 	options.push(newOption);
-			// }
-			// $('#add-graph-select').append(options);
 		},
 		error: function(data) {
 			alert(data.responseText);    		
 		}
+	});
+
+	// get available info squares.
+  allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
+	allInfoSquaresOptions = allInfoSquaresOptions.sort((isa, isb) => isa.TXT.localeCompare(isb.TXT) );
+	allInfoSquaresOptions = $.map(allInfoSquaresOptions, function (obj) {
+		obj.id = obj.id || obj.COD;
+		obj.text = obj.text || obj.TXT;
+		return obj;
 	});
 }
 
@@ -632,7 +634,7 @@ function renderCharts(useTimeout) {
 	var newItem = $('#graphs-section').find('.template-item');
 	var graphPosition = 0;
 	// var i = 0;
-	while (graphPosition < uiLayout.graphs.count) {
+	while (graphPosition < itemsCount['graphs']) {
 		var template = newItem.clone();
 		template.removeClass('template-item');
 		var divId = 'graph' + (graphPosition + 1);
@@ -648,7 +650,7 @@ function renderCharts(useTimeout) {
 				renderGraphData(graphWithData);
 			});
 		}
-		template.css('width', 'calc(' + 100 / uiLayout.graphs.count + '% - 20px)')
+		template.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)')
 		$('#graphs-section').append(template);
 		graphPosition++;
 	}
@@ -676,9 +678,9 @@ function renderGraphData(graph) {
 
 function calculateChartsWidth() {	
     // the percentage value of each width unit
-	var percent = 100 / uiLayout.graphs.count;
+	var percent = 100 / itemsCount['graphs'];
 	// setting the width for each graph
-	for (var i = 0; i < uiLayout.graphs.count; i++) {
+	for (var i = 0; i < itemsCount['graphs']; i++) {
 		var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == i + 1 })[0] : undefined;
 		var _width;
 		if (graph && graph.data.chartSize == 'large') {
@@ -698,7 +700,7 @@ function calculateChartsWidth() {
 
 function setChartWidth(currGraph) {	
 	// the percentage value of each width unit
-	var percent = 100 / uiLayout.graphs.count;
+	var percent = 100 / itemsCount['graphs'];
 	var _width;
 	if (currGraph && currGraph.data.chartSize == 'large') {
 		_width = 2 * percent + '%';
@@ -724,11 +726,11 @@ function refreshCharts(useTimeout) {
 		
 		if (useTimeout) {
 			setTimeout(function(_graphData, _divId) {
-				func(_graphData, _divId)
+				func(_graphData, _divId);
 			}, 100 * (i + 1), graphData.data, divId);
 		}
 		else {
-			func(graphData.data, divId)
+			func(graphData.data, divId);
 		}
 	}	
 }
@@ -856,7 +858,8 @@ function renderArea(area, areaData) {
 	var newItem = $(area).find('.template-item');
 	
 	// add items
-	var itemsNumber = areaData.count ? areaData.count : areaData.data.length; 
+	var areaName = $(area).data('area-name');
+	var itemsNumber = itemsCount[areaName] ? itemsCount[areaName] : areaData.data.length; 
 	for (i = 1; i <= itemsNumber; i++) {
 		var template = newItem.clone();
 		template.removeClass('template-item');
@@ -864,7 +867,7 @@ function renderArea(area, areaData) {
 		var existingItem = data.filter(function(a) { return a.LOC == currPosition });
 		// if there is an item with null as position, add it. (POS = null means it's a shortcut with no determined position).
 		if (existingItem.length == 0) {
-			var nullPositionItems = data.filter(function(a) { return a.LOC == null || a.LOC > areaData.count });
+			var nullPositionItems = data.filter(function(a) { return a.LOC == null || a.LOC > itemsNumber });
 			if (nullPositionItems.length > 0) {
 				var nullPositionItem = nullPositionItems[0];
 				nullPositionItem.LOC = currPosition;
@@ -1005,6 +1008,7 @@ function renderAllAreas(useTimeout) {
 		renderArea(this, uiLayout[areaName]);		
 	});
 	renderCharts(useTimeout);
+	renderInfoSquares();
 }
 
 function addToFavorites(itemToAdd) {	
@@ -1180,3 +1184,104 @@ function resetGraph(graphToDelete) {
 																						.data('data', '');
 	graphToDelete.find('.graph-div').html('');
 }
+
+function renderInfoSquares() {
+
+	var areaData = uiLayout['info-squares'];
+	var area = infoSquaresArea;
+
+	// area with sorting
+	$(area).find('.sort-item:not(.template-item)').remove();	
+	// area without sorting
+	$(area).find('.list-item:not(.template-item)').remove();	
+
+	// set area width
+	var newItem = $(area).find('.template-item');
+	
+	// add items
+	var itemsNumber = itemsCount['info-squares']; 
+	for (i = 1; i <= itemsNumber; i++) {
+		var template = newItem.clone();
+		template.removeClass('template-item');
+		var currPosition = i; //j * rows + i;
+		template.attr('id', 'info-' + i);
+		$(template).attr('original-position', currPosition);
+		$(area).append(template);		
+		var existingItem = areaData.data.filter(function(a) { return a.LOC == currPosition });		
+		// add an existing item
+		if (existingItem.length > 0) {		
+			getInfoSquareData(existingItem[0], function(itemWithData) {
+				renderInfoSquareData(itemWithData);				
+		  });	
+		}
+		// add a placeholder for sorting
+		else {
+			$(template).addClass('editing-item-placeholder')
+							.find('.add-item-button').data('position', currPosition);
+			$(template).find('.set-tooltip-field').removeClass('set-tooltip-field');
+		}
+	}
+	$(area).find('.set-tooltip-field').each(function(i, o) {
+		setTooltip(o);
+	});
+	
+}
+
+function getInfoSquareData(obj, handler) {
+	// value should come from server
+	obj.VAL = parseInt(Math.random() * 10000000).toLocaleString();
+	handler(obj);
+}
+
+function renderInfoSquareData(itemWithData) {
+	var elem = $('#info-' + itemWithData.LOC)
+	$(elem).addClass('active')
+					.data('data', JSON.stringify(itemWithData));
+	setTemplateFields(elem, itemWithData);
+	$(elem).find('a').data('apm', itemWithData.APM)
+												.data('uci', itemWithData.UCI);
+}
+
+function refreshPageData() {
+	// info squares
+	for (i = 0; i < uiLayout['info-squares'].data.length; i++) { 
+		var item = uiLayout['info-squares'].data[i];
+		getInfoSquareData(item, function(itemWithData) {
+			renderInfoSquareData(itemWithData);				
+		});	
+	}
+
+	// graphs
+	for (var i = 0; i < uiLayout.graphs.data.length; i++) {
+		var graph = uiLayout.graphs.data[i];
+		// var divId = $(graph).find('> .graph-div').attr('id');
+		// var graphData = JSON.parse($(graph).data('data'));			
+		// drawGraph(graphData, divId);
+		getGrpahData(graph, function(graphWithData) {
+			renderGraphData(graphWithData);
+			// $('#' + divId).parent().removeClass('loading');
+		});
+	}
+}
+
+//var allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
+
+// var uiLayout = {      
+//      'shortcuts': { count: 21, data: []}, 
+//      'info-squares': { count: 6, data: [
+//          { COD: 1, TXT: 'מכירות יומי', VAL: '72,527', LOC: 1 },
+//          { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422', LOC: 2 },
+//      ]},
+// 		 'graphs': { count: 4, data: [ { COD: 'G1', LOC: 1 }, { COD: 'G2', LOC: 2 }, { COD: 'G3', LOC: 3 } ]}, // { COD: 'G4', LOC: 5 }
+// 		 'last-apps': { data: [ 
+// 			 { TXT: 'איפיון חיפוש קריאה', UCI: 'CVH', APM: 'SRVQ:WH1' },
+// 			 { TXT: 'פעילות לטלפנית', UCI: 'SVK', APM: 'TLPN:' },
+// 			 { TXT: 'סוכנים למסופון', UCI: 'SVK', APM: 'MCRRO:' } 
+// 			]},
+// 			'last-docs': { data: [
+// 				{ DATE: '15.2.19', TXT: 'פריט 142677', UCI: 'CVH', APM: 'SRVQ:WH1' },
+// 				{ TXT: 'הזמנה 31283', UCI: 'SVK', APM: 'TLPN:' },
+// 			 	{ TXT: 'מכירות ינואר 2019', UCI: 'SVK', APM: 'MCRRO:' },
+// 			 	{ TXT: 'מלאי לקוח 77244', UCI: 'SVK', APM: 'MCRRO:' } 
+// 			]}
+// };
