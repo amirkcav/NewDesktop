@@ -308,7 +308,7 @@ body {
     border-bottom: none;
 }
 
-.info-square.editing-item-placeholder .sum > .sign {
+#info-squares-section .info-square.editing-item-placeholder .sum > .sign, #info-squares-section .info-square.editing-item-placeholder .template-field {
     display: none;
 }
 

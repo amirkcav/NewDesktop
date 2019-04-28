@@ -631,27 +631,9 @@ function setDepartmentsParentWidth() {
 
 function renderCharts(useTimeout) {
 	$('#graphs-section').find('.sort-item:not(.template-item)').remove();
-	var newItem = $('#graphs-section').find('.template-item');
 	var graphPosition = 0;
-	// var i = 0;
 	while (graphPosition < itemsCount['graphs']) {
-		var template = newItem.clone();
-		template.removeClass('template-item');
-		var divId = 'graph' + (graphPosition + 1);
-		template.find('> .graph-div').attr('id', divId);
-		template.find('.add-item-button').data('position', graphPosition + 1);
-		template.data('position', graphPosition + 1);
-		var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == graphPosition + 1 })[0] : undefined;		
-		if (!graph) {
-			template.addClass('editing-item-placeholder');
-		}
-		else {
-			getGrpahData(graph, function(graphWithData) {
-				renderGraphData(graphWithData);
-			});
-		}
-		template.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)')
-		$('#graphs-section').append(template);
+		renderChart(graphPosition);
 		graphPosition++;
 	}
 	sortArea($('#graphs-section'));
@@ -659,6 +641,27 @@ function renderCharts(useTimeout) {
 	//calculateChartsWidth();
 	// rerender the graphs to fit the new size
 	//refreshCharts(useTimeout);
+}
+
+function renderChart(graphPosition) {
+	var newItem = $('#graphs-section').find('.template-item');
+	var template = newItem.clone();
+	template.removeClass('template-item');
+	var divId = 'graph' + (graphPosition + 1);
+	template.find('> .graph-div').attr('id', divId);
+	template.find('.add-item-button').data('position', graphPosition + 1);
+	template.data('position', graphPosition + 1);
+	var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == graphPosition + 1 })[0] : undefined;		
+	if (!graph) {
+		template.addClass('editing-item-placeholder');
+	}
+	else {
+		getGrpahData(graph, function(graphWithData) {
+			renderGraphData(graphWithData);
+		});
+	}
+	template.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)')
+	$('#graphs-section').append(template);
 }
 
 function renderGraphData(graph) {
@@ -979,14 +982,16 @@ function removeShortcut(elem) {
 
 function removeInfoSquare(elem) {
 	var parentElem = $(elem).closest('.info-square');
+	parentElem.removeClass('active')
+						.addClass('editing-item-placeholder');
 	var data = JSON.parse(parentElem.data('data'));
 	uiLayout['info-squares'].data = $.grep(uiLayout['info-squares'].data, function(o) {
 		return o.LOC != data.LOC;
 	});
-	parentElem.fadeOut(function(){
-		renderArea(infoSquaresArea, uiLayout['info-squares']);
-		sortArea(infoSquaresArea);
-	});
+	// parentElem.fadeOut(function(){
+	// 	// renderArea(infoSquaresArea, uiLayout['info-squares']);
+	// 	// sortArea(infoSquaresArea);
+	// });
 }
 
 function removeGraph(elem) {
@@ -996,6 +1001,11 @@ function removeGraph(elem) {
 		return o.LOC != data.LOC;
 	});
 	resetGraph(parentElem);	
+	// if the deleted graph was large, add another empty graph.
+	if (data.data['chartSize'] === 'large') {
+		// the LOC is not 0 based, so this is the next 0 based index
+		renderChart(data.LOC);
+	}
 	// parentElem.fadeOut(function(){
 	// 	// renderCharts();
 	// 	// sortArea(graphsArea);
@@ -1182,6 +1192,7 @@ function resetGraph(graphToDelete) {
 	graphToDelete.find('.graph-title > label').html('')
 																						.attr('title', '')
 																						.data('data', '');
+	graphToDelete.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)');
 	graphToDelete.find('.graph-div').html('');
 }
 
@@ -1206,6 +1217,7 @@ function renderInfoSquares() {
 		var currPosition = i; //j * rows + i;
 		template.attr('id', 'info-' + i);
 		$(template).attr('original-position', currPosition);
+		$(template).find('.add-item-button').data('position', currPosition);
 		$(area).append(template);		
 		var existingItem = areaData.data.filter(function(a) { return a.LOC == currPosition });		
 		// add an existing item
@@ -1216,8 +1228,7 @@ function renderInfoSquares() {
 		}
 		// add a placeholder for sorting
 		else {
-			$(template).addClass('editing-item-placeholder')
-							.find('.add-item-button').data('position', currPosition);
+			$(template).addClass('editing-item-placeholder');								 
 			$(template).find('.set-tooltip-field').removeClass('set-tooltip-field');
 		}
 	}
