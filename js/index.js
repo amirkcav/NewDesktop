@@ -323,6 +323,10 @@ $(function() {
 			dataType : 'json',
 			success : function(data) {
 				graphData = data;
+				var prevGraphData; 
+				if ($('#graph' + position).parent().data('data')) {
+					prevGraphData = JSON.parse($('#graph' + position).parent().data('data'));
+				}
 				// check data validity
 				if (graphData.type === 'table' && (!graphData.cols || graphData.cols.length === 0)) {
 					this.error({});
@@ -338,7 +342,7 @@ $(function() {
 					else {
 						obj.LOC = positionForChart;
 					}	    		
-				}    	
+				} 				
 				if (!uiLayout['graphs'].data) {
 					uiLayout['graphs'].data = [];
 				}
@@ -347,6 +351,14 @@ $(function() {
 				obj.data = graphData;
 				obj.data.chartSize = graphData.chartSize; 
 				renderGraphData(obj);
+
+				// if replacing a large graph with a small one, add empty graph
+				if (graphData.chartSize !== 'large' && (prevGraphData && prevGraphData.data.chartSize === 'large')) {
+						
+						renderChart(position, true);
+
+				}
+
 				$(button).closest('.modal').modal('hide');    
 			},
 			error: function(data) {
@@ -636,14 +648,14 @@ function renderCharts(useTimeout) {
 		renderChart(graphPosition);
 		graphPosition++;
 	}
-	sortArea($('#graphs-section'));
-	// set the width of the graphs
-	//calculateChartsWidth();
-	// rerender the graphs to fit the new size
-	//refreshCharts(useTimeout);
+	// sortArea($('#graphs-section'));
+	//// set the width of the graphs
+	//// calculateChartsWidth();
+	//// rerender the graphs to fit the new size
+	//// refreshCharts(useTimeout);
 }
 
-function renderChart(graphPosition) {
+function renderChart(graphPosition, atPosition) {
 	var newItem = $('#graphs-section').find('.template-item');
 	var template = newItem.clone();
 	template.removeClass('template-item');
@@ -660,8 +672,13 @@ function renderChart(graphPosition) {
 			renderGraphData(graphWithData);
 		});
 	}
-	template.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)')
-	$('#graphs-section').append(template);
+	template.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)');
+	if (atPosition && $('#graph' + graphPosition)) {
+		$('#graph' + graphPosition).parent().after(template);
+	}
+	else {
+		$('#graphs-section').append(template);
+	}
 }
 
 function renderGraphData(graph) {
@@ -941,6 +958,7 @@ function updatePositions(area) {
 		currPos++;
 		item.data('position', position);
 		item.find('.add-item-button').data('position', position);		
+		item.find('> .graph-div').attr('id', 'graph' + position);
 	}	
 }
 
@@ -1004,12 +1022,8 @@ function removeGraph(elem) {
 	// if the deleted graph was large, add another empty graph.
 	if (data.data['chartSize'] === 'large') {
 		// the LOC is not 0 based, so this is the next 0 based index
-		renderChart(data.LOC);
+		renderChart(data.LOC, true);
 	}
-	// parentElem.fadeOut(function(){
-	// 	// renderCharts();
-	// 	// sortArea(graphsArea);
-	// });
 }
 
 function renderAllAreas(useTimeout) {
@@ -1098,7 +1112,9 @@ function checkPositionForChart(position) {
 		return $(elem).data('position') == position 
 	}).eq(0);
 	// is the next graph place is empty
-	if (currentElem.next().length && !currentElem.next().hasClass('active')) {
+	var _data = currentElem.data('data');
+	var elemData = _data && JSON.parse(_data);
+	if ((elemData && elemData.data.chartSize === 'large') || (currentElem.next().length && !currentElem.next().hasClass('active'))) {
 		positionForGraph = position;
 	}
 	// is the previous graph place is empty
@@ -1188,6 +1204,8 @@ function getGraphIcon(graphType) {
 }
 
 function resetGraph(graphToDelete) {
+	graphToDelete.data('data', null)
+							 .removeClass('active');
 	graphToDelete.addClass('editing-item-placeholder loading').removeClass('active');
 	graphToDelete.find('.graph-title > label').html('')
 																						.attr('title', '')
