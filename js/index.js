@@ -692,8 +692,8 @@ function renderGraphData(graph) {
 		$('#graph' + (graph.LOC + 1)).parent().remove();
 	}
 	setChartWidth(graph);
-	drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
 	template.removeClass('editing-item-placeholder loading');
+	drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
 }
 
 function calculateChartsWidth() {	
@@ -1023,6 +1023,7 @@ function removeGraph(elem) {
 	if (data.data['chartSize'] === 'large') {
 		// the LOC is not 0 based, so this is the next 0 based index
 		renderChart(data.LOC, true);
+		sortArea(graphsArea);
 	}
 }
 
