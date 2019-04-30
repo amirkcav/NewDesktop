@@ -1,3 +1,7 @@
+html {
+    background: white;
+}
+
 body.background1 {
     background: linear-gradient(to right bottom, rgb(235, 237, 244), rgb(171, 175, 190), rgb(235, 237, 244));
 }
