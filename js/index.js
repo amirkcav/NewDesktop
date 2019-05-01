@@ -933,6 +933,12 @@ function sortArea(area) {
 		delay: 50,
 		stop: function(event, ui) {
 			updatePositions(event.target);
+		},
+		// from: https://stackoverflow.com/questions/5791886/jquery-draggable-shows-helper-in-wrong-place-after-page-scrolled#answer-12642566
+		helper: function(event, ui){
+			var $clone =  $(ui).clone();
+			$clone .css('position','absolute');
+			return $clone.get(0);
 		}
 	});
 }
