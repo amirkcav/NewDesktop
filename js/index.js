@@ -965,7 +965,12 @@ function updatePositions(area) {
 		currPos++;
 		item.data('position', position);
 		item.find('.add-item-button').data('position', position);		
-		item.find('> .graph-div').attr('id', 'graph' + position);
+		if (area.isEqualNode(infoSquaresArea[0])) {
+			item.attr('id', 'info-' + position);
+		}
+		else if (area.isEqualNode(graphsArea[0])) {
+			item.find('> .graph-div').attr('id', 'graph' + position);
+		}
 	}	
 }
 
