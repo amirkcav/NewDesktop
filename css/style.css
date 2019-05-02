@@ -884,3 +884,24 @@ nav li.disabled {
     background: white;
 }
 
+.smart-rtl .page-footer {
+    padding: 15px 25px;
+}
+
+#last-update-div {
+    text-align: right;
+}
+
+#last-update-div > span.txt-color-white {
+    float: right;
+}
+
+#refresh-page-data-button {
+    margin-right: 15px;
+    position: relative;
+    bottom: 3px;
+}
+
+#company-div {
+    text-align: left;
+}

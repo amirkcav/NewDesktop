@@ -24,8 +24,7 @@ getPageData();
 
 var lastRefresh = new Date();
 setInterval(function() {
-	lastRefresh = new Date();
-	refreshPageData();
+	refreshPageData();	
 }, 5 * 60 * 1000)
 
 $(function() {	
@@ -515,6 +514,10 @@ $(function() {
 		runApp(apm, uci);
 	});
 
+	$('#refresh-page-data-button').on('click', function() {
+		refreshPageData();
+	});
+
 });
 
 function getPageData() {
@@ -560,6 +563,11 @@ function getPageData() {
 			originalLayout = cloneObject(uiLayout);
 
 			renderAllAreas(true);
+
+			// set last refresh time
+			//refreshPageData();	
+			lastRefresh = new Date();
+			$('#last-update').text(dateFormat(lastRefresh, 'dd/mm/yyyy HH:MM'));
 		},
 		error: function(data) {
 			alert(data.responseText);    		
@@ -1175,25 +1183,6 @@ function addToLastApps(newApp) {
 	}
 }
 
-function getLP() {
-	var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPGET";    	
-	// var data = JSON.stringify({ data: uiLayout }); 
-	$.ajax({
-		type : 'POST',
-		url : url,
-		// data: data,
-		contentType : 'application/json',
-		dataType : 'json',
-		success : function(data) {
-			//debugger;
-			var r = 3;
-		},
-		error: function(data) {
-			alert(data.responseText);    		
-		}
-	});  
-}
-
 function getGraphIcon(graphType) {
 	var chartIconClass = '';
 	switch (graphType) {
@@ -1304,6 +1293,10 @@ function refreshPageData() {
 			// $('#' + divId).parent().removeClass('loading');
 		});
 	}
+
+	// set last refresh time
+	lastRefresh = new Date();
+	$('#last-update').text(dateFormat(lastRefresh, 'dd/mm/yyyy HH:MM'));
 }
 
 //var allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
