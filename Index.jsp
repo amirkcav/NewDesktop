@@ -7,6 +7,13 @@
 
 <body class="_smart-style-6 menu-on-top smart-rtl background4">
 
+	<div id="loading-animation-div">
+		<div id="loading-animation">
+			<span>בטעינה</span>
+			<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+		</div>
+	</div>
+
 	<jsp:directive.page contentType="text/html;charset=UTF-8"/>
 
 	<jsp:include page="pageParts/Header.html"></jsp:include>
