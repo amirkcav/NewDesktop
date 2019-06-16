@@ -74,7 +74,6 @@ $(function() {
 			type : 'POST',
 			url : url,
 			data: data,
-			// headers: { 'CavToken': token },
 			contentType : 'application/json',
 			// dataType : 'json',
 			success : function(data) {
@@ -330,7 +329,6 @@ $(function() {
 		$.ajax({
 			type : 'GET',
 			url : `mcall?_ROUTINE=CBIGRF&_NS=CAV&_LABEL=RUN&GRF=${ obj.code }&TFK=MNG&USERNAME=SID`,
-			// headers: { 'CavToken': token },
 			contentType : 'application/json',
 			dataType : 'json',
 			success : function(data) {
@@ -541,7 +539,6 @@ function getPageData() {
 	$.ajax({
 		type : 'POST',
 		url : url,
-		// headers: { 'CavToken': token },
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -569,7 +566,6 @@ function getPageData() {
 	$.ajax({
 		type : 'POST',
 		url : url,
-		// headers: { 'CavToken': token },
 		// data: data,
 		contentType : 'application/json',
 		dataType : 'json',
@@ -604,7 +600,6 @@ function getPageData() {
 	$.ajax({
 		type : 'GET',
 		url : url,
-		// headers: { 'CavToken': token },
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -916,7 +911,6 @@ function getGrpahData(graph, handler) {
 	$.ajax({
 		type : 'GET',
 		url : url,
-		// headers: { 'CavToken': token },
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -1138,13 +1132,12 @@ function addToFavorites(itemToAdd) {
 	uiLayout.shortcuts.data.push(itemToAdd);	
 	renderMenuFavorites();
 	
-	var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=SAVEDSK&OPC=AMIRK";    	
+	var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=SAVEDSK"; // &OPC=AMIRK
     var data = JSON.stringify({ favorites: uiLayout.shortcuts.data }); 
     $.ajax({
         type : 'POST',
         url : url,
         data: data,
-				// headers: { 'CavToken': token },
 				contentType : 'application/json',
         dataType : 'json',
         success : function(data) {

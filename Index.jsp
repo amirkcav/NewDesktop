@@ -9,7 +9,8 @@
 
 	<div id="loading-animation-div">
 		<div id="loading-animation">
-			<span>בטעינה</span>
+			<!-- <span class="circle-loader"></span> -->
+			<span class="loading-text">בטעינה</span>
 			<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 		</div>
 	</div>
