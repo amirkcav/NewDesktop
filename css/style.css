@@ -40,7 +40,7 @@ body.background5 {
 
 .items-section {
     padding: 10px;
-    margin-top: 10px;
+    /* margin-top: 10px; */
 }
 
 .buttons-section {    
@@ -88,12 +88,13 @@ body.background5 {
 }
 
 .buttons-section .department header {
-    border-bottom: 1px dashed #999;
+    /* border-bottom: 1px dashed #999; */
     text-align: center;
     font-size: 1.2em;
     font-weight: bold;
-    height: 3em;
+    height: 100%; /*3em*/
     position: relative;
+    font-size: 2rem;
 }
 
 .buttons-section .department header > span {
@@ -155,6 +156,9 @@ body.background5 {
 #info-squares-section .info-square label.sum {
     font-size: 2.2em;
     min-width: 100px;    
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 #info-squares-section .info-square label.sum > span.sign {
@@ -437,6 +441,10 @@ body {
 
 #bottom-row {
     /* height: 50%; */
+    height: 390px;
+}
+
+#content > *[id] {
     height: 390px;
 }
 

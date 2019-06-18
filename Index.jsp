@@ -39,11 +39,11 @@
     <!-- MAIN PANEL -->
     <div id="main" role="main" class="narrow">
 
-        <div id="content">					
+        <div id="content" class="row">					
 
-			<div id="top-row" class="row">
+			<!-- <div id="top-row" class="row"> -->
 
-				<div id="last-apps-section" class="col-lg-2 list-section menu-style">
+				<div id="last-apps-section" class="col-lg-2 col-md-3 list-section menu-style">
 					<label class="section-title">יישומים אחרונים</label>	
 					<ul class=" bordered-list" data-area-name="last-apps">
 						<li class="last-app list-item template-item">
@@ -52,7 +52,7 @@
 					</ul>			
 				</div>
 								
-				<div id="shortcuts-section" class="col-lg-7 buttons-section items-section clearfix sort-area section" data-area-name="shortcuts">
+				<div id="shortcuts-section" class="col-lg-7 col-md-9 buttons-section items-section clearfix sort-area section" data-area-name="shortcuts">
 					<div href="javascript:;" class="department sort-item template-item">
 						<a class="department-button" href="javascript:;">
 							<header><span class="template-field set-tooltip-field" data-field="TXT"></span></header>
@@ -67,7 +67,7 @@
 					</div>
 				</div>
 
-				<div id="messages-section" class="col-lg-3 list-section list-style" >
+				<div id="messages-section" class="col-lg-3 col-md-3 list-section list-style" >
 					<label class="section-title">הודעות מערכת</label>	
 					<ul class="bordered-list" data-area-name="last-apps">
 						<li class="last-app list-item template-item">
@@ -76,11 +76,11 @@
 					</ul>			
 				</div>
 
-			</div>	
+			<!-- </div>	 -->
 			
-			<div id="bottom-row" class="row">
+			<!-- <div id="bottom-row" class="row"> -->
 		
-				<div id="last-docs-section" class="col-lg-2 list-section menu-style" >
+				<div id="last-docs-section" class="col-lg-2 col-md-3 list-section menu-style" >
 					<label class="section-title">מסמכים אחרונים</label>	
 					<ul class="bordered-list" data-area-name="last-docs">
 						<li class="last-app list-item template-item">
@@ -89,7 +89,7 @@
 					</ul>			
 				</div>
 
-				<div id="info-squares-section" class="col-lg-3 clearfix sort-area _items-section section" data-area-name="info-squares">
+				<div id="info-squares-section" class="col-lg-3 col-md-6 clearfix sort-area _items-section section" data-area-name="info-squares">
 					<div class="info-square item-scale sort-item template-item">
 						<a class="info-square-button" href="javascript:;">
 							<label class="sum"><span class="sign">₪</span><span class="template-field" data-field="VAL"></span></label>
@@ -102,7 +102,7 @@
 					</div>
 				</div>
 
-				<div id="graphs-section" class="clearfix sort-area section col-lg-7" data-sort-flow="horizontal" data-area-name="graphs">
+				<div id="graphs-section" class="col-lg-7 col-md-12 clearfix sort-area section" data-sort-flow="horizontal" data-area-name="graphs">
 					<div class="graph sort-item item-scale template-item loading">
 						<div class="graph-title"><label></label></div>
 						<img id="graph-loading-image" src="img/loading.gif">
@@ -113,7 +113,7 @@
 						<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר גרף" data-func="removeGraph">x</a>
 					</div>
 				</div>
-			</div>
+			<!-- </div> -->
 							
 		</div>       
 
