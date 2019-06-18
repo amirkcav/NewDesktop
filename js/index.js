@@ -29,6 +29,12 @@ $.ajaxSetup({
 	}
 });
 
+// default "empty" object
+var uiLayout = { 'shortcuts': { 'data': [] }, 'info-squares': { 'data': [] }, 'graphs': { 'data': [] }, 'last-docs': { 'data': [] }, 'last-apps': { 'data': [] } };
+// var defaultLayoutObject = { 'shortcuts': {}, 'info-squares': {}, 'graphs': {}, 'last-apps': {} };
+lpGetRequestCompleted = false;
+menuRequestCompleted = false;
+
 getPageData();
 
 var lastRefresh = new Date();
@@ -51,6 +57,8 @@ $(function() {
 	// setSelectOptions(allInfoSquaresOptions, $('#add-info-square-select'));
 
 	$('#edit-page').click(function() {
+		// save the original layout to be able to cancel changes.
+		originalLayout = cloneObject(uiLayout);
 		// activate sortable (jquery ui).
 		sort();
 		$('body').addClass('editing');
@@ -140,8 +148,9 @@ $(function() {
 		lastMenuApp = parent;
 		var apm = parent.data('apm');
 		var uci = parent.data('uci');
+		var wcy = parent.data('wcy');
 		var appText = JSON.parse(parent.data('data')).TXT;
-		runApp(apm, uci, appText);
+		runApp(apm, uci, wcy, appText);
 	});
 
 	$('#graphs-section, #shortcuts-section, #info-squares-section').on('click', '.delete-shortcut[data-toggle="popover"]', function(e){
@@ -174,8 +183,9 @@ $(function() {
 		if (!$('body').hasClass('editing')) {
 			var apm = $(this).data('apm');
 			var uci = $(this).data('uci');
+			var wcy = parent.data('wcy');
 			var appText = $(this).text().trim();
-			runApp(apm, uci, appText);
+			runApp(apm, uci, wcy, appText);
 		}
 		else {
 			var graphData = JSON.parse($(this).parent().data('data'));
@@ -467,8 +477,9 @@ $(function() {
 			if (infoData.APM && infoData.APM !== 'null') {
 				var apm = infoData.APM;
 				var uci = infoData.UCI;
+				var wcy = parent.data('wcy');
 				var appText = infoData.TXT;
-				runApp(apm, uci, appText);
+				runApp(apm, uci, wcy, appText);
 			}
 		}
 		else {    		
@@ -522,7 +533,8 @@ $(function() {
 	lastAppsArea.on('click', 'li.last-app > a', function() {
 		var apm = $(this).data('apm');
 		var uci = $(this).data('uci');
-		runApp(apm, uci);
+		var wcy = parent.data('wcy');
+		runApp(apm, uci, wcy);
 	});
 
 	$('#refresh-page-data-button').on('click', function() {
@@ -553,10 +565,14 @@ function getPageData() {
 			// rendreing the menu is heavy. using timeout so all the page data would be rendered first.
 			setTimeout(function() {
 				setMenu(data);
+				menuRequestCompleted = true;
+				closeLoadingAnimation();
 			}, 500);
 		},
 		error: function(data) {
 			alert(data.responseText);    		
+			menuRequestCompleted = true;
+			closeLoadingAnimation();
 		}
 	});
 	
@@ -570,19 +586,14 @@ function getPageData() {
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
-			// uiLayout.shortcuts.data = data[data.length - 1].MENU;
-			uiLayout = data.data;
-			// save the original layout to be able to cancel changes.
-			originalLayout = cloneObject(uiLayout);
-
-			setTimeout(() => {
-				$('#loading-animation-div').addClass('finish-loading');
-				setTimeout(() => {
-					$('#loading-animation-div').remove();
-				}, 300);
-			}, 300);
+			uiLayout = Object.assign(uiLayout, data.data);
+			// uiLayout = data.data;		
 
 			renderAllAreas(true);
+
+			lpGetRequestCompleted = true;
+			closeLoadingAnimation();
+
 
 			// set last refresh time
 			//refreshPageData();	
@@ -591,7 +602,11 @@ function getPageData() {
 
 		},
 		error: function(data) {
-			alert(data.responseText);    		
+			alert(data.responseText);   
+			renderAllAreas(true);
+			lpGetRequestCompleted = true;
+			closeLoadingAnimation(); 		
+			// uiLayout = {};
 		}
 	});
 
@@ -637,6 +652,9 @@ function renderAllAreas(useTimeout) {
 
 function renderArea(area, areaData) {
 	var data = areaData.data;
+	// if (!data) {
+	// 	return;
+	// }
 	
 	// area with sorting
 	$(area).find('.sort-item:not(.template-item)').remove();	
@@ -669,7 +687,8 @@ function renderArea(area, areaData) {
 							.data('data', JSON.stringify(existingItem[0]));
 			setTemplateFields(template, existingItem[0]);
 			$(template).find('a').data('apm', existingItem[0].APM)
-										.data('uci', existingItem[0].UCI);
+										.data('uci', existingItem[0].UCI)
+										.data('wcy', existingItem[0].wCY);
 		}
 		// add a placeholder for sorting
 		else {
@@ -774,7 +793,7 @@ function refreshPageData() {
 	$('#last-update').text(dateFormat(lastRefresh, 'dd/mm/yyyy HH:MM'));
 }
 
-function runApp(apm, uci, text) {
+function runApp(apm, uci, companyCode, text) {
 	var apmArr = apm.split(':');
 	var ap = apmArr[0];
 	var pm = apmArr[1];
@@ -786,10 +805,10 @@ function runApp(apm, uci, text) {
 	}
 	// run app.
 	if (window.app) {
-		app.openApplication(ap, pm, uci, '', '');
+		app.openApplication(ap, pm, uci, companyCode, '');
 	}
 	else {
-		console.log(stringFormat('Run App - {0}:{1}:{2}', ap, pm, uci));
+		console.log(stringFormat('Run App - {0}:{1}:{2}:{3}', ap, pm, uci, companyCode));
 	}
 }
 
@@ -1025,8 +1044,11 @@ function setMenu(data) {
 		const rootItem = data[i];
 		var liElement = $(`<li><a href="javascript:;"><i class="fa fa-lg fa-home"></i> <span class="menu-item-parent">${rootItem.TXT}</span></a></li>`); 		    		
 		addSubMenu(liElement, rootItem.MENU);
-		// $('#menu-list').append(liElement);
 		$('#menu-list > .search-app-li').before(liElement);
+		// set tooltip
+		if (liElement.find('.menu-item-parent').prop('offsetWidth') < liElement.find('.menu-item-parent').prop('scrollWidth')) {
+			liElement.find('.menu-item-parent').attr('title', rootItem.TXT);
+		}
 	}
 	
 	// $('#menu-list > ul').remove();
@@ -1087,12 +1109,13 @@ function setMenuItem(itemObj) {
 		$(newItemElem).addClass('app')
 					  .data('data', JSON.stringify(itemObj))
 					  .data('apm', itemObj.APM)
-					  .data('uci', itemObj.UCI);
+					  .data('uci', itemObj.UCI)
+						.data('wcy', itemObj.wCY);
 		
 		var favoriteClass = '';
 		var favoriteIconClass = 'fa-star-o';
 		// is favorite
-		if (uiLayout.shortcuts.data.indexOfByProperty('TXT', itemObj.TXT) >= 0) {				
+		if (uiLayout.shortcuts.data && uiLayout.shortcuts.data.indexOfByProperty('TXT', itemObj.TXT) >= 0) {				
 			favoriteIconClass = 'fa-star';
 			favoriteClass = 'favorite';
 		}
@@ -1109,7 +1132,7 @@ function setMenuSearch() {
 		source: menuApps,
 		select: function( event, ui ) {
 			var itemData = ui.item;
-			runApp(itemData.APM, itemData.UCI, itemData.TXT);
+			runApp(itemData.APM, itemData.UCI, itemData.wCY, itemData.TXT);
 			$(this).val('');
 			$(this).blur();
 			return false;
@@ -1192,7 +1215,8 @@ function addShortcut(data) {
 	template.removeClass('template-item');
 	$(template).find('.template-field[data-field="TXT"]').text(data.TXT); 
 	$(template).data('apm', data.APM)
-			   .data('uci', data.UCI);
+						 .data('uci', data.UCI)
+						 .data('wcy', data.wCY);
 	var placeholderItem = $('#shortcuts-section .editing-item-placeholder').first();
 	template.attr('original-position', placeholderItem.attr('original-position'))
 	placeholderItem.replaceWith(template);
@@ -1279,7 +1303,8 @@ function renderInfoSquareData(itemWithData) {
 					.data('data', JSON.stringify(itemWithData));
 	setTemplateFields(elem, itemWithData);
 	$(elem).find('a').data('apm', itemWithData.APM)
-												.data('uci', itemWithData.UCI);
+									 .data('uci', itemWithData.UCI)
+									 .data('wcy', itemWithData.wCY);
 }
 
 // function setDepartmentsParentWidth() {
@@ -1292,3 +1317,14 @@ function renderInfoSquareData(itemWithData) {
 // 	var parentWidth = numberOfColumns * itemWidth;
 // 	$('#departments-section').width(parentWidth);
 // }
+
+function closeLoadingAnimation() {
+	if (lpGetRequestCompleted && menuRequestCompleted) {
+		setTimeout(() => {
+			$('#loading-animation-div').addClass('finish-loading');
+			setTimeout(() => {
+				$('#loading-animation-div').remove();
+			}, 300);
+		}, 300);
+	}
+}
