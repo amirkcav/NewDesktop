@@ -183,7 +183,7 @@ $(function() {
 		if (!$('body').hasClass('editing')) {
 			var apm = $(this).data('apm');
 			var uci = $(this).data('uci');
-			var wcy = parent.data('wcy');
+			var wcy = $(this).data('wcy');
 			var appText = $(this).text().trim();
 			runApp(apm, uci, wcy, appText);
 		}
@@ -477,7 +477,7 @@ $(function() {
 			if (infoData.APM && infoData.APM !== 'null') {
 				var apm = infoData.APM;
 				var uci = infoData.UCI;
-				var wcy = parent.data('wcy');
+				var wcy = infoData.wCY;
 				var appText = infoData.TXT;
 				runApp(apm, uci, wcy, appText);
 			}
@@ -533,7 +533,7 @@ $(function() {
 	lastAppsArea.on('click', 'li.last-app > a', function() {
 		var apm = $(this).data('apm');
 		var uci = $(this).data('uci');
-		var wcy = parent.data('wcy');
+		var wcy = $(this).data('wcy');
 		runApp(apm, uci, wcy);
 	});
 
@@ -687,8 +687,10 @@ function renderArea(area, areaData) {
 							.data('data', JSON.stringify(existingItem[0]));
 			setTemplateFields(template, existingItem[0]);
 			$(template).find('a').data('apm', existingItem[0].APM)
-										.data('uci', existingItem[0].UCI)
-										.data('wcy', existingItem[0].wCY);
+													 .data('uci', existingItem[0].UCI);
+			if (existingItem[0].wCY) {
+				$(template).find('a').data('wcy', existingItem[0].wCY);
+			}
 		}
 		// add a placeholder for sorting
 		else {
@@ -799,13 +801,13 @@ function runApp(apm, uci, companyCode, text) {
 	var pm = apmArr[1];
 	// add to last apps
 	if (text && text.length > 0) {
-		var currApp = { TXT: text, UCI: uci, APM: apm };
+		var currApp = { TXT: text, UCI: uci, APM: apm, wCY: companyCode };
 		addToLastApps(currApp);		
 		renderArea(lastAppsArea, uiLayout['last-apps']);
 	}
 	// run app.
 	if (window.app) {
-		app.openApplication(ap, pm, uci, companyCode, '');
+		app.openApplication(ap, pm, uci, companyCode ? companyCode.toString() : '', '');
 	}
 	else {
 		console.log(stringFormat('Run App - {0}:{1}:{2}:{3}', ap, pm, uci, companyCode));
@@ -1042,6 +1044,10 @@ function removeGraph(elem) {
 function setMenu(data) {		    	
 	for (let i = 0; i < data.length; i++) {
 		const rootItem = data[i];
+		// if there's only one company, skip companys level
+		if (rootItem.MENU.length === 1) {
+			rootItem.MENU = rootItem.MENU[0].MENU;
+		}
 		var liElement = $(`<li><a href="javascript:;"><i class="fa fa-lg fa-home"></i> <span class="menu-item-parent">${rootItem.TXT}</span></a></li>`); 		    		
 		addSubMenu(liElement, rootItem.MENU);
 		$('#menu-list > .search-app-li').before(liElement);
@@ -1109,8 +1115,10 @@ function setMenuItem(itemObj) {
 		$(newItemElem).addClass('app')
 					  .data('data', JSON.stringify(itemObj))
 					  .data('apm', itemObj.APM)
-					  .data('uci', itemObj.UCI)
-						.data('wcy', itemObj.wCY);
+						.data('uci', itemObj.UCI);
+		if (itemObj.wCY) {
+			$(newItemElem).addClass('app').data('wcy', itemObj.wCY);
+		}
 		
 		var favoriteClass = '';
 		var favoriteIconClass = 'fa-star-o';
@@ -1215,8 +1223,10 @@ function addShortcut(data) {
 	template.removeClass('template-item');
 	$(template).find('.template-field[data-field="TXT"]').text(data.TXT); 
 	$(template).data('apm', data.APM)
-						 .data('uci', data.UCI)
-						 .data('wcy', data.wCY);
+						 .data('uci', data.UCI);
+	if (data.wCY) {
+		$(template).data('wcy', data.wCY);
+	}
 	var placeholderItem = $('#shortcuts-section .editing-item-placeholder').first();
 	template.attr('original-position', placeholderItem.attr('original-position'))
 	placeholderItem.replaceWith(template);
@@ -1303,8 +1313,10 @@ function renderInfoSquareData(itemWithData) {
 					.data('data', JSON.stringify(itemWithData));
 	setTemplateFields(elem, itemWithData);
 	$(elem).find('a').data('apm', itemWithData.APM)
-									 .data('uci', itemWithData.UCI)
-									 .data('wcy', itemWithData.wCY);
+									 .data('uci', itemWithData.UCI);
+	if (itemWithData.wCY) {
+		$(elem).find('a').data('wcy', itemWithData.wCY);
+	}
 }
 
 // function setDepartmentsParentWidth() {
