@@ -172,8 +172,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button id="add-shortcut-modal-button" class="btn btn-lg btn-default">הוסף</button>
-                </div>
+                    <button id="add-shortcut-modal-button" class="btn btn-lg modal-submit-button">הוסף</button>
+					<button id="add-shortcut-modal-cancel-button" class="btn btn-lg modal-cancel-button" data-dismiss="modal">בטל</button>
+				</div>
             </div>
         </div>
     </div>
@@ -197,7 +198,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button id="add-info-square-modal-button" class="btn btn-lg btn-default">הוסף</button>
+                    <button id="add-info-square-modal-button" class="btn btn-lg modal-submit-button">הוסף</button>
+					<button id="add-info-square-modal-cancel-button" class="btn btn-lg modal-cancel-button" data-dismiss="modal">בטל</button>
                 </div>
             </div>
         </div>
@@ -219,7 +221,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button id="add-graph-modal-button" class="btn btn-lg btn-default">הוסף</button>
+                    <button id="add-graph-modal-button" class="btn btn-lg modal-submit-button">הוסף</button>
+					<button id="add-graph-modal-cancel-button" class="btn btn-lg modal-cancel-button" data-dismiss="modal">בטל</button>
                 </div>
             </div>
         </div>
@@ -239,7 +242,10 @@
                 	</a>
                 	<div id="large-graph-div"></div>
                 </div>
-            </div>
+				<div class="modal-footer">
+					<button class="btn btn-lg btn-default" data-dismiss="modal">סגור</button>
+				</div>
+			</div>
         </div>		
 	</div>
 

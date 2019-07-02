@@ -1024,3 +1024,20 @@ nav li.disabled {
 }
 
 /* #endregion Loading animation */
+
+.modal-cancel-button {
+    float: left;
+    background: #e2c7c7;
+}
+
+.modal-cancel-button:hover {
+    background: #d2bfbf
+}
+
+.modal-submit-button {
+    background: #ced6ce;
+}
+
+.modal-submit-button:hover {
+    background: #bfcabf;
+}
