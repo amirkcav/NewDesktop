@@ -32,8 +32,10 @@ $.ajaxSetup({
 // default "empty" object
 var uiLayout = { 'shortcuts': { 'data': [] }, 'info-squares': { 'data': [] }, 'graphs': { 'data': [] }, 'last-docs': { 'data': [] }, 'last-apps': { 'data': [] } };
 // var defaultLayoutObject = { 'shortcuts': {}, 'info-squares': {}, 'graphs': {}, 'last-apps': {} };
-lpGetRequestCompleted = false;
-menuRequestCompleted = false;
+var lpGetRequestCompleted = false;
+var menuRequestCompleted = false;
+
+var menuFavorites;
 
 getPageData();
 
@@ -561,18 +563,29 @@ function getPageData() {
 			// originalLayout = cloneObject(uiLayout);
 
 			// renderAllAreas(true);
-			
+			menuFavorites = data[data.length - 1].MENU;
+
+			// to get a big menu
+			if (token === '1234') {
+				data = data.concat(data).concat(data);
+			}
+
 			// rendreing the menu is heavy. using timeout so all the page data would be rendered first.
 			setTimeout(function() {
 				setMenu(data);
 				menuRequestCompleted = true;
-				closeLoadingAnimation();
+
+				var menuHeight = $('#left-panel').prop('clientHeight') - $('#header').prop('clientHeight');
+				// $('#main').css('margin-top', menuHeight + 'px', 'important');
+				$('#main')[0].style.setProperty('margin-top', menuHeight + 'px', 'important');
+
+				requestCompleted();
 			}, 500);
 		},
 		error: function(data) {
 			alert(data.responseText);    		
 			menuRequestCompleted = true;
-			closeLoadingAnimation();
+			requestCompleted();
 		}
 	});
 	
@@ -589,23 +602,20 @@ function getPageData() {
 			uiLayout = Object.assign(uiLayout, data.data);
 			// uiLayout = data.data;		
 
-			renderAllAreas(true);
+			renderAllAreas(true);			
 
 			lpGetRequestCompleted = true;
-			closeLoadingAnimation();
-
+			requestCompleted();
 
 			// set last refresh time
-			//refreshPageData();	
 			lastRefresh = new Date();
 			$('#last-update').text(dateFormat(lastRefresh, 'dd/mm/yyyy HH:MM'));
-
 		},
 		error: function(data) {
 			alert(data.responseText);   
 			renderAllAreas(true);
 			lpGetRequestCompleted = true;
-			closeLoadingAnimation(); 		
+			requestCompleted(); 		
 			// uiLayout = {};
 		}
 	});
@@ -1330,8 +1340,13 @@ function renderInfoSquareData(itemWithData) {
 // 	$('#departments-section').width(parentWidth);
 // }
 
-function closeLoadingAnimation() {
+function requestCompleted() {
 	if (lpGetRequestCompleted && menuRequestCompleted) {
+		// if no shortcuts data is saved, render favorites.
+		if (uiLayout.shortcuts.data.length === 0) {
+			renderArea(shortcutsArea, { data: menuFavorites });
+		}
+		// hide loading animation
 		setTimeout(() => {
 			$('#loading-animation-div').addClass('finish-loading');
 			setTimeout(() => {
