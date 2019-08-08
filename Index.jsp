@@ -106,7 +106,9 @@
 					<div class="graph sort-item item-scale template-item loading">
 						<div class="graph-title"><label></label></div>
 						<img id="graph-loading-image" src="img/loading.gif">
-						<div class="graph-div"></div>
+						<div class="graph-div">
+							<canvas></canvas>
+						</div>
 						<a href="#add-graph-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
 							<span>+</span>
 						</a>
@@ -126,7 +128,7 @@
     <jsp:include page="pageParts/Scripts.html"></jsp:include>
 	
 	<script src="js/plugin/moment/moment.min.js"></script>
-	<script src="js/plugin/chartjs/chart.min.js"></script>
+	<script src="js/plugin/chartjs/chart.js"></script>
 	<script src="js/plugin/select2/dist/js/select2.js"></script>
 	
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -141,6 +143,8 @@
 	<script src="js/cav-portal-main.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/cav-drawCharts.js" type="text/javascript" charset="utf-8"></script>
 	
+	<script src="js/cav-newCharts.js" type="text/javascript" charset="utf-8"></script>
+
 	<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
 
 	<template id="confirmation-popover-template">
@@ -240,7 +244,9 @@
                 		<i class="fa fa-table table-icon"></i>
                 		<i class="fa fa-bar-chart-o graph-icon"></i>
                 	</a>
-                	<div id="large-graph-div"></div>
+                	<div id="large-graph-div">
+						<canvas></canvas>
+					</div>
                 </div>
 				<div class="modal-footer">
 					<button class="btn btn-lg btn-default" data-dismiss="modal">סגור</button>

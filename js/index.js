@@ -149,7 +149,7 @@ $(function() {
 		}
 		lastMenuApp = parent;
 		var apm = parent.data('apm');
-		var uci = parent.data('uci');
+		var uci = JSON.parse(parent.data('data')).SYS; //parent.data('uci');
 		var wcy = parent.data('wcy');
 		var appText = JSON.parse(parent.data('data')).TXT;
 		runApp(apm, uci, wcy, appText);
@@ -448,7 +448,7 @@ $(function() {
 	});
 
 	$('#large-graph-modal').on('hidden.bs.modal', function() {
-		$('#large-graph-div').html('');
+		$('#large-graph-div').html('<canvas></canvas>');
 		$('#change-graph-mode-button').removeClass('hidden');		
 		$(this).find('.modal-header > h3').html('');
 		$(this).find('.modal-body').removeClass('table-mode')
@@ -1012,13 +1012,23 @@ function checkPositionForChart(position) {
 function drawGraph(graphData, divId, graphHeight) {
 	switch (graphData.type) {
 		case "bar":
-			drawBar(graphData, divId, graphHeight);
+			// if (divId === 'graph1') {
+				drawBar_NEW(graphData, divId, graphHeight);
+			// }
+			// else {
+			// 	drawBar(graphData, divId, graphHeight);
+			// }
 			break;
 		case "line":
 			drawLine(graphData, divId, graphHeight);
 			break;
 		case "pie":
-			drawPie(graphData, divId, graphHeight);
+			if (divId === 'graph2') {
+				drawPie_NEW(graphData, divId, graphHeight);
+			}
+			else {
+				drawPie(graphData, divId, graphHeight);
+			}
 			break;
 		case "gauge":
 			drawGauge(graphData, divId, 0, graphHeight);

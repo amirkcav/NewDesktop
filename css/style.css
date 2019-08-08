@@ -229,6 +229,10 @@ body.background5 {
     margin: 0 auto;
 }
 
+#graphs-section .graph-div canvas {
+    padding: 10px;
+}
+
 .tableGauge thead {
     background: #eee;
 } 
@@ -1045,3 +1049,4 @@ nav li.disabled {
 #menu-list > li > ul {
     z-index: 1111;
 }
+
