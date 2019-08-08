@@ -1,0 +1,40 @@
+.grid-stack-item-content {
+  border: 1px solid #333;
+  background: #eee;
+}
+
+.grid-stack-placeholder {
+  border: 1px dashed #888;
+}
+
+
+.item-shortcut .grid-stack-item-content {
+  background: #aad;
+}
+
+.item-data-cube .grid-stack-item-content {
+  background: #add;
+}
+
+.item-graph .grid-stack-item-content {
+  background: #ada;
+}
+
+#items-container {
+  margin: 50px;
+  padding: 30px;
+  /* width: 1000px; */
+  border: 1px solid #666;
+}
+
+.remove-item {
+  float: right;
+  border-left: 1px solid #333;
+  border-bottom: 1px solid #333;
+  padding: 4px 8px;
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  background: rgba(255,255,255,0.7);
+}
