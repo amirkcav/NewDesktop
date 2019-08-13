@@ -1,0 +1,57 @@
+#departments-section {
+    width: 18%;
+}
+
+#shortcuts-section {
+    width: 35%;
+}
+
+#info-squares-section {
+    width: calc(49% - 3vw);
+}
+
+.buttons-section .sort-item, .buttons-section .sorting-placeholder {
+    width: 7vw;
+}
+
+.buttons-section .department header {
+    font-size: 0.82vw;
+}
+
+#info-squares-section .sort-item {
+    width: 13vw;
+}
+
+#info-squares-section .info-square label.sum {
+    font-size: 1.7vw;
+}
+
+#info-squares-section .info-square label {
+    font-size: 1.05vw; 
+}
+
+.buttons-section .department, #info-squares-section .info-square {
+    margin: 0.5vw !important;
+}
+
+.items-section {
+    padding: 0.5vw;
+} 
+
+#content {
+    height: unset;
+    min-height: calc(100vh - 49px - 70px - 52px);
+}
+
+.buttons-section .sort-item, .buttons-section .sorting-placeholder {
+    width: 7vw;
+    /*height: 100px;*/ 
+}
+
+#info-squares-section .sorting-placeholder {
+    width: 13vw;
+}
+
+
+
+

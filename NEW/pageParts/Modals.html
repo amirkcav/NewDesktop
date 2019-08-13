@@ -1,0 +1,37 @@
+<div id="confirmation-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3></h3>
+            </div>
+            <div class="modal-body">
+                <div id="confirmation-modal-data" class="finance-modal-data clearfix">
+                    <p>Are you sure?</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <button id="cancel-button" class="btn btn-default btn-cancel pull-left" data-dismiss="modal">Cancel</button>
+                    <button id="save-button" class="btn btn-default btn-save pull-right _btn-yes" data-dismiss="modal">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="group-option-template">	
+	<div class="group-option-data">
+		<label class="title"></label>
+		<label class="hierarchy"></label>
+	</div>
+</template>
+
+<template id="confirmation-popover-template">
+    <div>
+        <p>Are you sure?</p>
+        <div class="clearfix">
+            <button id="confirmation-popover-yes" class="pull-right btn btn-default">Yes</button>
+            <button id="confirmation-popover-no" class="pull-left btn btn-default" data-dismiss="popover">No</button>
+        </div>
+    </div>
+</template>
