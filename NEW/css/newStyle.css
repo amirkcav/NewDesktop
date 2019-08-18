@@ -1,3 +1,7 @@
+body {
+  min-height: 100vh;
+}
+
 .grid-stack-item-content {
   border: 1px solid #333;
   background: #eee;
@@ -20,10 +24,9 @@
 }
 
 #items-container {
-  margin: 50px;
-  padding: 30px;
-  /* width: 1000px; */
-  border: 1px solid #666;
+  margin: 20px;
+  /* padding: 30px;
+  border: 1px solid #666; */
 }
 
 #buttons-div {
@@ -31,6 +34,7 @@
 }
 
 .remove-item {
+  display: none;
   float: right;
   border-left: 1px solid #333;
   border-bottom: 1px solid #333;
@@ -40,4 +44,20 @@
   color: #333;
   font-weight: bold;
   background: rgba(255,255,255,0.7);
+}
+
+body.editing .remove-item {
+  display: block;
+}
+
+.grid-stack-item.ui-draggable-disabled {
+  opacity: 1;
+}
+
+body.editing .grid-stack-item-content {
+  cursor: move;
+}
+
+body:not(.editing) .grid-stack-item-content {
+  cursor: pointer;
 }

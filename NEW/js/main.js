@@ -36,6 +36,14 @@ $(function() {
 		   .data("bs.popover").inState = {click: false, hover: false, focus: false};
 	});
 	
+	// reset form data when modal is closed
+	$('.modal.reset-on-close').on('hidden.bs.modal', function(){
+		var form = $(this).find('form');
+		resetFormValues(form);
+		$(form).validate().resetForm();
+		$(form).find('.form-control.error').removeClass('error');
+	});
+
 });
 
 // from https://stackoverflow.com/questions/1038746/equivalent-of-string-format-in-jquery#answer-1038930
@@ -130,4 +138,10 @@ function setSelectOptions(optionsData, select, textProp = 'TXT', valueProp = 'CO
     $(select).append(options);
 }
   
-
+function htmlToElement(htmlString) {
+	var div = document.createElement('div');
+	div.innerHTML = htmlString.trim();
+	// Change this to div.childNodes to support multiple top-level nodes
+	return div.firstChild; 
+  }
+  

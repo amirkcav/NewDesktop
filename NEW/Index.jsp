@@ -6,12 +6,12 @@
 
 <body class="_smart-style-6 menu-on-top smart-rtl background4">
 
-	<!-- <div id="loading-animation-div">
+	<div id="loading-animation-div">
 		<div id="loading-animation">
 			<span class="loading-text">בטעינה</span>
 			<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
 		</div>
-	</div> -->
+	</div>
 
 	<jsp:directive.page contentType="text/html;charset=UTF-8"/>
 
@@ -20,15 +20,15 @@
 	<!-- menu -->
 	<aside id="left-panel">
 		<div id="manage-edit-div">
-			<button id="done-edit-page" class="btn btn-default edit-state">שמור</button>
-			<button id="cancel-edit-page" class="btn btn-default edit-state">בטל</button>
+			<!-- <button id="done-edit-page" class="btn btn-default edit-state">שמור</button> -->
+			<button id="save-button" class="btn btn-default edit-state">SAVE</button>      
+			<button id="cancel-edit-page" class="btn btn-default edit-state">בטל</button> 
 			<button id="edit-page" class="btn btn-default regular-state">מצב עריכה</button>
 			
-			<button id="delete-all-button">DELETE ALL</button>      
-			<button id="save-button">SAVE</button>      
-			<button class="add-item-button" data-type="graph">Add graph</button>
-			<button class="add-item-button" data-type="data-cube">Add data cube</button>
-			<button class="add-item-button" data-type="shortcut">Add shortcut</button>
+			<button id="delete-all-button" class="edit-state">DELETE ALL</button>      
+			<button class="add-item-button edit-state" data-type="graph">Add graph</button>
+			<button class="add-item-button edit-state" data-type="data-cube">Add data cube</button>
+			<button href="#add-shortcut-modal" data-toggle="modal" class="edit-state" data-type="shortcut">Add shortcut</button>
 			<span style="margin: 25px;"></span>
 		</div>
 	    <nav>
@@ -79,45 +79,45 @@
 
         <div id="templates-area" style="display: none;">
           
-					<div href="javascript:;" class="department sort-item template-item" data-template-type="shortcut">
-						<a class="department-button" href="javascript:;">
-							<header><span class="template-field set-tooltip-field" data-field="TXT"></span></header>
-							<div class="department-content">
-								<i class="template-field" data-field="icon"></i>
-							</div>
-						</a>	
-						<a href="#add-shortcut-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
-							<span>+</span>
-						</a>					
-						<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר קיצור דרך" data-func="removeShortcut">x</a>
-          </div>
+			<div href="javascript:;" class="department sort-item __template-item" data-template-type="shortcut">
+				<a class="department-button" href="javascript:;">
+					<header><span class="template-field set-tooltip-field" data-field="TXT"></span></header>
+					<div class="department-content">
+						<i class="template-field" data-field="icon"></i>
+					</div>
+				</a>	
+				<a href="#add-shortcut-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
+					<span>+</span>
+				</a>					
+				<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר קיצור דרך" data-func="removeShortcut">x</a>
+          	</div>
           
-          <div class="info-square item-scale sort-item template-item" data-template-type="info-square">
-						<a class="info-square-button" href="javascript:;">
-							<label class="sum"><span class="sign">₪</span><span class="template-field" data-field="VAL"></span></label>
-							<label class="title template-field set-tooltip-field" data-field="TXT"></label>
-						</a>
-						<a href="#add-info-square-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
-							<span>+</span>
-						</a>
-						<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר ריבוע מידע" data-func="removeInfoSquare">x</a>
-					</div>
+          	<div class="info-square item-scale sort-item template-item" data-template-type="info-square">
+				<a class="info-square-button" href="javascript:;">
+					<label class="sum"><span class="sign">₪</span><span class="template-field" data-field="VAL"></span></label>
+					<label class="title template-field set-tooltip-field" data-field="TXT"></label>
+				</a>
+				<a href="#add-info-square-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
+					<span>+</span>
+				</a>
+				<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר ריבוע מידע" data-func="removeInfoSquare">x</a>
+			</div>
 
-          <div class="graph sort-item item-scale template-item loading" data-template-type="graph">
-						<div class="graph-title"><label></label></div>
-						<img id="graph-loading-image" src="img/loading.gif">
-						<div class="graph-div">
-							<canvas></canvas>
-						</div>
-						<a href="#add-graph-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
-							<span>+</span>
-						</a>
-						<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר גרף" data-func="removeGraph">x</a>
-					</div>
+          	<div class="graph sort-item item-scale template-item loading" data-template-type="graph">
+				<div class="graph-title"><label></label></div>
+				<img id="graph-loading-image" src="img/loading.gif">
+				<div class="graph-div">
+					<canvas></canvas>
+				</div>
+				<a href="#add-graph-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
+					<span>+</span>
+				</a>
+				<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר גרף" data-func="removeGraph">x</a>
+			</div>
 
 				</div>					
 							
-		  </div>       
+		  	</div>       
 
     </div>
 
