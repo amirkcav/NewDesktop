@@ -70,18 +70,10 @@ function addItem(width, height, type, dataObj, id, x, y) {
       id = Math.max.apply(0, ids) + 1;
     }
   }
-  // data-gs-x="${x}" data-gs-y="${y}" data-gs-width="${width}" data-gs-height="${height}"
   var template = getItemTemplate(type, id, dataObj);
-  // var template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
-  //                   <div class="grid-stack-item-content">
-  //                     <a class="remove-item" href="javascript:;">X</a>
-  //                     <span class="shortcut-text">${dataObj ? dataObj.TXT : id}</span>
-  //                   </div>
-  //                 </div>`;
   var elem = htmlToElement(template);
   if (dataObj) {
     $(elem).data('item-data', JSON.stringify(dataObj));
-    // setTemplateFields(elem, dataObj);
   }
   var hasPosition = x != null && y != null;                
   gridStackObj.addWidget(elem, x, y, width, height, !hasPosition);
@@ -96,10 +88,19 @@ function getItemTemplate(type, id, itemData) {
       template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
                     <div class="grid-stack-item-content">
                       <a class="remove-item" href="javascript:;">X</a>
-                      <span class="shortcut-text">${itemData ? itemData.TXT : id}</span>
+                      <label class="shortcut-text">${itemData ? itemData.TXT : id}</label>
                     </div>
                   </div>`;
       break;  
+    case 'data-cube':
+        template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
+          <div class="grid-stack-item-content">
+            <a class="remove-item" href="javascript:;">X</a>
+            <label class="sum"><span class="sign">₪</span><span>${itemData.VAL}</span></label>
+            <label class="title set-tooltip-field">${itemData.TXT}</label>
+          </div>
+        </div>`;
+      break;
   }
   return template;
 }
@@ -129,8 +130,8 @@ function addShortcut(data) {
   // _addItem(1, 1, 'shortcut');
 }
 
-function addDataCube() {
-  _addItem(2, 1, 'data-cube');
+function addDataCube(data) {
+  addItem(2, 1, 'data-cube', data);
 }
 
 function addGraph() {
@@ -160,6 +161,11 @@ function renderItems(data) {
   itemsData.forEach(item => {
     if (item.type === 'shortcut') {
       addItem(item.width, item.height, item.type, item.data ? JSON.parse(item.data) : null, item.id, item.x, item.y);
+    }
+    else if (item.type === 'data-cube') {
+      getInfoSquareData(item, function(itemWithData) {
+        addItem(itemWithData.width, itemWithData.height, itemWithData.type, itemWithData.data ? JSON.parse(itemWithData.data) : null, itemWithData.id, itemWithData.x, itemWithData.y);
+      });
     }
     else {
       _addItem(item.width, item.height, item.type, item.id, item.x, item.y);

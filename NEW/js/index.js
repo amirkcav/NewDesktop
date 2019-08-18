@@ -245,11 +245,7 @@ $(function() {
 	//#region info-squares
 
 	$('#add-info-square-modal').on('click', '#add-info-square-modal-button', function() {
-		// var selectedOption = $('#add-info-square-select').find('option:selected');
-		var position = $(this).data('position');
-		//var obj = JSON.parse(selectedOption.data('data'));    	
 		var obj = $('#add-info-square-select').select2('data')[0]
-		obj.LOC = position;
 		// was an app chosen.
 		if ($('#info-square-application').val().length > 0) {
 			var selectedApp = JSON.parse($('#info-square-application').data('selected-item'));
@@ -263,19 +259,20 @@ $(function() {
 			obj.APP = '';
 		}
 		
-		// is editing an existing shortcut
-		var itemInPosition = uiLayout['info-squares'].data.filter(function(a) { return a.LOC == obj.LOC })[0];    			    		    
-		if (itemInPosition) {
-			//uiLayout.shortcuts.data.pop(itemInPosition);
-			var index = uiLayout['info-squares'].data.indexOf(itemInPosition);
-			uiLayout['info-squares'].data.splice(index, 1);
-		}
+		// // is editing an existing shortcut
+		// var itemInPosition = uiLayout['info-squares'].data.filter(function(a) { return a.LOC == obj.LOC })[0];    			    		    
+		// if (itemInPosition) {
+		// 	//uiLayout.shortcuts.data.pop(itemInPosition);
+		// 	var index = uiLayout['info-squares'].data.indexOf(itemInPosition);
+		// 	uiLayout['info-squares'].data.splice(index, 1);
+		// }
 
-		uiLayout['info-squares'].data.push(obj);	
+		// uiLayout['info-squares'].data.push(obj);	
 		getInfoSquareData(obj, function(itemWithData) {
-			renderInfoSquareData(itemWithData);				
-			var elem = $('#info-' + itemWithData.LOC)
-			$(elem).removeClass('editing-item-placeholder');
+			addDataCube(itemWithData);
+			// renderInfoSquareData(itemWithData);				
+			// var elem = $('#info-' + itemWithData.LOC)
+			// $(elem).removeClass('editing-item-placeholder');
 		});		
 		// renderArea(infoSquaresArea, uiLayout['info-squares']);
 		// sortArea(infoSquaresArea);
@@ -607,14 +604,14 @@ function getPageData() {
 	// 	}
 	// });
 
-	// // get available info squares.
-  // allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
-	// allInfoSquaresOptions = allInfoSquaresOptions.sort((isa, isb) => isa.TXT.localeCompare(isb.TXT) );
-	// allInfoSquaresOptions = $.map(allInfoSquaresOptions, function (obj) {
-	// 	obj.id = obj.id || obj.COD;
-	// 	obj.text = obj.text || obj.TXT;
-	// 	return obj;
-	// });
+	// get available info squares.
+  allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
+	allInfoSquaresOptions = allInfoSquaresOptions.sort((isa, isb) => isa.TXT.localeCompare(isb.TXT) );
+	allInfoSquaresOptions = $.map(allInfoSquaresOptions, function (obj) {
+		obj.id = obj.id || obj.COD;
+		obj.text = obj.text || obj.TXT;
+		return obj;
+	});
 }
 
 function refreshPageData() {
@@ -1160,8 +1157,9 @@ function renderInfoSquares() {
 }
 
 function getInfoSquareData(obj, handler) {
+	obj.data = JSON.parse(obj.data);
 	// value should come from server
-	obj.VAL = parseInt(Math.random() * 10000000).toLocaleString();
+	obj.data.VAL = parseInt(Math.random() * 10000000).toLocaleString();
 	handler(obj);
 }
 

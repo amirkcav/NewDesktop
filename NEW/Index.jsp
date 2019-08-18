@@ -27,7 +27,7 @@
 			
 			<button id="delete-all-button" class="edit-state">DELETE ALL</button>      
 			<button class="add-item-button edit-state" data-type="graph">Add graph</button>
-			<button class="add-item-button edit-state" data-type="data-cube">Add data cube</button>
+			<button href="#add-info-square-modal" data-toggle="modal" class="edit-state" data-type="data-cube">Add data cube</button>
 			<button href="#add-shortcut-modal" data-toggle="modal" class="edit-state" data-type="shortcut">Add shortcut</button>
 			<span style="margin: 25px;"></span>
 		</div>
