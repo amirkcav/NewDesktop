@@ -224,20 +224,6 @@ $(function() {
 				$(elem).data('item-data', JSON.stringify(selectedItem));
 				$(elem).find('.shortcut-text').text(selectedItem.TXT);
 			}
-			// var position = $(this).data('position');
-			// selectedItem.LOC = position;
-			
-			// // is editing an existing shortcut
-			// var itemInPosition = uiLayout.shortcuts.data.filter(function(a) { return a.LOC == selectedItem.LOC })[0];    			    		    
-			// if (itemInPosition) {
-			// 	//uiLayout.shortcuts.data.pop(itemInPosition);
-			// 	var index = uiLayout.shortcuts.data.indexOf(itemInPosition);
-			// 	uiLayout.shortcuts.data.splice(index, 1);
-			// }
-			
-			// uiLayout.shortcuts.data.push(selectedItem);			
-			// renderArea(shortcutsArea, uiLayout.shortcuts);
-			// sortArea(shortcutsArea);
 			$(this).closest('.modal').modal('hide');
 		}
 	});	
@@ -258,24 +244,11 @@ $(function() {
 			obj.UCI = '';
 			obj.APP = '';
 		}
-		
-		// // is editing an existing shortcut
-		// var itemInPosition = uiLayout['info-squares'].data.filter(function(a) { return a.LOC == obj.LOC })[0];    			    		    
-		// if (itemInPosition) {
-		// 	//uiLayout.shortcuts.data.pop(itemInPosition);
-		// 	var index = uiLayout['info-squares'].data.indexOf(itemInPosition);
-		// 	uiLayout['info-squares'].data.splice(index, 1);
-		// }
 
-		// uiLayout['info-squares'].data.push(obj);	
-		getInfoSquareData(obj, function(itemWithData) {
-			addDataCube(itemWithData);
-			// renderInfoSquareData(itemWithData);				
-			// var elem = $('#info-' + itemWithData.LOC)
-			// $(elem).removeClass('editing-item-placeholder');
+		getInfoSquareData(obj, function(value) {
+			obj.VAL = value;
+			addDataCube(obj);
 		});		
-		// renderArea(infoSquaresArea, uiLayout['info-squares']);
-		// sortArea(infoSquaresArea);
 		$(this).closest('.modal').modal('hide');
 	});
 
@@ -1157,10 +1130,12 @@ function renderInfoSquares() {
 }
 
 function getInfoSquareData(obj, handler) {
-	obj.data = JSON.parse(obj.data);
+	// obj.data = JSON.parse(obj.data);
 	// value should come from server
-	obj.data.VAL = parseInt(Math.random() * 10000000).toLocaleString();
-	handler(obj);
+	const value = parseInt(Math.random() * 10000000).toLocaleString();
+	obj.VAL = value;
+	// handler(obj);
+	handler(value);
 }
 
 function renderInfoSquareData(itemWithData) {

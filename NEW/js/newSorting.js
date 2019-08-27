@@ -1,7 +1,7 @@
 /* http://gridstackjs.com/ */
 
 var gridStackObj;
-var itemsData;
+// var itemsData;
 
 $(function () {
   var options = {
@@ -13,7 +13,7 @@ $(function () {
   $('.grid-stack').gridstack(options);
   gridStackObj = $('.grid-stack').data('gridstack');
 
-  itemsData = localStorage.getItem('itemsData');
+  var itemsData = localStorage.getItem('itemsData');
   if (itemsData) {
     itemsData = JSON.parse(itemsData);
     renderItems(itemsData);    
@@ -82,26 +82,24 @@ function addItem(width, height, type, dataObj, id, x, y) {
 }
 
 function getItemTemplate(type, id, itemData) {
-  var template;
+  let temlpateContent = '';
   switch (type) {
     case 'shortcut':
-      template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
-                    <div class="grid-stack-item-content">
-                      <a class="remove-item" href="javascript:;">X</a>
-                      <label class="shortcut-text">${itemData ? itemData.TXT : id}</label>
-                    </div>
-                  </div>`;
+      temlpateContent = `<label class="shortcut-text">${itemData ? itemData.TXT : id}</label>`;
       break;  
     case 'data-cube':
-        template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
-          <div class="grid-stack-item-content">
-            <a class="remove-item" href="javascript:;">X</a>
-            <label class="sum"><span class="sign">₪</span><span>${itemData.VAL}</span></label>
-            <label class="title set-tooltip-field">${itemData.TXT}</label>
-          </div>
-        </div>`;
+      temlpateContent = `<label class="title set-tooltip-field">${itemData.TXT}</label>
+                         <label class="sum"><span class="sign">₪</span><span>${itemData.VAL}</span></label>`;
       break;
-  }
+  }  
+  var template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
+                    <div class="grid-stack-item-content">
+                      <a class="remove-item" href="javascript:;">X</a>
+                      <div class="template-content">
+                        ${temlpateContent}
+                      </div>
+                    </div>
+                  </div>`;  
   return template;
 }
 
@@ -158,13 +156,19 @@ function serializeItems() {
 
 function renderItems(data) {
   $('.grid-stack').html('');
-  itemsData.forEach(item => {
+  // itemsData.forEach(item => {
+  data.forEach(item => {
     if (item.type === 'shortcut') {
       addItem(item.width, item.height, item.type, item.data ? JSON.parse(item.data) : null, item.id, item.x, item.y);
     }
     else if (item.type === 'data-cube') {
-      getInfoSquareData(item, function(itemWithData) {
-        addItem(itemWithData.width, itemWithData.height, itemWithData.type, itemWithData.data ? JSON.parse(itemWithData.data) : null, itemWithData.id, itemWithData.x, itemWithData.y);
+      getInfoSquareData(item, (value) => {
+        if (item.data) {
+          item.data = JSON.parse(item.data);
+          item.data.VAL = value;
+        }
+        // addItem(itemWithData.width, itemWithData.height, itemWithData.type, itemWithData.data ? JSON.parse(itemWithData.data) : null, itemWithData.id, itemWithData.x, itemWithData.y);
+        addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
       });
     }
     else {

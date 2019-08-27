@@ -1,3 +1,8 @@
+:root {
+  --main-text: 2rem;
+  --secondary-text: 1.7rem;
+}
+
 body {
   min-height: 100vh;
 }
@@ -35,7 +40,8 @@ body {
 
 .remove-item {
   display: none;
-  float: right;
+  /* float: right; */
+  position: absolute;
   border-left: 1px solid #333;
   border-bottom: 1px solid #333;
   padding: 4px 8px;
@@ -60,4 +66,31 @@ body.editing .grid-stack-item-content {
 
 body:not(.editing) .grid-stack-item-content {
   cursor: pointer;
+}
+
+.item-data-cube {
+  text-align: center;
+}
+
+.item-data-cube label {
+  display: block;
+}
+
+.template-content {
+  padding: 5px;
+}
+
+.item-data-cube .template-content {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.item-data-cube .template-content > .title {
+  font-size: var(--secondary-text);
+}
+
+.item-data-cube .template-content > .sum {
+  font-size: var(--main-text);
+  font-weight: bold;
 }

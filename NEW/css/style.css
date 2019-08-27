@@ -23,13 +23,6 @@ body.background5 {
     background: linear-gradient(-20deg, rgb(220, 176, 237) 0%, rgb(153, 201, 156) 100%)
 }
 
-#content {
-    /*height: calc(100vh - 49px - 70px - 52px);*/ /* full screen - top row - menu row - footer */
-    /* display: flex;
-    flex-direction: column;
-    justify-content: space-between; */
-}
-
 #header #logo {
     overflow: hidden;
 }
@@ -1058,7 +1051,7 @@ nav li.disabled {
     width: 100%;
     padding: 7px;
     direction: rtl;
-    font-size: 18px;
+    font-size: var(--main-text);
     text-align: center;
     font-weight: bold;
 }
