@@ -37,9 +37,31 @@ $(function () {
   });
 
   $('#items-container').on('click', '.remove-item', function(event) {
-    var elem = $(this).closest('.grid-stack-item');
-    $(elem).fadeOut(function(){
-      gridStackObj.removeWidget(elem);
+    
+    if (!$(this).hasClass('popover-init')) {
+      $(this).popover({	    
+        html: true,
+        placement: 'auto',
+        content: function() {
+          return $('#confirmation-popover-template').html();
+        },
+        title: 'מחיקה',
+        container: 'body'
+      });
+      $(this).popover('show')
+             .addClass('popover-init');		    		   
+    }    	
+    else {
+      $(this).popover('show');
+    }
+
+    $('#confirmation-popover-yes').click((e) => {
+      var elem = $(this).closest('.grid-stack-item');
+      $(elem).fadeOut(function(){
+        gridStackObj.removeWidget(elem);
+      });
+      // $(this).popover('hide');
+      // e.stopPropagation();
     });
     event.stopPropagation();
   });
@@ -57,6 +79,183 @@ $(function () {
     localStorage.removeItem('itemsData');
     $('body').removeClass('editing');
   });
+
+  //#region click on item
+
+  $('#items-container').on('click', '.grid-stack-item.item-shortcut', function() {
+		var itemData = JSON.parse($(this).data('item-data'));
+		if (!$('body').hasClass('editing')) {
+			var apm = itemData.APM;
+			var uci = itemData.UCI;
+			var wcy = itemData.wCY;
+			var appText = itemData.TXT.trim();
+			runApp(apm, uci, wcy, appText);
+		}
+		else {
+			var app = itemData.value ? itemData.value : itemData.TXT; 
+			$('#add-shortcut').val(app)
+												.data('selected-item', JSON.stringify(itemData));
+			$('#shortcut-title').val(itemData.TXT);			
+			$('#add-shortcut-modal').data('item-id', $(this).data('id'));
+			$('#add-shortcut-modal').modal('show');    		
+		}
+	});    
+
+	$('#items-container').on('click', '.grid-stack-item.item-data-cube', function() {
+		var itemData = JSON.parse($(this).data('item-data'));
+		if (!$('body').hasClass('editing')) {
+			if (itemData.APM && itemData.APM !== 'null') {
+				var apm = itemData.APM;
+				var uci = itemData.UCI;
+				var wcy = itemData.wCY;
+				var appText = itemData.TXT.trim();
+				runApp(apm, uci, wcy, appText);
+			}
+		}
+		else {
+			if (itemData.APP && itemData.APP !== 'null') {
+				$('#info-square-application').val(itemData.APP);
+				$('#info-square-application').data('selected-item', JSON.stringify(itemData));
+			}
+			$('#add-info-square-select').data('value', itemData.COD);
+			// $('#add-info-square-select').val(itemData.COD)
+			// 														.trigger('change');
+			// $('#add-info-square-modal-button').data('position', itemData.LOC);    		
+			$('#add-info-square-modal').data('item-id', $(this).data('id'));
+			$('#add-info-square-modal').modal('show');   		
+		}
+	});
+
+  //#endregion click on item
+
+  //#region add & edit shortcut
+
+  $('#add-shortcut-modal').on('shown.bs.modal', function() {
+		if (!$('#add-shortcut').hasClass('ui-autocomplete-input')) {
+			$('#add-shortcut').autocomplete({
+				minLength: 2,
+				source: menuApps,
+				appendTo: '.search-app-parent',
+				select: function( event, ui ) {
+					var itemData = ui.item;
+					// needed for selection by moouse click.
+					$(this).val(itemData.label)
+								 .data('selected-item', JSON.stringify(itemData));
+					$('#shortcut-title').val(itemData.label);
+					return false;
+				},
+				response: function(event, ui) {
+          // ui.content is the array that's about to be sent to the response callback.
+          if (ui.content.length === 0) {
+              $("#empty-message").text("No results found");
+          } 
+          else {
+              $("#empty-message").empty();
+          }
+        },
+        change: function (event, ui) {
+          if (!ui.item) {
+              this.value = '';
+          }
+        }
+			});
+		}
+	});
+
+	$('#add-shortcut-modal').on('hidden.bs.modal', function() {
+		$('#add-shortcut-modal').data('item-id', null);		
+	});
+
+	$('#add-shortcut-modal').on('click', '#add-shortcut-modal-button', function() {
+		if ($('#add-shortcut-form').valid()) {
+			var selectedItem = JSON.parse($('#add-shortcut').data('selected-item'));    		
+			selectedItem.TXT = $('#shortcut-title').val();    
+			// add shortcut
+			if (!$('#add-shortcut-modal').data('item-id')) {
+				addShortcut(selectedItem);
+			}
+			// edit
+			else {
+				var currItemId = $('#add-shortcut-modal').data('item-id');
+				var elem = $(`[data-id=${currItemId}]`);
+				$(elem).data('item-data', JSON.stringify(selectedItem));
+				$(elem).find('.shortcut-text').text(selectedItem.TXT);
+			}
+			$(this).closest('.modal').modal('hide');
+		}
+	});	
+
+  //#endregion add & edit shortcut
+
+  //#region add & edit data-cube
+
+  $('#add-info-square-modal').on('shown.bs.modal', function() {
+		$('#add-info-square-select').select2({
+			data: allInfoSquaresOptions,
+			dropdownParent: $('#add-info-square-modal'),
+			placeholder: "בחר נתון להצגה"
+		});
+		if ($('#add-info-square-select').data('value')) {
+			$('#add-info-square-select').val($('#add-info-square-select').data('value'))
+																	.trigger('change');
+		}
+		
+		if (!$('#info-square-application').hasClass('ui-autocomplete-input')) {
+			$('#info-square-application').autocomplete({
+				minLength: 2,
+				source: menuApps,
+				appendTo: '#add-info-square-modal', // '.search-app-parent',
+				select: function( event, ui ) {
+					var itemData = ui.item;
+					// needed for selection by moouse click.
+					$(this).val(itemData.label);
+					$(this).data('selected-item', JSON.stringify(itemData));
+					return false;
+				},
+				response: function(event, ui) {
+					// ui.content is the array that's about to be sent to the response callback.
+					if (ui.content.length === 0) {
+						$("#empty-message").text("No results found");
+					} 
+					else {
+						$("#empty-message").empty();
+					}
+				},
+				change: function (event, ui) {
+					if (!ui.item) {
+						this.value = '';
+					}
+				}
+			});
+		}
+	});
+
+  $('#add-info-square-modal').on('click', '#add-info-square-modal-button', function() {
+		var obj = $('#add-info-square-select').select2('data')[0];
+		if ($('#add-info-square-modal').data('item-id')) {
+			obj.id = $('#add-info-square-modal').data('item-id');
+		}
+		// was an app chosen.
+		if ($('#info-square-application').val().length > 0) {
+			var selectedApp = JSON.parse($('#info-square-application').data('selected-item'));
+			obj.APM = selectedApp.APM;
+			obj.UCI = selectedApp.UCI;
+			obj.APP = $('#info-square-application').val();
+		}
+		else {
+			obj.APM = '';
+			obj.UCI = '';
+			obj.APP = '';
+		}
+
+		getInfoSquareData(obj, function(value) {
+			obj.VAL = value;
+			addDataCube(obj);
+		});		
+		$(this).closest('.modal').modal('hide');
+	});
+
+  //#endregion add & edit data-cube
 
 });
 
@@ -94,7 +293,7 @@ function getItemTemplate(type, id, itemData) {
   }  
   var template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
                     <div class="grid-stack-item-content">
-                      <a class="remove-item" href="javascript:;">X</a>
+                      <a class="remove-item" href="javascript:;" data-toggle="popover" data-trigger="focus">X</a>
                       <div class="template-content">
                         ${temlpateContent}
                       </div>
@@ -129,7 +328,7 @@ function addShortcut(data) {
 }
 
 function addDataCube(data) {
-  addItem(2, 1, 'data-cube', data);
+  addItem(2, 1, 'data-cube', data, data.id ? data.id : undefined);
 }
 
 function addGraph() {

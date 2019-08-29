@@ -129,187 +129,55 @@ $(function() {
 
 	//#endregion menu
 
-	$('#graphs-section, #shortcuts-section, #info-squares-section').on('click', '.delete-shortcut[data-toggle="popover"]', function(e){
-		if (!$(this).hasClass('popover-init')) {
-			$(this).popover({	    
-				html: true,
-				placement: 'top',
-				//title: 'Delete remark',
-				content: function() {
-						return $('#confirmation-popover-template').html();
-				}
-			});
-			$(this).popover('show')
-							.addClass('popover-init');		    		   
-		}    	
-		else {
-			$(this).popover('show');
-		}
+	// $('#graphs-section, #shortcuts-section, #info-squares-section').on('click', '.delete-shortcut[data-toggle="popover"]', function(e){
+	// 	if (!$(this).hasClass('popover-init')) {
+	// 		$(this).popover({	    
+	// 			html: true,
+	// 			placement: 'top',
+	// 			//title: 'Delete remark',
+	// 			content: function() {
+	// 					return $('#confirmation-popover-template').html();
+	// 			}
+	// 		});
+	// 		$(this).popover('show')
+	// 						.addClass('popover-init');		    		   
+	// 	}    	
+	// 	else {
+	// 		$(this).popover('show');
+	// 	}
 		
-		// function the function name on the ""yes" button in the popover
-		var func = $(this).data('func');
-		$('#confirmation-popover-yes').data('func', func);
+	// 	// function the function name on the ""yes" button in the popover
+	// 	var func = $(this).data('func');
+	// 	$('#confirmation-popover-yes').data('func', func);
 		
-		e.stopImmediatePropagation();
+	// 	e.stopImmediatePropagation();
 
-		return false;
-	});
+	// 	return false;
+	// });	
 
-	$('#items-container').on('click', '.grid-stack-item.item-shortcut', function() {
-		var itemData = JSON.parse($(this).data('item-data'));
-		if (!$('body').hasClass('editing')) {
-			var apm = itemData.APM;
-			var uci = itemData.UCI;
-			var wcy = itemData.wCY;
-			var appText = itemData.TXT.trim();
-			runApp(apm, uci, wcy, appText);
-		}
-		else {
-			var app = itemData.value ? itemData.value : itemData.TXT; 
-			$('#add-shortcut').val(app);
-			$('#shortcut-title').val(itemData.TXT);			
-			$('#add-shortcut-modal').data('item-id', $(this).data('id'));
-			$('#add-shortcut-modal').modal('show');    		
-		}
-	});    
+	//#region info-squares	
 
-	$('#add-shortcut-modal').on('shown.bs.modal', function() {
-		if (!$('#add-shortcut').hasClass('ui-autocomplete-input')) {
-			$('#add-shortcut').autocomplete({
-				minLength: 2,
-				source: menuApps,
-				appendTo: '.search-app-parent',
-				select: function( event, ui ) {
-					var itemData = ui.item;
-					// needed for selection by moouse click.
-					$(this).val(itemData.label);
-					$('#shortcut-title').val(itemData.label);
-					$('#add-shortcut-modal-button').data('selected-item', JSON.stringify(itemData));
-					return false;
-				},
-				response: function(event, ui) {
-								// ui.content is the array that's about to be sent to the response callback.
-								if (ui.content.length === 0) {
-										$("#empty-message").text("No results found");
-								} 
-								else {
-										$("#empty-message").empty();
-								}
-						},
-						change: function (event, ui) {
-								if (!ui.item) {
-										this.value = '';
-								}
-						}
-			});
-		}
-	});
-
-	$('#add-shortcut-modal').on('hidden.bs.modal', function() {
-		$('#add-shortcut-modal').data('item-id', null);		
-	});
-
-	$('#add-shortcut-modal').on('click', '#add-shortcut-modal-button', function() {
-		if ($('#add-shortcut-form').valid()) {
-			var selectedItem = JSON.parse($(this).data('selected-item'));    		
-			selectedItem.TXT = $('#shortcut-title').val();    
-			// add shortcut
-			if (!$('#add-shortcut-modal').data('item-id')) {
-				addShortcut(selectedItem);
-			}
-			// edit
-			else {
-				var currItemId = $('#add-shortcut-modal').data('item-id');
-				var elem = $(`[data-id=${currItemId}]`);
-				$(elem).data('item-data', JSON.stringify(selectedItem));
-				$(elem).find('.shortcut-text').text(selectedItem.TXT);
-			}
-			$(this).closest('.modal').modal('hide');
-		}
-	});	
-
-	//#region info-squares
-
-	$('#add-info-square-modal').on('click', '#add-info-square-modal-button', function() {
-		var obj = $('#add-info-square-select').select2('data')[0]
-		// was an app chosen.
-		if ($('#info-square-application').val().length > 0) {
-			var selectedApp = JSON.parse($('#info-square-application').data('selected-item'));
-			obj.APM = selectedApp.APM;
-			obj.UCI = selectedApp.UCI;
-			obj.APP = $('#info-square-application').val();
-		}
-		else {
-			obj.APM = '';
-			obj.UCI = '';
-			obj.APP = '';
-		}
-
-		getInfoSquareData(obj, function(value) {
-			obj.VAL = value;
-			addDataCube(obj);
-		});		
-		$(this).closest('.modal').modal('hide');
-	});
-
-	$(infoSquaresArea).on('click', '.info-square:not(.editing-item-placeholder)', function() {
-		var infoData = JSON.parse($(this).data('data'));
-		if (!$('body').hasClass('editing')) {
-			if (infoData.APM && infoData.APM !== 'null') {
-				var apm = infoData.APM;
-				var uci = infoData.UCI;
-				var wcy = infoData.wCY;
-				var appText = infoData.TXT;
-				runApp(apm, uci, wcy, appText);
-			}
-		}
-		else {    		
-			if (infoData.APP && infoData.APP !== 'null') {
-				$('#info-square-application').val(infoData.APP);
-				$('#info-square-application').data('selected-item', JSON.stringify(infoData));
-			}
-			$('#add-info-square-select').val(infoData.COD);
-			$('#add-info-square-modal-button').data('position', infoData.LOC);    		
-			$('#add-info-square-modal').modal('show');    		
-		}
-	});
-
-	$('#add-info-square-modal').on('shown.bs.modal', function() {
-		$('#add-info-square-select').select2({
-			data: allInfoSquaresOptions,
-			dropdownParent: $('#add-info-square-modal'),
-			placeholder: "בחר נתון להצגה",
-		});
-		
-		if (!$('#info-square-application').hasClass('ui-autocomplete-input')) {
-			$('#info-square-application').autocomplete({
-				minLength: 2,
-				source: menuApps,
-				appendTo: '#add-info-square-modal', // '.search-app-parent',
-				select: function( event, ui ) {
-					var itemData = ui.item;
-					// needed for selection by moouse click.
-					$(this).val(itemData.label);
-					$(this).data('selected-item', JSON.stringify(itemData));
-					return false;
-				},
-				response: function(event, ui) {
-					// ui.content is the array that's about to be sent to the response callback.
-					if (ui.content.length === 0) {
-						$("#empty-message").text("No results found");
-					} 
-					else {
-						$("#empty-message").empty();
-					}
-				},
-				change: function (event, ui) {
-					if (!ui.item) {
-						this.value = '';
-					}
-				}
-			});
-		}
-	});
+	// $(infoSquaresArea).on('click', '.info-square:not(.editing-item-placeholder)', function() {
+	// 	var infoData = JSON.parse($(this).data('data'));
+	// 	if (!$('body').hasClass('editing')) {
+	// 		if (infoData.APM && infoData.APM !== 'null') {
+	// 			var apm = infoData.APM;
+	// 			var uci = infoData.UCI;
+	// 			var wcy = infoData.wCY;
+	// 			var appText = infoData.TXT;
+	// 			runApp(apm, uci, wcy, appText);
+	// 		}
+	// 	}
+	// 	else {    		
+	// 		if (infoData.APP && infoData.APP !== 'null') {
+	// 			$('#info-square-application').val(infoData.APP);
+	// 			$('#info-square-application').data('selected-item', JSON.stringify(infoData));
+	// 		}
+	// 		$('#add-info-square-select').val(infoData.COD);
+	// 		$('#add-info-square-modal-button').data('position', infoData.LOC);    		
+	// 		$('#add-info-square-modal').modal('show');    		
+	// 	}
+	// });
 
 	//#endregion info-squares
 

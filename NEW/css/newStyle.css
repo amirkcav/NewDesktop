@@ -12,6 +12,10 @@ body {
   background: #eee;
 }
 
+.grid-stack>.grid-stack-item>.grid-stack-item-content {
+  overflow: unset;
+}
+
 .grid-stack-placeholder {
   border: 1px dashed #888;
 }

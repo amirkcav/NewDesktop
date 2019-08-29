@@ -155,7 +155,7 @@
 	    <div class="confirmation-popover-content">
 	        <p>האם אתה בטוח?</p>
 	        <div class="clearfix">
-	            <button id="confirmation-popover-yes" class="pull-right btn btn-default">כן</button>
+	            <button id="confirmation-popover-yes" class="pull-right btn btn-default" data-dismiss="popover">כן</button>
 	            <button id="confirmation-popover-no" class="pull-left btn btn-default" data-dismiss="popover">לא</button>
 	        </div>
 	    </div>
