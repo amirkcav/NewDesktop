@@ -4,7 +4,7 @@ const colors = [
     'rgb(155, 99, 232)',
 ];
 
-function drawBar_NEW(obj, divId, graphHeight) {
+function drawBar_NEW(obj, canvasElem) {
 
     var xLabels = [];
     var dataSetsNumber = obj.cols.y.length;
@@ -28,7 +28,7 @@ function drawBar_NEW(obj, divId, graphHeight) {
         };        
     }    
 
-    var ctx = $('#' + divId).find('> canvas')[0].getContext('2d');
+    var ctx = canvasElem.getContext('2d');
     var chart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -61,8 +61,8 @@ function drawBar_NEW(obj, divId, graphHeight) {
 
 }
 
-function drawPie_NEW(obj, divId, graphHeight) {
-    var ctx = $('#' + divId).find('> canvas')[0].getContext('2d');
+function drawPie_NEW(obj, canvasElem) {
+    var ctx = canvasElem.getContext('2d');
     var dataSets = [
         {
             // backgroundColor: ['red', 'yellow', 'blue'],

@@ -8,6 +8,9 @@ $(function () {
       cellHeight: 'auto',
       disableDrag: true,
       disableResize: true,
+      resizable: {
+        handles: 'se, sw'
+      }
       // verticalMargin: 10
   };
   $('.grid-stack').gridstack(options);
@@ -29,7 +32,7 @@ $(function () {
         addDataCube();
         break;
       case 'graph':
-        addGraph();
+        // addGraph();
         break;    
       default:
         break;
@@ -232,7 +235,8 @@ $(function () {
 
   $('#add-info-square-modal').on('click', '#add-info-square-modal-button', function() {
 		var obj = $('#add-info-square-select').select2('data')[0];
-		if ($('#add-info-square-modal').data('item-id')) {
+    // on edit
+    if ($('#add-info-square-modal').data('item-id')) {
 			obj.id = $('#add-info-square-modal').data('item-id');
 		}
 		// was an app chosen.
@@ -257,6 +261,39 @@ $(function () {
 
   //#endregion add & edit data-cube
 
+  //#region add & edit graph
+
+  $('#add-graph-modal').on('click', '#add-graph-modal-button', function() {
+		var obj = $('#add-graph-select').select2('data')[0]; 
+		var button = this;
+		$.ajax({
+			type : 'GET',
+			url : `../mcall?_ROUTINE=CBIGRF&_NS=CAV&_LABEL=RUN&GRF=${ obj.code }&TFK=MNG&USERNAME=SID`,
+			contentType : 'application/json',
+			dataType : 'json',
+			success : function(graphData) {
+				// check data validity
+				if (graphData.type === 'table' && (!graphData.cols || graphData.cols.length === 0)) {
+					this.error({});
+					return;
+				}
+				// renderCharts();
+				obj.data = graphData;
+        obj.data.chartSize = graphData.chartSize; 
+        addGraph(obj);
+				renderGraphData(obj);
+				$(button).closest('.modal').modal('hide');    
+			},
+			error: function(data) {
+				// alert(data.responseText);   
+				var error = data.responseText ? data.responseText : 'אירעה שגיאה בטעינת הגרף.';
+				$('#add-graph-modal .add-graph-error').text(error).fadeIn();
+			}
+		});				
+	});
+
+  //#endregion add & edit graph
+
 });
 
 function addItem(width, height, type, dataObj, id, x, y) {
@@ -269,6 +306,9 @@ function addItem(width, height, type, dataObj, id, x, y) {
       id = Math.max.apply(0, ids) + 1;
     }
   }
+
+  dataObj.id = id;
+
   var template = getItemTemplate(type, id, dataObj);
   var elem = htmlToElement(template);
   if (dataObj) {
@@ -289,6 +329,13 @@ function getItemTemplate(type, id, itemData) {
     case 'data-cube':
       temlpateContent = `<label class="title set-tooltip-field">${itemData.TXT}</label>
                          <label class="sum"><span class="sign">₪</span><span>${itemData.VAL}</span></label>`;
+      break;
+    case 'graph': 
+      temlpateContent = `<div class="graph-title"><label></label></div>
+                         <img id="graph-loading-image" src="img/loading.gif">
+                         <div class="graph-div">
+                           <canvas></canvas>
+                         </div>`;
       break;
   }  
   var template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
@@ -324,15 +371,14 @@ function _addItem(width, height, type, id, x, y) {
 
 function addShortcut(data) {
   addItem(1, 1, 'shortcut', data);
-  // _addItem(1, 1, 'shortcut');
 }
 
 function addDataCube(data) {
-  addItem(2, 1, 'data-cube', data, data.id ? data.id : undefined);
+  addItem(2, 1, 'data-cube', data);
 }
 
-function addGraph() {
-  _addItem(2, 2, 'graph');
+function addGraph(data) {
+  addItem(2, 2, 'graph', data);
 }
 
 function serializeItems() {
@@ -370,8 +416,9 @@ function renderItems(data) {
         addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
       });
     }
-    else {
-      _addItem(item.width, item.height, item.type, item.id, item.x, item.y);
+    else if (item.type === 'graph') {
+      addItem(item.width, item.height, item.type, item.id, item.x, item.y);
+      // _addItem(item.width, item.height, item.type, item.id, item.x, item.y);
     }
   });
 }

@@ -13,6 +13,11 @@ var infoSquaresArea = {};
 var graphsArea = {};
 var lastAppsArea = $('<div></div>');
 
+var hebrewPeriods = {
+	monthly: 'חודשי',
+	daily: 'יומי'
+}
+
 // set token header (from query string).
 var urlParams = new URLSearchParams(window.location.search);
 var token = urlParams.has('token') ? urlParams.get('token') : null;
@@ -181,76 +186,7 @@ $(function() {
 
 	//#endregion info-squares
 
-	//#region graphs
-
-	$('#add-graph-modal').on('click', '#add-graph-modal-button', function() {
-		var selectedOption = $('#add-graph-select').find('option:selected');
-		var position = $(this).data('position');
-		var obj = $('#add-graph-select').select2('data')[0]; //JSON.parse(selectedOption.data('data'));
-		obj.LOC = position;
-		
-		// is editing an existing shortcut
-		var itemInPosition = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == obj.LOC })[0] : undefined;    			    		    
-		if (itemInPosition) {
-			//uiLayout.shortcuts.data.pop(itemInPosition);
-			var index = uiLayout.graphs.data.indexOf(itemInPosition);
-			uiLayout.graphs.data.splice(index, 1);
-		}
-
-		// var graphData = getGrpahData(obj.COD);
-		var button = this;
-		$.ajax({
-			type : 'GET',
-			url : `../mcall?_ROUTINE=CBIGRF&_NS=CAV&_LABEL=RUN&GRF=${ obj.code }&TFK=MNG&USERNAME=SID`,
-			contentType : 'application/json',
-			dataType : 'json',
-			success : function(data) {
-				graphData = data;
-				var prevGraphData; 
-				if ($('#graph' + position).parent().data('data')) {
-					prevGraphData = JSON.parse($('#graph' + position).parent().data('data'));
-				}
-				// check data validity
-				if (graphData.type === 'table' && (!graphData.cols || graphData.cols.length === 0)) {
-					this.error({});
-					return;
-				}
-				// handle large graph
-				if (graphData.chartSize == 'large') {
-					var positionForChart = checkPositionForChart(position);
-					if (positionForChart == -1) {
-						$('#add-graph-modal .add-graph-error').text('אין מקום לגרף זה (גודל כפול) במיקום זה.').fadeIn();
-						return;
-					}
-					else {
-						obj.LOC = positionForChart;
-					}	    		
-				} 				
-				if (!uiLayout['graphs'].data) {
-					uiLayout['graphs'].data = [];
-				}
-				uiLayout['graphs'].data.push(obj);
-				// renderCharts();
-				obj.data = graphData;
-				obj.data.chartSize = graphData.chartSize; 
-				renderGraphData(obj);
-
-				// if replacing a large graph with a small one, add empty graph
-				if (graphData.chartSize !== 'large' && (prevGraphData && prevGraphData.data.chartSize === 'large')) {
-						
-						renderChart(position, true);
-
-				}
-
-				$(button).closest('.modal').modal('hide');    
-			},
-			error: function(data) {
-				// alert(data.responseText);   
-				var error = data.responseText ? data.responseText : 'אירעה שגיאה בטעינת הגרף.';
-				$('#add-graph-modal .add-graph-error').text(error).fadeIn();
-			}
-		});				
-	});
+	//#region graphs	
 
 	$('#add-graph-modal').on('shown.bs.modal', function() {
 		$('#add-graph-select').select2({
@@ -424,26 +360,26 @@ function getPageData() {
 	// 	}
 	// });
 
-	// // get available graphs (for add graph popup)
-	// var url = "../mcall?_NS=CAV&_ROUTINE=CBIGRF&_LABEL=GETALLGRF";
-	// $.ajax({
-	// 	type : 'GET',
-	// 	url : url,
-	// 	contentType : 'application/json',
-	// 	dataType : 'json',
-	// 	success : function(data) {
-	// 		// currently showing only graphs from SVK (the second chracter of the graph name is the UCI).
-	// 		allGraphsOptions = data.graphList.filter((g) => g.code[1] === 'S').sort((ga, gb) => ga.name.localeCompare(gb.name) );
-	// 		allGraphsOptions = $.map(allGraphsOptions, function (obj) {
-	// 			obj.id = obj.id || obj.code;
-	// 			obj.text = obj.text || obj.name;
-	// 			return obj;
-	// 		});
-	// 	},
-	// 	error: function(data) {
-	// 		alert(data.responseText);    		
-	// 	}
-	// });
+	// get available graphs (for add graph popup)
+	var url = "../mcall?_NS=CAV&_ROUTINE=CBIGRF&_LABEL=GETALLGRF";
+	$.ajax({
+		type : 'GET',
+		url : url,
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			// currently showing only graphs from SVK (the second chracter of the graph name is the UCI).
+			allGraphsOptions = data.graphList.filter((g) => g.code[1] === 'S').sort((ga, gb) => ga.name.localeCompare(gb.name) );
+			allGraphsOptions = $.map(allGraphsOptions, function (obj) {
+				obj.id = obj.id || obj.code;
+				obj.text = obj.text || obj.name;
+				return obj;
+			});
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
+	});
 
 	// get available info squares.
   allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
@@ -561,19 +497,19 @@ function renderChart(graphPosition, atPosition) {
 }
 
 function renderGraphData(graph) {
-	template = $('#graph' + graph.LOC).parent();
+	template = $(`[data-id=${graph.id}]`) // $('#graph' + graph.LOC).parent();
 	template.addClass('active');			
 	var header = graph.data.titles.head.replace(/<BR>/,' ').replace(/<BR >/,' ')
 	template.find('.graph-title > label').html(header);
-	setTooltip(template.find('.graph-title > label')[0]);
+	// setTooltip(template.find('.graph-title > label')[0]);
 	template.data('data', JSON.stringify(graph));
-	if (graph.data.chartSize == 'large') {
-		$('#graph' + (graph.LOC + 1)).parent().remove();
-	}
+	// if (graph.data.chartSize == 'large') {
+	// 	$('#graph' + (graph.LOC + 1)).parent().remove();
+	// }
 	// width needed to be set so the graph would render properly.
-	setChartWidth(graph);
+	// setChartWidth(graph);
 	template.removeClass('editing-item-placeholder loading');
-	drawGraph(graph.data, /*divId*/ 'graph' + graph.LOC);			
+	drawGraph(graph.data, template.find('canvas')[0]);			
 }
 
 function calculateChartsWidth() {	
@@ -685,26 +621,16 @@ function checkPositionForChart(position) {
 }
 
 // the call to graphs plugin according to the graph type.
-function drawGraph(graphData, divId, graphHeight) {
+function drawGraph(graphData, canvasElem, graphHeight) {
 	switch (graphData.type) {
 		case "bar":
-			// if (divId === 'graph1') {
-				drawBar_NEW(graphData, divId, graphHeight);
-			// }
-			// else {
-			// 	drawBar(graphData, divId, graphHeight);
-			// }
+			drawBar_NEW(graphData, canvasElem);
 			break;
 		case "line":
 			drawLine(graphData, divId, graphHeight);
 			break;
 		case "pie":
-			if (divId === 'graph2') {
-				drawPie_NEW(graphData, divId, graphHeight);
-			}
-			else {
-				drawPie(graphData, divId, graphHeight);
-			}
+			drawPie_NEW(graphData, canvasElem);
 			break;
 		case "gauge":
 			drawGauge(graphData, divId, 0, graphHeight);
