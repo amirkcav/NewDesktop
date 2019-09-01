@@ -417,7 +417,9 @@ function renderItems(data) {
       });
     }
     else if (item.type === 'graph') {
-      addItem(item.width, item.height, item.type, item.id, item.x, item.y);
+      item.data = JSON.parse(item.data);
+      addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
+      renderGraphData(item.data);
       // _addItem(item.width, item.height, item.type, item.id, item.x, item.y);
     }
   });
