@@ -277,9 +277,7 @@ $(function () {
 					this.error({});
 					return;
 				}
-				// renderCharts();
 				obj.data = graphData;
-        obj.data.chartSize = graphData.chartSize; 
         addGraph(obj);
 				renderGraphData(obj);
 				$(button).closest('.modal').modal('hide');    
@@ -378,7 +376,7 @@ function addDataCube(data) {
 }
 
 function addGraph(data) {
-  addItem(2, 2, 'graph', data);
+  addItem(data.data.chartSize === 'large' ? 3 : 2, 2, 'graph', data);
 }
 
 function serializeItems() {
@@ -420,7 +418,6 @@ function renderItems(data) {
       item.data = JSON.parse(item.data);
       addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
       renderGraphData(item.data);
-      // _addItem(item.width, item.height, item.type, item.id, item.x, item.y);
     }
   });
 }

@@ -501,52 +501,47 @@ function renderGraphData(graph) {
 	template.addClass('active');			
 	var header = graph.data.titles.head.replace(/<BR>/,' ').replace(/<BR >/,' ')
 	template.find('.graph-title > label').html(header);
-	// setTooltip(template.find('.graph-title > label')[0]);
+	setTooltip(template.find('.graph-title > label')[0]);
 	template.data('data', JSON.stringify(graph));
-	// if (graph.data.chartSize == 'large') {
-	// 	$('#graph' + (graph.LOC + 1)).parent().remove();
-	// }
-	// width needed to be set so the graph would render properly.
-	// setChartWidth(graph);
 	template.removeClass('editing-item-placeholder loading');
 	drawGraph(graph.data, template.find('canvas')[0]);			
 }
 
-function calculateChartsWidth() {	
-    // the percentage value of each width unit
-	var percent = 100 / itemsCount['graphs'];
-	// setting the width for each graph
-	for (var i = 0; i < itemsCount['graphs']; i++) {
-		var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == i + 1 })[0] : undefined;
-		var _width;
-		if (graph && graph.data.chartSize == 'large') {
-			_width = 2 * percent + '%';
-		}
-		else {
-			_width = percent + '%';
-		}	
-		// 20px is for the radius (10px each size).
-		$('#graph' + (i + 1)).parent().css('width', 'calc(' + _width + ' - 20px)');
+// function calculateChartsWidth() {	
+//     // the percentage value of each width unit
+// 	var percent = 100 / itemsCount['graphs'];
+// 	// setting the width for each graph
+// 	for (var i = 0; i < itemsCount['graphs']; i++) {
+// 		var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == i + 1 })[0] : undefined;
+// 		var _width;
+// 		if (graph && graph.data.chartSize == 'large') {
+// 			_width = 2 * percent + '%';
+// 		}
+// 		else {
+// 			_width = percent + '%';
+// 		}	
+// 		// 20px is for the radius (10px each size).
+// 		$('#graph' + (i + 1)).parent().css('width', 'calc(' + _width + ' - 20px)');
 		
-		if (graph && graph.data.chartSize == 'large') {
-			i++;
-		}		
-	}
-}
+// 		if (graph && graph.data.chartSize == 'large') {
+// 			i++;
+// 		}		
+// 	}
+// }
 
-function setChartWidth(currGraph) {	
-	// the percentage value of each width unit
-	var percent = 100 / itemsCount['graphs'];
-	var _width;
-	if (currGraph && currGraph.data.chartSize == 'large') {
-		_width = 2 * percent + '%';
-	}
-	else {
-		_width = percent + '%';
-	}	
-	// 20px is for the radius (10px each size).
-	$('#graph' + currGraph.LOC).parent().css('width', 'calc(' + _width + ' - 20px)');
-}
+// function setChartWidth(currGraph) {	
+// 	// the percentage value of each width unit
+// 	var percent = 100 / itemsCount['graphs'];
+// 	var _width;
+// 	if (currGraph && currGraph.data.chartSize == 'large') {
+// 		_width = 2 * percent + '%';
+// 	}
+// 	else {
+// 		_width = percent + '%';
+// 	}	
+// 	// 20px is for the radius (10px each size).
+// 	$('#graph' + currGraph.LOC).parent().css('width', 'calc(' + _width + ' - 20px)');
+// }
 
 // get graph data from server.
 function getGrpahData(graph, handler) {

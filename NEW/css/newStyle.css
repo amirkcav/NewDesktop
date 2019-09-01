@@ -1,6 +1,7 @@
 :root {
   --main-text: 2rem;
   --secondary-text: 1.7rem;
+  --graph-title-height: 35px;
 }
 
 body {
@@ -12,9 +13,9 @@ body {
   background: #eee;
 }
  
-/*.grid-stack>.grid-stack-item>.grid-stack-item-content {
-  overflow: unset;
-} */
+.grid-stack>.grid-stack-item>.grid-stack-item-content {
+  overflow: hidden;
+}
 
 .grid-stack-placeholder {
   border: 1px dashed #888;
@@ -29,7 +30,7 @@ body {
 }
 
 .item-graph .grid-stack-item-content {
-  background: #ada;
+  background: #d5f5d5;
 }
 
 #items-container {
@@ -97,4 +98,26 @@ body:not(.editing) .grid-stack-item-content {
 .item-data-cube .template-content > .sum {
   font-size: var(--main-text);
   font-weight: bold;
+}
+
+.item-graph .graph-div {
+  height: calc(100% - var(--graph-title-height));
+}
+
+.item-graph .template-content {
+  height: 100%;
+}
+
+.item-graph .template-content > .graph-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  height: var(--graph-title-height);
+  line-height: var(--graph-title-height);
+}
+
+.item-graph .template-content > .graph-title > label {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
