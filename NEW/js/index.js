@@ -186,89 +186,67 @@ $(function() {
 
 	//#endregion info-squares
 
-	//#region graphs	
+	//#region graphs		
 
-	$('#add-graph-modal').on('shown.bs.modal', function() {
-		$('#add-graph-select').select2({
-			data: allGraphsOptions,
-			dropdownParent: $('#add-graph-modal'),
-			placeholder: "בחר גרף",
-			templateResult: (opt) => {
-				return $(`<label class="graph-option-label"><i class="fa fa-${ getGraphIcon(opt.type) }"></i> ${ opt.text } [${ hebrewPeriods[opt.period] }]</label>`);
-			},
-			templateSelection: (opt) => {
-				return $(`<label class="graph-option-label"><i class="fa fa-${ getGraphIcon(opt.type) }"></i> ${ opt.text } [${ hebrewPeriods[opt.period] }]</label>`);
-			},
-		});
-	});
-
-	$('#add-graph-modal').on('hidden.bs.modal', function() {
-		$(this).find('.add-graph-error').hide();
-	});
-
-	$('#add-graph-modal').on('change', '#add-graph-select', function() {
-		$('#add-graph-modal').find('.add-graph-error').hide();
-	});
-
-	$('#graphs-section').on('click', '.graph.active', function() {
-		/*// the add graph button (the event is on the span inside the button
-		if ($(event.target).parent().is('.add-item-button')) {
-			return;
-		} */   	
-		var graphData = JSON.parse($(this).data('data'));
-		if ($('body').hasClass('editing')) {    		
-			$('#add-graph-modal-button').data('position', graphData.LOC);
-			$('#add-graph-select').val(graphData.COD);
-			$('#add-graph-modal').modal('show');
-		}
-		else {
-			$('#large-graph-modal').data('data', $(this).data('data'));	    
-			const largeModal = graphData.data.chartSize == 'large' || (graphData.type === 'table' && graphData.data.cols.length > 4);
-			$('#large-graph-modal').toggleClass('large', largeModal);
-			$('#large-graph-modal').find('.modal-header > h3').html(graphData.data.titles.head);
-			$('#large-graph-modal .modal-body').addClass('loading');
-			if (graphData.type === 'table') {
-				$('#change-graph-mode-button').addClass('hidden');
-			}
-			$('#large-graph-modal').modal('show');
-		}
-	});
+	// $('#graphs-section').on('click', '.graph.active', function() {
+	// 	/*// the add graph button (the event is on the span inside the button
+	// 	if ($(event.target).parent().is('.add-item-button')) {
+	// 		return;
+	// 	} */   	
+	// 	var graphData = JSON.parse($(this).data('data'));
+	// 	if ($('body').hasClass('editing')) {    		
+	// 		$('#add-graph-modal-button').data('position', graphData.LOC);
+	// 		$('#add-graph-select').val(graphData.COD);
+	// 		$('#add-graph-modal').modal('show');
+	// 	}
+	// 	else {
+	// 		$('#large-graph-modal').data('data', $(this).data('data'));	    
+	// 		const largeModal = graphData.data.chartSize == 'large' || (graphData.type === 'table' && graphData.data.cols.length > 4);
+	// 		$('#large-graph-modal').toggleClass('large', largeModal);
+	// 		$('#large-graph-modal').find('.modal-header > h3').html(graphData.data.titles.head);
+	// 		$('#large-graph-modal .modal-body').addClass('loading');
+	// 		if (graphData.type === 'table') {
+	// 			$('#change-graph-mode-button').addClass('hidden');
+	// 		}
+	// 		$('#large-graph-modal').modal('show');
+	// 	}
+	// });
 	
-	$('#large-graph-modal').on('shown.bs.modal', function() {
-		var graphData = JSON.parse($(this).data('data'));		
-		let graphHeight = 500;
-		if (graphData.type === 'table') {
-			graphHeight = 600;
-		}
-		drawGraph(graphData.data, 'large-graph-div', graphHeight);
-		$('#large-graph-modal .modal-body').removeClass('loading');		
-	});
+	// $('#large-graph-modal').on('shown.bs.modal', function() {
+	// 	var graphData = JSON.parse($(this).data('data'));		
+	// 	let graphHeight = 500;
+	// 	if (graphData.type === 'table') {
+	// 		graphHeight = 600;
+	// 	}
+	// 	drawGraph(graphData.data, 'large-graph-div', graphHeight);
+	// 	$('#large-graph-modal .modal-body').removeClass('loading');		
+	// });
 
-	$('#large-graph-modal').on('hidden.bs.modal', function() {
-		$('#large-graph-div').html('<canvas></canvas>');
-		$('#change-graph-mode-button').removeClass('hidden');		
-		$(this).find('.modal-header > h3').html('');
-		$(this).find('.modal-body').removeClass('table-mode')
-										.addClass('graph-mode');
-	});    
+	// $('#large-graph-modal').on('hidden.bs.modal', function() {
+	// 	$('#large-graph-div').html('<canvas></canvas>');
+	// 	$('#change-graph-mode-button').removeClass('hidden');		
+	// 	$(this).find('.modal-header > h3').html('');
+	// 	$(this).find('.modal-body').removeClass('table-mode')
+	// 									.addClass('graph-mode');
+	// });    
 
-	$('#large-graph-modal').on('click', '#change-graph-mode-button', function() {    	
-		var graphData = JSON.parse($('#large-graph-modal').data('data'));
-		var modalBody = $(this).closest('.modal-body');
-		if (modalBody.hasClass('graph-mode')) {
-			chartToTable(graphData.data, 'large-graph-div');
-		}
-		else if (modalBody.hasClass('table-mode')) {
-			let graphHeight = 500;
-			if (graphData.type === 'table') {
-				graphHeight = 600;
-			}
-			drawGraph(graphData.data, 'large-graph-div', graphHeight);
-		}
+	// $('#large-graph-modal').on('click', '#change-graph-mode-button', function() {    	
+	// 	var graphData = JSON.parse($('#large-graph-modal').data('data'));
+	// 	var modalBody = $(this).closest('.modal-body');
+	// 	if (modalBody.hasClass('graph-mode')) {
+	// 		chartToTable(graphData.data, 'large-graph-div');
+	// 	}
+	// 	else if (modalBody.hasClass('table-mode')) {
+	// 		let graphHeight = 500;
+	// 		if (graphData.type === 'table') {
+	// 			graphHeight = 600;
+	// 		}
+	// 		drawGraph(graphData.data, 'large-graph-div', graphHeight);
+	// 	}
 		
-		$(modalBody).toggleClass('graph-mode')
-								.toggleClass('table-mode');
-	});
+	// 	$(modalBody).toggleClass('graph-mode')
+	// 							.toggleClass('table-mode');
+	// });
 	
 	//#endregion	
 

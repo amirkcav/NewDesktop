@@ -75,47 +75,7 @@
             </div>
           </div>
 
-        </div>
-
-        <div id="templates-area" style="display: none;">
-          
-			<div href="javascript:;" class="department sort-item __template-item" data-template-type="shortcut">
-				<a class="department-button" href="javascript:;">
-					<header><span class="template-field set-tooltip-field" data-field="TXT"></span></header>
-					<div class="department-content">
-						<i class="template-field" data-field="icon"></i>
-					</div>
-				</a>	
-				<a href="#add-shortcut-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
-					<span>+</span>
-				</a>					
-				<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר קיצור דרך" data-func="removeShortcut">x</a>
-          	</div>
-          
-          	<div class="info-square item-scale sort-item template-item" data-template-type="info-square">
-				<a class="info-square-button" href="javascript:;">
-					<label class="sum"><span class="sign">₪</span><span class="template-field" data-field="VAL"></span></label>
-					<label class="title template-field set-tooltip-field" data-field="TXT"></label>
-				</a>
-				<a href="#add-info-square-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
-					<span>+</span>
-				</a>
-				<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר ריבוע מידע" data-func="removeInfoSquare">x</a>
-			</div>
-
-          	<div class="graph sort-item item-scale template-item loading" data-template-type="graph">
-				<div class="graph-title"><label></label></div>
-				<img id="graph-loading-image" src="img/loading.gif">
-				<div class="graph-div">
-					<canvas></canvas>
-				</div>
-				<a href="#add-graph-modal" data-toggle="modal" class="add-item-button placeholder-only item-scale" title="Add shortcut">
-					<span>+</span>
-				</a>
-				<a class="delete-shortcut" data-toggle="popover" data-trigger="focus" data-original-title="הסר גרף" data-func="removeGraph">x</a>
-			</div>
-
-				</div>					
+        </div>				
 							
 		  	</div>       
 

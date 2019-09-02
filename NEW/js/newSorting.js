@@ -120,12 +120,18 @@ $(function () {
 				$('#info-square-application').val(itemData.APP);
 				$('#info-square-application').data('selected-item', JSON.stringify(itemData));
 			}
-			$('#add-info-square-select').data('value', itemData.COD);
-			// $('#add-info-square-select').val(itemData.COD)
-			// 														.trigger('change');
-			// $('#add-info-square-modal-button').data('position', itemData.LOC);    		
+			$('#add-info-square-select').data('value', itemData.COD);   		
 			$('#add-info-square-modal').data('item-id', $(this).data('id'));
 			$('#add-info-square-modal').modal('show');   		
+		}
+	});
+
+  $('#items-container').on('click', '.grid-stack-item.item-graph', function() {
+		var graphData = JSON.parse($(this).data('item-data'));
+		if ($('body').hasClass('editing')) {
+			$('#add-graph-select').data('value', graphData.code);
+			$('#add-graph-modal').data('item-id', $(this).data('id'));
+			$('#add-graph-modal').modal('show');      
 		}
 	});
 
@@ -233,6 +239,11 @@ $(function () {
 		}
 	});
 
+  $('#add-info-square-modal').on('hidden.bs.modal', function() {
+    $(this).data('item-id', null);
+    $('#add-info-square-select').data('value', null);   		
+  });
+
   $('#add-info-square-modal').on('click', '#add-info-square-modal-button', function() {
 		var obj = $('#add-info-square-select').select2('data')[0];
     // on edit
@@ -253,8 +264,19 @@ $(function () {
 		}
 
 		getInfoSquareData(obj, function(value) {
-			obj.VAL = value;
-			addDataCube(obj);
+      obj.VAL = value;
+      // new item
+      if (!$('#add-info-square-modal').data('item-id')) {      
+        addDataCube(obj);
+      }
+      // edit item
+      else {
+        obj.id = $('#add-info-square-modal').data('item-id');
+        var elem = $(`[data-id=${obj.id}]`);
+        $(elem).find('.title').text(obj.TXT);
+        $(elem).find('.sum span:not(.sign)').text(obj.VAL);
+        $(elem).data('item-data', JSON.stringify(obj));
+      }
 		});		
 		$(this).closest('.modal').modal('hide');
 	});
@@ -277,8 +299,17 @@ $(function () {
 					this.error({});
 					return;
 				}
-				obj.data = graphData;
-        addGraph(obj);
+        obj.data = graphData;
+        // new graph
+        if (!$('#add-graph-modal').data('item-id')) {
+          addGraph(obj);
+        }
+        // edit graph
+        else {
+          obj.id = $('#add-graph-modal').data('item-id');
+          var elem = $(`[data-id=${obj.id}]`);
+				  $(elem).data('item-data', JSON.stringify(obj));
+        }
 				renderGraphData(obj);
 				$(button).closest('.modal').modal('hide');    
 			},
@@ -288,6 +319,34 @@ $(function () {
 				$('#add-graph-modal .add-graph-error').text(error).fadeIn();
 			}
 		});				
+	});
+
+  $('#add-graph-modal').on('shown.bs.modal', function() {
+		$('#add-graph-select').select2({
+			data: allGraphsOptions,
+			dropdownParent: $('#add-graph-modal'),
+			placeholder: "בחר גרף",
+			templateResult: (opt) => {
+				return $(`<label class="graph-option-label"><i class="fa fa-${ getGraphIcon(opt.type) }"></i> ${ opt.text } [${ hebrewPeriods[opt.period] }]</label>`);
+			},
+			templateSelection: (opt) => {
+				return $(`<label class="graph-option-label"><i class="fa fa-${ getGraphIcon(opt.type) }"></i> ${ opt.text } [${ hebrewPeriods[opt.period] }]</label>`);
+			},
+    });
+    if ($('#add-graph-select').data('value')) {
+			$('#add-graph-select').val($('#add-graph-select').data('value'))
+                            .trigger('change');
+		}
+	});
+
+	$('#add-graph-modal').on('hidden.bs.modal', function() {
+    $(this).find('.add-graph-error').hide();
+    $(this).data('item-id', null);
+    $('#add-graph-select').data('value', null);
+  });
+
+	$('#add-graph-modal').on('change', '#add-graph-select', function() {
+		$('#add-graph-modal').find('.add-graph-error').hide();
 	});
 
   //#endregion add & edit graph
