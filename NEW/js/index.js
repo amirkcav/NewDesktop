@@ -43,8 +43,9 @@ $(function() {
 		originalItemsData = serializeItems();
 		// activate sortable (jquery ui).
 		$('body').addClass('editing');
-		gridStackObj.movable('.grid-stack-item', true);
-		gridStackObj.resizable('.grid-stack-item', true);
+		// gridStackObj.movable('.grid-stack-item', true);
+		// gridStackObj.resizable('.grid-stack-item', true);
+		gridStackObj.setStatic(false);
 	});
 	
 	// $('#done-edit-page').click(function() {
@@ -133,122 +134,6 @@ $(function() {
 	});    
 
 	//#endregion menu
-
-	// $('#graphs-section, #shortcuts-section, #info-squares-section').on('click', '.delete-shortcut[data-toggle="popover"]', function(e){
-	// 	if (!$(this).hasClass('popover-init')) {
-	// 		$(this).popover({	    
-	// 			html: true,
-	// 			placement: 'top',
-	// 			//title: 'Delete remark',
-	// 			content: function() {
-	// 					return $('#confirmation-popover-template').html();
-	// 			}
-	// 		});
-	// 		$(this).popover('show')
-	// 						.addClass('popover-init');		    		   
-	// 	}    	
-	// 	else {
-	// 		$(this).popover('show');
-	// 	}
-		
-	// 	// function the function name on the ""yes" button in the popover
-	// 	var func = $(this).data('func');
-	// 	$('#confirmation-popover-yes').data('func', func);
-		
-	// 	e.stopImmediatePropagation();
-
-	// 	return false;
-	// });	
-
-	//#region info-squares	
-
-	// $(infoSquaresArea).on('click', '.info-square:not(.editing-item-placeholder)', function() {
-	// 	var infoData = JSON.parse($(this).data('data'));
-	// 	if (!$('body').hasClass('editing')) {
-	// 		if (infoData.APM && infoData.APM !== 'null') {
-	// 			var apm = infoData.APM;
-	// 			var uci = infoData.UCI;
-	// 			var wcy = infoData.wCY;
-	// 			var appText = infoData.TXT;
-	// 			runApp(apm, uci, wcy, appText);
-	// 		}
-	// 	}
-	// 	else {    		
-	// 		if (infoData.APP && infoData.APP !== 'null') {
-	// 			$('#info-square-application').val(infoData.APP);
-	// 			$('#info-square-application').data('selected-item', JSON.stringify(infoData));
-	// 		}
-	// 		$('#add-info-square-select').val(infoData.COD);
-	// 		$('#add-info-square-modal-button').data('position', infoData.LOC);    		
-	// 		$('#add-info-square-modal').modal('show');    		
-	// 	}
-	// });
-
-	//#endregion info-squares
-
-	//#region graphs		
-
-	// $('#graphs-section').on('click', '.graph.active', function() {
-	// 	/*// the add graph button (the event is on the span inside the button
-	// 	if ($(event.target).parent().is('.add-item-button')) {
-	// 		return;
-	// 	} */   	
-	// 	var graphData = JSON.parse($(this).data('data'));
-	// 	if ($('body').hasClass('editing')) {    		
-	// 		$('#add-graph-modal-button').data('position', graphData.LOC);
-	// 		$('#add-graph-select').val(graphData.COD);
-	// 		$('#add-graph-modal').modal('show');
-	// 	}
-	// 	else {
-	// 		$('#large-graph-modal').data('data', $(this).data('data'));	    
-	// 		const largeModal = graphData.data.chartSize == 'large' || (graphData.type === 'table' && graphData.data.cols.length > 4);
-	// 		$('#large-graph-modal').toggleClass('large', largeModal);
-	// 		$('#large-graph-modal').find('.modal-header > h3').html(graphData.data.titles.head);
-	// 		$('#large-graph-modal .modal-body').addClass('loading');
-	// 		if (graphData.type === 'table') {
-	// 			$('#change-graph-mode-button').addClass('hidden');
-	// 		}
-	// 		$('#large-graph-modal').modal('show');
-	// 	}
-	// });
-	
-	// $('#large-graph-modal').on('shown.bs.modal', function() {
-	// 	var graphData = JSON.parse($(this).data('data'));		
-	// 	let graphHeight = 500;
-	// 	if (graphData.type === 'table') {
-	// 		graphHeight = 600;
-	// 	}
-	// 	drawGraph(graphData.data, 'large-graph-div', graphHeight);
-	// 	$('#large-graph-modal .modal-body').removeClass('loading');		
-	// });
-
-	// $('#large-graph-modal').on('hidden.bs.modal', function() {
-	// 	$('#large-graph-div').html('<canvas></canvas>');
-	// 	$('#change-graph-mode-button').removeClass('hidden');		
-	// 	$(this).find('.modal-header > h3').html('');
-	// 	$(this).find('.modal-body').removeClass('table-mode')
-	// 									.addClass('graph-mode');
-	// });    
-
-	// $('#large-graph-modal').on('click', '#change-graph-mode-button', function() {    	
-	// 	var graphData = JSON.parse($('#large-graph-modal').data('data'));
-	// 	var modalBody = $(this).closest('.modal-body');
-	// 	if (modalBody.hasClass('graph-mode')) {
-	// 		chartToTable(graphData.data, 'large-graph-div');
-	// 	}
-	// 	else if (modalBody.hasClass('table-mode')) {
-	// 		let graphHeight = 500;
-	// 		if (graphData.type === 'table') {
-	// 			graphHeight = 600;
-	// 		}
-	// 		drawGraph(graphData.data, 'large-graph-div', graphHeight);
-	// 	}
-		
-	// 	$(modalBody).toggleClass('graph-mode')
-	// 							.toggleClass('table-mode');
-	// });
-	
-	//#endregion	
 
 	lastAppsArea.on('click', 'li.last-app > a', function() {
 		var apm = $(this).data('apm');
@@ -434,45 +319,45 @@ function resetArrayLocations(arr) {
 
 //#region graphs
 
-function renderCharts(useTimeout) {
-	$('#graphs-section').find('.sort-item:not(.template-item)').remove();
-	var graphPosition = 0;
-	while (graphPosition < itemsCount['graphs']) {
-		renderChart(graphPosition);
-		graphPosition++;
-	}
-	// sortArea($('#graphs-section'));
-	//// set the width of the graphs
-	//// calculateChartsWidth();
-	//// rerender the graphs to fit the new size
-	//// refreshCharts(useTimeout);
-}
+// function renderCharts(useTimeout) {
+// 	$('#graphs-section').find('.sort-item:not(.template-item)').remove();
+// 	var graphPosition = 0;
+// 	while (graphPosition < itemsCount['graphs']) {
+// 		renderChart(graphPosition);
+// 		graphPosition++;
+// 	}
+// 	// sortArea($('#graphs-section'));
+// 	//// set the width of the graphs
+// 	//// calculateChartsWidth();
+// 	//// rerender the graphs to fit the new size
+// 	//// refreshCharts(useTimeout);
+// }
 
-function renderChart(graphPosition, atPosition) {
-	var newItem = $('#graphs-section').find('.template-item');
-	var template = newItem.clone();
-	template.removeClass('template-item');
-	var divId = 'graph' + (graphPosition + 1);
-	template.find('> .graph-div').attr('id', divId);
-	template.find('.add-item-button').data('position', graphPosition + 1);
-	template.data('position', graphPosition + 1);
-	var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == graphPosition + 1 })[0] : undefined;		
-	if (!graph) {
-		template.addClass('editing-item-placeholder');
-	}
-	else {
-		getGrpahData(graph, function(graphWithData) {
-			renderGraphData(graphWithData);
-		});
-	}
-	template.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)');
-	if (atPosition && $('#graph' + graphPosition)) {
-		$('#graph' + graphPosition).parent().after(template);
-	}
-	else {
-		$('#graphs-section').append(template);
-	}
-}
+// function renderChart(graphPosition, atPosition) {
+// 	var newItem = $('#graphs-section').find('.template-item');
+// 	var template = newItem.clone();
+// 	template.removeClass('template-item');
+// 	var divId = 'graph' + (graphPosition + 1);
+// 	template.find('> .graph-div').attr('id', divId);
+// 	template.find('.add-item-button').data('position', graphPosition + 1);
+// 	template.data('position', graphPosition + 1);
+// 	var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == graphPosition + 1 })[0] : undefined;		
+// 	if (!graph) {
+// 		template.addClass('editing-item-placeholder');
+// 	}
+// 	else {
+// 		getGrpahData(graph, function(graphWithData) {
+// 			renderGraphData(graphWithData);
+// 		});
+// 	}
+// 	template.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)');
+// 	if (atPosition && $('#graph' + graphPosition)) {
+// 		$('#graph' + graphPosition).parent().after(template);
+// 	}
+// 	else {
+// 		$('#graphs-section').append(template);
+// 	}
+// }
 
 function renderGraphData(graph) {
 	template = $(`[data-id=${graph.id}]`) // $('#graph' + graph.LOC).parent();
@@ -562,37 +447,6 @@ function getGraphIcon(graphType) {
 	return chartIconClass;
 }
 
-// when deleting a graph, remove its data (the HTML element is not removed).
-function resetGraph(graphToDelete) {
-	graphToDelete.data('data', null)
-							 .removeClass('active');
-	graphToDelete.addClass('editing-item-placeholder loading').removeClass('active');
-	graphToDelete.find('.graph-title > label').html('')
-																						.attr('title', '')
-																						.data('data', '');
-	graphToDelete.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)');
-	graphToDelete.find('.graph-div').html('');
-}
-
-function checkPositionForChart(position) {
-	var positionForGraph = -1;
-	var graphs = $('#graphs-section .graph:not(.template-item)');
-	var currentElem = graphs.filter(function(j, elem) { 
-		return $(elem).data('position') == position 
-	}).eq(0);
-	// is the next graph place is empty
-	var _data = currentElem.data('data');
-	var elemData = _data && JSON.parse(_data);
-	if ((elemData && elemData.data.chartSize === 'large') || (currentElem.next().length && !currentElem.next().hasClass('active'))) {
-		positionForGraph = position;
-	}
-	// is the previous graph place is empty
-	else if (currentElem.prev().is(':not(.template-item)') && !currentElem.prev().hasClass('active')) {
-		positionForGraph = position - 1;
-	}
-	return positionForGraph;
-}
-
 // the call to graphs plugin according to the graph type.
 function drawGraph(graphData, canvasElem, graphHeight) {
 	switch (graphData.type) {
@@ -614,21 +468,6 @@ function drawGraph(graphData, canvasElem, graphHeight) {
 	//	 more types removed for now 
 		default:
 			return;
-	}
-}
-
-function removeGraph(elem) {
-	var parentElem = $(elem).closest('.graph');
-	var data = JSON.parse(parentElem.data('data'));
-	uiLayout['graphs'].data = $.grep(uiLayout['graphs'].data, function(o) {
-		return o.LOC != data.LOC;
-	});
-	resetGraph(parentElem);	
-	// if the deleted graph was large, add another empty graph.
-	if (data.data['chartSize'] === 'large') {
-		// the LOC is not 0 based, so this is the next 0 based index
-		renderChart(data.LOC, true);
-		sortArea(graphsArea);
 	}
 }
 
@@ -827,74 +666,74 @@ function showLastMenuPosition() {
 // 	placeholderItem.replaceWith(template);
 // }
 
-function removeShortcut(elem) {
-	var parentElem = $(elem).closest('.department');
-	var data = JSON.parse(parentElem.data('data'));
-	var removedElemDataObject = uiLayout.shortcuts.data.filter(function(o) {
-		return o.LOC == data.LOC;
-	}); 
-	removedElemDataObject[0].LOC = notShortcutPos;
-	parentElem.fadeOut(function(){
-		renderArea(shortcutsArea, uiLayout.shortcuts);
-		sortArea(shortcutsArea);
-	});	
-}
+// function removeShortcut(elem) {
+// 	var parentElem = $(elem).closest('.department');
+// 	var data = JSON.parse(parentElem.data('data'));
+// 	var removedElemDataObject = uiLayout.shortcuts.data.filter(function(o) {
+// 		return o.LOC == data.LOC;
+// 	}); 
+// 	removedElemDataObject[0].LOC = notShortcutPos;
+// 	parentElem.fadeOut(function(){
+// 		renderArea(shortcutsArea, uiLayout.shortcuts);
+// 		sortArea(shortcutsArea);
+// 	});	
+// }
 
-function removeInfoSquare(elem) {
-	var parentElem = $(elem).closest('.info-square');
-	parentElem.removeClass('active')
-						.addClass('editing-item-placeholder');
-	var data = JSON.parse(parentElem.data('data'));
-	uiLayout['info-squares'].data = $.grep(uiLayout['info-squares'].data, function(o) {
-		return o.LOC != data.LOC;
-	});
-	// parentElem.fadeOut(function(){
-	// 	// renderArea(infoSquaresArea, uiLayout['info-squares']);
-	// 	// sortArea(infoSquaresArea);
-	// });
-}
+// function removeInfoSquare(elem) {
+// 	var parentElem = $(elem).closest('.info-square');
+// 	parentElem.removeClass('active')
+// 						.addClass('editing-item-placeholder');
+// 	var data = JSON.parse(parentElem.data('data'));
+// 	uiLayout['info-squares'].data = $.grep(uiLayout['info-squares'].data, function(o) {
+// 		return o.LOC != data.LOC;
+// 	});
+// 	// parentElem.fadeOut(function(){
+// 	// 	// renderArea(infoSquaresArea, uiLayout['info-squares']);
+// 	// 	// sortArea(infoSquaresArea);
+// 	// });
+// }
 
-function renderInfoSquares() {
+// function renderInfoSquares() {
 
-	var areaData = uiLayout['info-squares'];
-	var area = infoSquaresArea;
+// 	var areaData = uiLayout['info-squares'];
+// 	var area = infoSquaresArea;
 
-	// area with sorting
-	$(area).find('.sort-item:not(.template-item)').remove();	
-	// area without sorting
-	$(area).find('.list-item:not(.template-item)').remove();	
+// 	// area with sorting
+// 	$(area).find('.sort-item:not(.template-item)').remove();	
+// 	// area without sorting
+// 	$(area).find('.list-item:not(.template-item)').remove();	
 
-	// set area width
-	var newItem = $(area).find('.template-item');
+// 	// set area width
+// 	var newItem = $(area).find('.template-item');
 	
-	// add items
-	var itemsNumber = itemsCount['info-squares']; 
-	for (i = 1; i <= itemsNumber; i++) {
-		var template = newItem.clone();
-		template.removeClass('template-item');
-		var currPosition = i; //j * rows + i;
-		template.attr('id', 'info-' + i);
-		$(template).attr('original-position', currPosition);
-		$(template).find('.add-item-button').data('position', currPosition);
-		$(area).append(template);		
-		var existingItem = areaData.data.filter(function(a) { return a.LOC == currPosition });		
-		// add an existing item
-		if (existingItem.length > 0) {		
-			getInfoSquareData(existingItem[0], function(itemWithData) {
-				renderInfoSquareData(itemWithData);				
-		  });	
-		}
-		// add a placeholder for sorting
-		else {
-			$(template).addClass('editing-item-placeholder');								 
-			$(template).find('.set-tooltip-field').removeClass('set-tooltip-field');
-		}
-	}
-	$(area).find('.set-tooltip-field').each(function(i, o) {
-		setTooltip(o);
-	});
+// 	// add items
+// 	var itemsNumber = itemsCount['info-squares']; 
+// 	for (i = 1; i <= itemsNumber; i++) {
+// 		var template = newItem.clone();
+// 		template.removeClass('template-item');
+// 		var currPosition = i; //j * rows + i;
+// 		template.attr('id', 'info-' + i);
+// 		$(template).attr('original-position', currPosition);
+// 		$(template).find('.add-item-button').data('position', currPosition);
+// 		$(area).append(template);		
+// 		var existingItem = areaData.data.filter(function(a) { return a.LOC == currPosition });		
+// 		// add an existing item
+// 		if (existingItem.length > 0) {		
+// 			getInfoSquareData(existingItem[0], function(itemWithData) {
+// 				renderInfoSquareData(itemWithData);				
+// 		  });	
+// 		}
+// 		// add a placeholder for sorting
+// 		else {
+// 			$(template).addClass('editing-item-placeholder');								 
+// 			$(template).find('.set-tooltip-field').removeClass('set-tooltip-field');
+// 		}
+// 	}
+// 	$(area).find('.set-tooltip-field').each(function(i, o) {
+// 		setTooltip(o);
+// 	});
 	
-}
+// }
 
 function getInfoSquareData(obj, handler) {
 	// obj.data = JSON.parse(obj.data);

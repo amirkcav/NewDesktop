@@ -4,16 +4,15 @@ var gridStackObj;
 // var itemsData;
 
 $(function () {
-  var options = {
+  var gridstackOptions = {
       cellHeight: 'auto',
-      disableDrag: true,
-      disableResize: true,
+      staticGrid: true,
       resizable: {
         handles: 'se, sw'
       }
       // verticalMargin: 10
   };
-  $('.grid-stack').gridstack(options);
+  $('.grid-stack').gridstack(gridstackOptions);
   gridStackObj = $('.grid-stack').data('gridstack');
 
   var itemsData = localStorage.getItem('itemsData');
@@ -21,23 +20,6 @@ $(function () {
     itemsData = JSON.parse(itemsData);
     renderItems(itemsData);    
   }
-
-  $('.add-item-button').click(function() {
-    var type = $(this).data('type');
-    switch (type) {
-      case 'shortcut':
-        addShortcut();
-        break;
-      case 'data-cube':
-        addDataCube();
-        break;
-      case 'graph':
-        // addGraph();
-        break;    
-      default:
-        break;
-    }
-  });
 
   $('#items-container').on('click', '.remove-item', function(event) {
     
@@ -63,8 +45,6 @@ $(function () {
       $(elem).fadeOut(function(){
         gridStackObj.removeWidget(elem);
       });
-      // $(this).popover('hide');
-      // e.stopPropagation();
     });
     event.stopPropagation();
   });
@@ -483,6 +463,5 @@ function renderItems(data) {
 
 function cancelEditing() {
   $('body').removeClass('editing');
-  gridStackObj.movable('.grid-stack-item', false);
-  gridStackObj.resizable('.grid-stack-item', false);
+  gridStackObj.setStatic(true);
 }
