@@ -36,17 +36,7 @@ getPageData();
 // 	refreshPageData();	
 // }, refreshIntervalSeconds * 60 * 1000);
 
-$(function() {	
-
-	$('#edit-page').click(function() {
-		// save the original items to be able to cancel changes.
-		originalItemsData = serializeItems();
-		// activate sortable (jquery ui).
-		$('body').addClass('editing');
-		// gridStackObj.movable('.grid-stack-item', true);
-		// gridStackObj.resizable('.grid-stack-item', true);
-		gridStackObj.setStatic(false);
-	});
+$(function() {		
 	
 	// $('#done-edit-page').click(function() {
 	// 	originalLayout = cloneObject(uiLayout);
@@ -86,12 +76,7 @@ $(function() {
 	// 		}
   //   });  
 
-	// });
-	
-	$('#cancel-edit-page').click(function() {
-		renderItems(originalItemsData);
-		cancelEditing();
-	});    
+	// });	
 
 	//#region menu
 
@@ -152,10 +137,9 @@ $(function() {
 
 function getPageData() {
 	// get menu data
-	var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=ZZ";
 	$.ajax({
 		type : 'POST',
-		url : url,
+		url : "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=ZZ",
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -224,10 +208,9 @@ function getPageData() {
 	// });
 
 	// get available graphs (for add graph popup)
-	var url = "../mcall?_NS=CAV&_ROUTINE=CBIGRF&_LABEL=GETALLGRF";
 	$.ajax({
 		type : 'GET',
-		url : url,
+		url : "../mcall?_NS=CAV&_ROUTINE=CBIGRF&_LABEL=GETALLGRF",
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -251,6 +234,21 @@ function getPageData() {
 		obj.id = obj.id || obj.COD;
 		obj.text = obj.text || obj.TXT;
 		return obj;
+	});
+
+	// get last documents
+	$.ajax({
+		type : 'GET',
+		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RDOCS",
+		// data: {},
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			console.log(3);
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
 	});
 }
 
@@ -367,7 +365,14 @@ function renderGraphData(graph) {
 	setTooltip(template.find('.graph-title > label')[0]);
 	template.data('data', JSON.stringify(graph));
 	template.removeClass('editing-item-placeholder loading');
-	drawGraph(graph.data, template.find('canvas')[0]);			
+	drawGraph(graph.data, template.find('canvas')[0]);		
+	if (graph.data.type === 'table') {
+		$(template).addClass('table-graph');
+		$(template).find('table').bootstrapTable();
+	}
+	else {
+		$(template).removeClass('table-graph');
+	}
 }
 
 // function calculateChartsWidth() {	
@@ -463,12 +468,14 @@ function drawGraph(graphData, canvasElem, graphHeight) {
 			drawGauge(graphData, divId, 0, graphHeight);
 			break;
 		case "table":
-			drawTable(graphData, divId, graphHeight);
+			drawTable_new(graphData, canvasElem);
 			break;
 	//	 more types removed for now 
 		default:
 			return;
 	}
+	var graphClass = graphData.type === 'table' ? 'table-graph' : '';
+	canvasElem
 }
 
 //#endregion graphs
@@ -736,11 +743,9 @@ function showLastMenuPosition() {
 // }
 
 function getInfoSquareData(obj, handler) {
-	// obj.data = JSON.parse(obj.data);
 	// value should come from server
 	const value = parseInt(Math.random() * 10000000).toLocaleString();
 	obj.VAL = value;
-	// handler(obj);
 	handler(value);
 }
 

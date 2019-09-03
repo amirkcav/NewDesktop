@@ -121,3 +121,15 @@ body:not(.editing) .grid-stack-item-content {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+.template-content .bootstrap-table {
+  display: none;
+}
+
+.table-graph canvas {
+  display: none !important;
+}
+
+.table-graph .template-content .bootstrap-table {
+  display: block;
+}

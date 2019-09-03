@@ -144,4 +144,3 @@ function htmlToElement(htmlString) {
 	// Change this to div.childNodes to support multiple top-level nodes
 	return div.firstChild; 
   }
-  

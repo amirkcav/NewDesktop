@@ -49,6 +49,20 @@ $(function () {
     event.stopPropagation();
   });
 
+  //#region top row buttons
+
+  $('#edit-page').click(function() {
+		// save the original items to be able to cancel changes.
+		originalItemsData = serializeItems();
+		$('body').addClass('editing');
+		gridStackObj.setStatic(false);
+	});
+
+  $('#cancel-edit-page').click(function() {
+		renderItems(originalItemsData);
+		cancelEditing();
+	});
+
   $('#save-button').click(function() {
     var itemsData = serializeItems();
     localStorage.setItem('itemsData', JSON.stringify(itemsData));
@@ -62,6 +76,8 @@ $(function () {
     localStorage.removeItem('itemsData');
     $('body').removeClass('editing');
   });
+
+  //#endregion top row buttons
 
   //#region click on item
 
@@ -274,6 +290,12 @@ $(function () {
 			contentType : 'application/json',
 			dataType : 'json',
 			success : function(graphData) {
+        // not supported graph types
+        if (['bar', 'pie', 'table'].indexOf(graphData.type) < 0) {
+          var error = 'סוג גרף זה לא נתמך.';
+          $('#add-graph-modal .add-graph-error').text(error).fadeIn();
+          return;
+        }
 				// check data validity
 				if (graphData.type === 'table' && (!graphData.cols || graphData.cols.length === 0)) {
 					this.error({});
@@ -290,7 +312,7 @@ $(function () {
           var elem = $(`[data-id=${obj.id}]`);
 				  $(elem).data('item-data', JSON.stringify(obj));
         }
-				renderGraphData(obj);
+        renderGraphData(obj);        
 				$(button).closest('.modal').modal('hide');    
 			},
 			error: function(data) {
@@ -416,6 +438,7 @@ function addDataCube(data) {
 
 function addGraph(data) {
   addItem(data.data.chartSize === 'large' ? 3 : 2, 2, 'graph', data);
+  // bootstrapTable
 }
 
 function serializeItems() {

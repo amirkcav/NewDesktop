@@ -88,3 +88,22 @@ function drawPie_NEW(obj, canvasElem) {
         }
     });
 }
+
+function drawTable_new(obj, canvasElem) {
+    var tableElem = htmlToElement('<table data-search="false"><thead><tr></tr></thead><tbody></tbody></table>');
+    obj.cols.forEach(col => {
+        $(tableElem).find('thead tr').append(`<th>${col.title}</th>`);        
+    });
+
+    obj.values.forEach(rowValues => {
+        // var row = htmlToElement('<tr></tr>');
+        var rowContent = '<tr>';
+        rowValues.forEach(val => {
+            rowContent += `<td>${val.val}</td>`;
+        });
+        rowContent += '</tr>'
+        $(tableElem).find('tbody').append(rowContent);   
+    });
+    $(canvasElem).after(tableElem);
+    // $(canvasElem).remove();
+}
