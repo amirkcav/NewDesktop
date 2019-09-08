@@ -128,7 +128,7 @@ $(function() {
 	});
 
 	$('#refresh-page-data-button').on('click', function() {
-		// refreshPageData();
+		refreshPageData();
 	});
 
 });
@@ -240,11 +240,19 @@ function getPageData() {
 	$.ajax({
 		type : 'GET',
 		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RDOCS",
-		// data: {},
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
-			console.log(3);
+			var docs = [];
+			data.document.forEach(doc => {
+				var template = `<li class="last-doc list-item" data-doc-dataa="${doc}" data-a="{"name": "AMIR"}">
+													<a href="javascript:;" class="set-tooltip-field">${doc.description}</a>
+												</li>`;
+				var elem = htmlToElement(template);
+				$(elem).data('doc-data', JSON.stringify(doc));
+				docs.push(elem);
+			});
+			$('#last-docs-section > ul').append(docs);
 		},
 		error: function(data) {
 			alert(data.responseText);    		
@@ -253,25 +261,39 @@ function getPageData() {
 }
 
 function refreshPageData() {
-	// info squares
-	for (i = 0; i < uiLayout['info-squares'].data.length; i++) { 
-		var item = uiLayout['info-squares'].data[i];
-		getInfoSquareData(item, function(itemWithData) {
-			renderInfoSquareData(itemWithData);				
-		});	
-	}
+	$('.item-data-cube, .item-graph').each((i,o) => {
+		var data = JSON.parse($(o).data('item-data'));
+		if ($(o).data('item-type') === 'data-cube') {
+			getInfoSquareData(data, function(value) {
+				updateDataCubeValue(o, value);
+			});
+		}
+		else if ($(o).data('item-type') === 'graph') { 
+			getGrpahData(data, function(graphWithData) {
+				renderGraphData(graphWithData);
+			});
+		}
+	});
+	
+	// // info squares
+	// for (i = 0; i < uiLayout['info-squares'].data.length; i++) { 
+	// 	var item = uiLayout['info-squares'].data[i];
+	// 	getInfoSquareData(item, function(itemWithData) {
+	// 		renderInfoSquareData(itemWithData);				
+	// 	});	
+	// }
 
-	// graphs
-	for (var i = 0; i < uiLayout.graphs.data.length; i++) {
-		var graph = uiLayout.graphs.data[i];
-		// var divId = $(graph).find('> .graph-div').attr('id');
-		// var graphData = JSON.parse($(graph).data('data'));			
-		// drawGraph(graphData, divId);
-		getGrpahData(graph, function(graphWithData) {
-			renderGraphData(graphWithData);
-			// $('#' + divId).parent().removeClass('loading');
-		});
-	}
+	// // graphs
+	// for (var i = 0; i < uiLayout.graphs.data.length; i++) {
+	// 	var graph = uiLayout.graphs.data[i];
+	// 	// var divId = $(graph).find('> .graph-div').attr('id');
+	// 	// var graphData = JSON.parse($(graph).data('data'));			
+	// 	// drawGraph(graphData, divId);
+	// 	getGrpahData(graph, function(graphWithData) {
+	// 		renderGraphData(graphWithData);
+	// 		// $('#' + divId).parent().removeClass('loading');
+	// 	});
+	// }
 
 	// set last refresh time
 	lastRefresh = new Date();
@@ -458,19 +480,18 @@ function drawGraph(graphData, canvasElem, graphHeight) {
 		case "bar":
 			drawBar_NEW(graphData, canvasElem);
 			break;
-		case "line":
-			drawLine(graphData, divId, graphHeight);
-			break;
+		// case "line":
+		// 	drawLine(graphData, divId, graphHeight);
+		// 	break;
 		case "pie":
 			drawPie_NEW(graphData, canvasElem);
 			break;
 		case "gauge":
-			drawGauge(graphData, divId, 0, graphHeight);
+			drawGauge_new(graphData, canvasElem);
 			break;
 		case "table":
 			drawTable_new(graphData, canvasElem);
 			break;
-	//	 more types removed for now 
 		default:
 			return;
 	}
@@ -749,17 +770,17 @@ function getInfoSquareData(obj, handler) {
 	handler(value);
 }
 
-function renderInfoSquareData(itemWithData) {
-	var elem = $('#info-' + itemWithData.LOC)
-	$(elem).addClass('active')
-					.data('data', JSON.stringify(itemWithData));
-	setTemplateFields(elem, itemWithData);
-	$(elem).find('a').data('apm', itemWithData.APM)
-									 .data('uci', itemWithData.UCI);
-	if (itemWithData.wCY) {
-		$(elem).find('a').data('wcy', itemWithData.wCY);
-	}
-}
+// function renderInfoSquareData(itemWithData) {
+// 	var elem = $('#info-' + itemWithData.LOC)
+// 	$(elem).addClass('active')
+// 					.data('data', JSON.stringify(itemWithData));
+// 	setTemplateFields(elem, itemWithData);
+// 	$(elem).find('a').data('apm', itemWithData.APM)
+// 									 .data('uci', itemWithData.UCI);
+// 	if (itemWithData.wCY) {
+// 		$(elem).find('a').data('wcy', itemWithData.wCY);
+// 	}
+// }
 
 function requestCompleted() {
 	if (menuRequestCompleted /*&& lpGetRequestCompleted*/) {

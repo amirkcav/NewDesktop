@@ -1,7 +1,7 @@
 /* http://gridstackjs.com/ */
 
 var gridStackObj;
-// var itemsData;
+var itemsData;
 
 $(function () {
   var gridstackOptions = {
@@ -15,7 +15,7 @@ $(function () {
   $('.grid-stack').gridstack(gridstackOptions);
   gridStackObj = $('.grid-stack').data('gridstack');
 
-  var itemsData = localStorage.getItem('itemsData');
+  itemsData = localStorage.getItem('itemsData');
   if (itemsData) {
     itemsData = JSON.parse(itemsData);
     renderItems(itemsData);    
@@ -64,7 +64,7 @@ $(function () {
 	});
 
   $('#save-button').click(function() {
-    var itemsData = serializeItems();
+    itemsData = serializeItems();
     localStorage.setItem('itemsData', JSON.stringify(itemsData));
     cancelEditing();
   });
@@ -272,6 +272,7 @@ $(function () {
         $(elem).find('.title').text(obj.TXT);
         $(elem).find('.sum span:not(.sign)').text(obj.VAL);
         $(elem).data('item-data', JSON.stringify(obj));
+        updateDataCubeValue(obj);
       }
 		});		
 		$(this).closest('.modal').modal('hide');
@@ -291,7 +292,7 @@ $(function () {
 			dataType : 'json',
 			success : function(graphData) {
         // not supported graph types
-        if (['bar', 'pie', 'table'].indexOf(graphData.type) < 0) {
+        if (['bar', 'pie', 'table', 'gauge'].indexOf(graphData.type) < 0) {
           var error = 'סוג גרף זה לא נתמך.';
           $('#add-graph-modal .add-graph-error').text(error).fadeIn();
           return;
@@ -353,6 +354,11 @@ $(function () {
 
   //#endregion add & edit graph
 
+  $('#last-docs-section > ul').on('click', '.last-doc.list-item', function() {
+    var docData = JSON.parse($(this).data('doc-data'));
+    // runApp
+  });
+
 });
 
 function addItem(width, height, type, dataObj, id, x, y) {
@@ -408,25 +414,25 @@ function getItemTemplate(type, id, itemData) {
   return template;
 }
 
-function _addItem(width, height, type, id, x, y) {
-  if (!id) {
-    if ($('#items-container .grid-stack-item').length === 0) {
-      id = 1;
-    }
-    else {
-      var ids = $('#items-container .grid-stack-item').map((i,o) => $(o).data('id'));
-      id = Math.max.apply(0, ids) + 1;
-    }
-  }
-  var template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}" data-gs-x="${x}" data-gs-y="${y}" data-gs-width="${width}" data-gs-height="${height}">
-                    <div class="grid-stack-item-content">
-                      <a class="remove-item" href="javascript:;">X</a>
-                      <h3>${id}</h3>
-                    </div>
-                  </div>`;
-  var hasPosition = x != null && y != null;                
-  var widget = gridStackObj.addWidget(htmlToElement(template), x, y, width, height, !hasPosition);
-}
+// function _addItem(width, height, type, id, x, y) {
+//   if (!id) {
+//     if ($('#items-container .grid-stack-item').length === 0) {
+//       id = 1;
+//     }
+//     else {
+//       var ids = $('#items-container .grid-stack-item').map((i,o) => $(o).data('id'));
+//       id = Math.max.apply(0, ids) + 1;
+//     }
+//   }
+//   var template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}" data-gs-x="${x}" data-gs-y="${y}" data-gs-width="${width}" data-gs-height="${height}">
+//                     <div class="grid-stack-item-content">
+//                       <a class="remove-item" href="javascript:;">X</a>
+//                       <h3>${id}</h3>
+//                     </div>
+//                   </div>`;
+//   var hasPosition = x != null && y != null;                
+//   var widget = gridStackObj.addWidget(htmlToElement(template), x, y, width, height, !hasPosition);
+// }
 
 function addShortcut(data) {
   addItem(1, 1, 'shortcut', data);
@@ -451,8 +457,15 @@ function serializeItems() {
       y: $(o).attr('data-gs-y'),
       width: $(o).attr('data-gs-width'),
       height: $(o).attr('data-gs-height'),
-      data: $(o).data('item-data')
+      data: JSON.parse($(o).data('item-data'))
     };
+    // removing actual value (data cube & graph)
+    if (item.type === 'graph') {
+      item.data.data = undefined;
+    }
+    else if (item.type === 'data-cube') { 
+      item.data.VAL = undefined;
+    }
     items.push(item);
   });
   items.sort((a, b) => a.y - b.y);
@@ -464,12 +477,12 @@ function renderItems(data) {
   // itemsData.forEach(item => {
   data.forEach(item => {
     if (item.type === 'shortcut') {
-      addItem(item.width, item.height, item.type, item.data ? JSON.parse(item.data) : null, item.id, item.x, item.y);
+      addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
     }
     else if (item.type === 'data-cube') {
       getInfoSquareData(item, (value) => {
         if (item.data) {
-          item.data = JSON.parse(item.data);
+          item.data = item.data;
           item.data.VAL = value;
         }
         // addItem(itemWithData.width, itemWithData.height, itemWithData.type, itemWithData.data ? JSON.parse(itemWithData.data) : null, itemWithData.id, itemWithData.x, itemWithData.y);
@@ -477,9 +490,12 @@ function renderItems(data) {
       });
     }
     else if (item.type === 'graph') {
-      item.data = JSON.parse(item.data);
+      // item.data = JSON.parse(item.data);
       addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
-      renderGraphData(item.data);
+      // renderGraphData(item.data);
+      getGrpahData(item.data, function(graphWithData) {
+        renderGraphData(graphWithData);
+      });
     }
   });
 }
@@ -487,4 +503,8 @@ function renderItems(data) {
 function cancelEditing() {
   $('body').removeClass('editing');
   gridStackObj.setStatic(true);
+}
+
+function updateDataCubeValue(elem, value) {
+  $(elem).find('.sum span:not(.sign)').text(value);
 }

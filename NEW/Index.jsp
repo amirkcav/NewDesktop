@@ -89,6 +89,8 @@
 	
 	<script src="js/plugin/moment/moment.min.js"></script>
 	<script src="js/plugin/chartjs/chart.js"></script>
+	<script src="js/plugin/chartjs/Gauge.js"></script>
+
 	<script src="js/plugin/select2/dist/js/select2.js"></script>
 	
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>

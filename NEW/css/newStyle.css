@@ -8,6 +8,10 @@ body {
   min-height: 100vh;
 }
 
+.list-section {
+  height: 40vh;
+}
+
 .grid-stack-item-content {
   border: 1px solid #333;
   background: #eee;
@@ -69,7 +73,8 @@ body.editing .grid-stack-item-content {
   cursor: move;
 }
 
-body:not(.editing) .grid-stack-item-content {
+body:not(.editing) .item-shortcut .grid-stack-item-content,
+body:not(.editing) .item-data-cube .grid-stack-item-content {
   cursor: pointer;
 }
 

@@ -90,13 +90,12 @@ function drawPie_NEW(obj, canvasElem) {
 }
 
 function drawTable_new(obj, canvasElem) {
-    var tableElem = htmlToElement('<table data-search="false"><thead><tr></tr></thead><tbody></tbody></table>');
+    var tableElem = htmlToElement('<div class="table-wrapper"><table data-search="false"><thead><tr></tr></thead><tbody></tbody></table></div>');
     obj.cols.forEach(col => {
         $(tableElem).find('thead tr').append(`<th>${col.title}</th>`);        
     });
 
     obj.values.forEach(rowValues => {
-        // var row = htmlToElement('<tr></tr>');
         var rowContent = '<tr>';
         rowValues.forEach(val => {
             rowContent += `<td>${val.val}</td>`;
@@ -104,6 +103,30 @@ function drawTable_new(obj, canvasElem) {
         rowContent += '</tr>'
         $(tableElem).find('tbody').append(rowContent);   
     });
+    $(canvasElem).parent().find('.table-wrapper').remove();
     $(canvasElem).after(tableElem);
-    // $(canvasElem).remove();
+}
+
+function drawGauge_new(obj, canvasElem) {
+    var ctx = canvasElem.getContext('2d');
+    new Chart(ctx, {
+        type: "tsgauge",
+        data: {
+            datasets: [{
+                backgroundColor: ["red", "yellow", "green"],
+                borderWidth: 0,
+                gaugeData: {
+                    value: obj.values[0].val,
+                    valueColor: "#666"
+                },
+                gaugeLimits: [0, 1, 1, 2]
+            }]
+        },
+        options: {
+            events: [],
+            showMarkers: true,
+            // the width of the gauge. 
+            cutoutPercentage: 90
+        }
+    });
 }
