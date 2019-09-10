@@ -617,16 +617,6 @@ function setMenuSearch() {
 		},
 	});	
 
-	$('ul.ui-autocomplete.ui-menu').on('contextmenu', 'li.ui-menu-item', function(event) {
-		$('#context').remove();
-		if ($(this).find('#context').length == 0) {
-			var itemData = $(this).data('uiAutocompleteItem');
-	    	var contextMenu = '<div id="context"><a id="create-shortcut" href="javascript:;" data-item=\'' + JSON.stringify(itemData) + '\'>הוסף קיצור דרך</a></div>';
-	    	$(this).after(contextMenu);
-    	}    	
-    	$(this).find('#context').show();
-    	return false;
-    });
 }
 
 function addToFavorites(itemToAdd) {	
