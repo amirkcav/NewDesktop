@@ -240,3 +240,11 @@ ul.ui-autocomplete {
   /* font-weight: bold; */
 }
 /*#endregion*/
+
+.select2.select2-container, .select2-selection__rendered {
+  outline: none;
+}
+
+.select2 .select2-selection label {
+  margin-bottom: 0;
+}

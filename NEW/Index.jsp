@@ -101,8 +101,8 @@
 	
 	<script src="js/plugin/jquery-validate/jquery.validate.min.js"></script>
 	
-	<script src="js/cav-portal-main.js" type="text/javascript" charset="utf-8"></script>
-	<script src="js/cav-drawCharts.js" type="text/javascript" charset="utf-8"></script>
+	<!-- <script src="js/cav-portal-main.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/cav-drawCharts.js" type="text/javascript" charset="utf-8"></script> -->
 	
 	<script src="js/cav-newCharts.js" type="text/javascript" charset="utf-8"></script>
 
