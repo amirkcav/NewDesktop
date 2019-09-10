@@ -4,22 +4,21 @@ var gridStackObj;
 var itemsData;
 
 $(function () {
-  var gridstackOptions = {
-      cellHeight: 'auto',
-      staticGrid: true,
-      resizable: {
-        handles: 'se, sw'
-      }
-      // verticalMargin: 10
-  };
-  $('.grid-stack').gridstack(gridstackOptions);
-  gridStackObj = $('.grid-stack').data('gridstack');
+  // var gridstackOptions = {
+  //     cellHeight: 'auto',
+  //     staticGrid: true,
+  //     resizable: {
+  //       handles: 'se, sw'
+  //     }
+  // };
+  // $('.grid-stack').gridstack(gridstackOptions);
+  // gridStackObj = $('.grid-stack').data('gridstack');
 
-  itemsData = localStorage.getItem('itemsData');
-  if (itemsData) {
-    itemsData = JSON.parse(itemsData);
-    renderItems(itemsData);    
-  }
+  // itemsData = localStorage.getItem('itemsData');
+  // if (itemsData) {
+  //   itemsData = JSON.parse(itemsData);
+  //   renderItems(itemsData);    
+  // }
 
   $('#items-container').on('click', '.remove-item', function(event) {
     
@@ -65,8 +64,34 @@ $(function () {
 
   $('#save-button').click(function() {
     itemsData = serializeItems();
-    localStorage.setItem('itemsData', JSON.stringify(itemsData));
-    cancelEditing();
+    // localStorage.setItem('itemsData', JSON.stringify(itemsData));
+    var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPSAV";		
+    $.ajax({
+			type : 'POST',
+			url : url,
+			data: JSON.stringify({ data: itemsData }),
+			contentType : 'application/json',
+			// dataType : 'json',
+			success : function(data) {
+				// currently returning "*** OK ***"
+				if (data && data.indexOf('OK') > -1) {
+					$.smallBox({
+						title : "המידע נשמר בהצלחה!",
+						// content : "...",
+						color : "#6a6",
+						timeout: 3000,
+						sound: false,
+						iconSmall : "fa fa-check"
+					});
+        }
+        cancelEditing();        
+    	},
+			error: function(data) {
+				alert(data.responseText);    		
+        // cancelEditing();
+			}
+    });  
+    // cancelEditing();
   });
 
   $('#delete-all-button').click(function() {
@@ -359,6 +384,17 @@ $(function () {
   $('#last-docs-section > ul').on('click', '.last-doc.list-item', function() {
     var docData = JSON.parse($(this).data('doc-data'));
     // runApp
+    var apm = docData.AP + ':';
+    var uci = docData.SYS;
+    var cy = docData.CY;
+    var pmDataArr = [];
+    docData.PM.forEach(pm => {
+      pm.VAC.forEach(vac => {
+        pmDataArr.push(`${vac.name}=${vac.value}`);
+      });
+    });
+    var pmString = pmDataArr.join('&');
+    runApp(apm, uci, cy, '', pmString);
   });
 
 });

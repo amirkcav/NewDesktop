@@ -177,36 +177,43 @@ function getPageData() {
 		}
 	});
 	
-	// // get page data
-	// var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPGET";    	
-	// // var data = JSON.stringify({ data: uiLayout }); 
-	// $.ajax({
-	// 	type : 'POST',
-	// 	url : url,
-	// 	// data: data,
-	// 	contentType : 'application/json',
-	// 	dataType : 'json',
-	// 	success : function(data) {
-	// 		uiLayout = Object.assign(uiLayout, data.data);
-	// 		// uiLayout = data.data;		
+	// get page data
+	var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPGET";    	
+	// var data = JSON.stringify({ data: uiLayout }); 
+	$.ajax({
+		type : 'POST',
+		url : url,
+		// data: data,
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {			
 
-	// 		renderAllAreas(true);			
+		var gridstackOptions = {
+			cellHeight: 'auto',
+			staticGrid: true,
+			resizable: {
+				handles: 'se, sw'
+			}
+		};
+		$('.grid-stack').gridstack(gridstackOptions);
+		gridStackObj = $('.grid-stack').data('gridstack');
 
-	// 		lpGetRequestCompleted = true;
-	// 		requestCompleted();
+			renderItems(data.data);
 
-	// 		// set last refresh time
-	// 		lastRefresh = new Date();
-	// 		$('#last-update').text(dateFormat(lastRefresh, 'dd/mm/yyyy HH:MM'));
-	// 	},
-	// 	error: function(data) {
-	// 		alert(data.responseText);   
-	// 		renderAllAreas(true);
-	// 		lpGetRequestCompleted = true;
-	// 		requestCompleted(); 		
-	// 		// uiLayout = {};
-	// 	}
-	// });
+			lpGetRequestCompleted = true;
+			requestCompleted();
+
+			// set last refresh time
+			lastRefresh = new Date();
+			$('#last-update').text(dateFormat(lastRefresh, 'dd/mm/yyyy HH:MM'));
+		},
+		error: function(data) {
+			alert(data.responseText);   
+			// renderAllAreas(true);
+			lpGetRequestCompleted = true;
+			requestCompleted(); 		
+		}
+	});
 
 	// get available graphs (for add graph popup)
 	$.ajax({
@@ -301,7 +308,7 @@ function refreshPageData() {
 	$('#last-update').text(dateFormat(lastRefresh, 'dd/mm/yyyy HH:MM'));
 }
 
-function runApp(apm, uci, companyCode, text) {
+function runApp(apm, uci, companyCode, text, params = '') {
 	var apmArr = apm.split(':');
 	var ap = apmArr[0];
 	var pm = apmArr[1];
@@ -313,10 +320,10 @@ function runApp(apm, uci, companyCode, text) {
 	// }
 	// run app.
 	if (window.app) {
-		app.openApplication(ap, pm, uci, companyCode ? companyCode.toString() : '', '');
+		app.openApplication(ap, pm, uci, companyCode ? companyCode.toString() : '', params);
 	}
 	else {
-		console.log(stringFormat('Run App - {0}:{1}:{2}:{3}', ap, pm, uci, companyCode));
+		console.log(stringFormat('Run App - {0}:{1}:{2}:{3}:{4}', ap, pm, uci, companyCode, params));
 	}
 }
 
