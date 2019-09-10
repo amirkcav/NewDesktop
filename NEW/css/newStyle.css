@@ -248,3 +248,11 @@ ul.ui-autocomplete {
 .select2 .select2-selection label {
   margin-bottom: 0;
 }
+
+#menu-list.sm ul a.highlighted, #menu-list.sm li.app:hover {
+  background: #eee;
+}
+
+#menu-list.sm li.app:active {
+  background: #ddd;
+}
