@@ -4,7 +4,7 @@
 	<jsp:include page="pageParts/Head.html"></jsp:include>
 </head>
 
-<body class="_smart-style-6 menu-on-top smart-rtl background4">
+<body class="background4 clearfix">
 
 	<div id="loading-animation-div">
 		<div id="loading-animation">
@@ -15,12 +15,11 @@
 
 	<jsp:directive.page contentType="text/html;charset=UTF-8"/>
 
-	<jsp:include page="pageParts/Header.html"></jsp:include>
+	<!--HEADER-->
 	
 	<!-- menu -->
-	<aside id="left-panel">
-		<div id="manage-edit-div">
-			<!-- <button id="done-edit-page" class="btn btn-default edit-state">שמור</button> -->
+	<div id="menu-row" class="clearfix">
+		<div id="manage-edit-div">			
 			<button id="save-button" class="btn btn-default edit-state">SAVE</button>      
 			<button id="cancel-edit-page" class="btn btn-default edit-state">בטל</button> 
 			<button id="edit-page" class="btn btn-default regular-state">מצב עריכה</button>
@@ -31,20 +30,18 @@
 			<button href="#add-shortcut-modal" data-toggle="modal" class="edit-state" data-type="shortcut">Add shortcut</button>
 			<span style="margin: 25px;"></span>
 		</div>
-	    <nav>
-	    	<ul id="menu-list">
-    			<li class="search-app-li">
-    				<a href="javascript:;"><i class="fa fa-lg fa-search"></i> <span class="menu-item-parent">חפש בתפריט</span></a>
-    				<input id="search-in-menu" class="search-app form-control" type="text" name="param" placeholder="חפש בתפריט">
-    			</li>
-	    	</ul>        
-	    </nav>
-	</aside>
+		<ul id="menu-list" class="sm sm-rtl sm-blue">
+			<li class="search-app-li">
+				<a href="javascript:;"><i class="fa fa-lg fa-search"></i> <span class="menu-item-parent">חפש בתפריט</span></a>
+				<!-- <input id="search-in-menu" class="search-app form-control" type="text" name="param" placeholder="חפש בתפריט"> -->
+			</li>
+		</ul>        
+	</div>
 
     <!-- MAIN PANEL -->
-    <div id="main" role="main" class="narrow">
+    <div id="main" role="main" class="_narrow">
 
-      <div id="content" class="row">					
+      <div id="content" class="_row">					
 
         <div class="col-lg-2 col-md-3">
           <div id="last-apps-section" class="list-section menu-style">
@@ -77,7 +74,7 @@
 
         </div>				
 							
-		  	</div>       
+		</div>       
 
     </div>
 
@@ -93,12 +90,14 @@
 
 	<script src="js/plugin/select2/dist/js/select2.js"></script>
 	
-	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-	<script type="text/javascript">
+	<script src="js/plugin/smartmenus/jquery.smartmenus.js"></script>
+
+	<!-- <script type="text/javascript" src="https://www.google.com/jsapi"></script> -->
+	<!-- <script type="text/javascript">
 		google.load('visualization', '1.0', {
 			packages : [ 'corechart', 'gauge', 'table', 'controls', 'geochart' ]
 		});
-	</script>		
+	</script>		 -->
 	
 	<script src="js/plugin/jquery-validate/jquery.validate.min.js"></script>
 	

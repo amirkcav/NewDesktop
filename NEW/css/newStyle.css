@@ -6,7 +6,38 @@
 
 body {
   min-height: 100vh;
+  direction: rtl;
 }
+
+@media (min-width: 768px) {
+  .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9,
+  .col-md-1, .col-md-10, .col-md-11, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9,
+  .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9 {
+    float: right;
+  }
+}
+
+label {
+  font-weight: 500;
+}
+
+#content > div {
+  float: right;
+  direction: rtl;
+}
+
+/* .page-footer {
+  height: 52px;
+  padding: 15px 13px 0;
+  padding-left: 233px;
+  border-top: 1px solid #CECECE;
+  background: #2a2725;
+  width: 100%;
+  position: relative;
+  display: block;
+  bottom: 0;
+  direction: rtl;
+} */
 
 .list-section {
   height: 40vh;
@@ -138,3 +169,74 @@ body:not(.editing) .item-data-cube .grid-stack-item-content {
 .table-graph .template-content .bootstrap-table {
   display: block;
 }
+
+/*#region jquery ui autocomplete*/ 
+/*from https://jsfiddle.net/gotemkfr/*/
+.ui-autocomplete {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  float: left;
+  display: none;
+  min-width: 160px;   
+  padding: 4px 0;
+  margin: 0 0 10px 25px;
+  list-style: none;
+  background-color: #ffffff;
+  border-color: #ccc;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-style: solid;
+  border-width: 1px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+  *border-right-width: 2px;
+  *border-bottom-width: 2px;
+}
+
+.ui-menu-item > a.ui-corner-all {
+  display: block;
+  padding: 3px 15px;
+  clear: both;
+  font-weight: normal;
+  line-height: 18px;
+  color: #555555;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.ui-state-hover, .ui-state-active {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #0088cc;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  background-image: none;
+}
+
+.ui-helper-hidden-accessible {
+  display: none;
+}
+
+ul.ui-autocomplete {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.ui-autocomplete .ui-menu-item:hover {
+  background-color: #5897fb;
+}
+
+.ui-autocomplete .ui-menu-item:hover > a {
+  color: white;
+  /* font-weight: bold; */
+}
+/*#endregion*/

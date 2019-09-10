@@ -197,6 +197,7 @@ $(function () {
   $('#add-info-square-modal').on('shown.bs.modal', function() {
 		$('#add-info-square-select').select2({
 			data: allInfoSquaresOptions,
+      dir: "rtl",
 			dropdownParent: $('#add-info-square-modal'),
 			placeholder: "בחר נתון להצגה"
 		});
@@ -326,7 +327,8 @@ $(function () {
 
   $('#add-graph-modal').on('shown.bs.modal', function() {
 		$('#add-graph-select').select2({
-			data: allGraphsOptions,
+      data: allGraphsOptions,
+      dir: "rtl",
 			dropdownParent: $('#add-graph-modal'),
 			placeholder: "בחר גרף",
 			templateResult: (opt) => {

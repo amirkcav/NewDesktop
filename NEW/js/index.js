@@ -2,6 +2,7 @@
 var menuItemTemplate = '<li><a class="name" href="javascript:;"></a></li>';
 var menuApps = [];
 var originalItemsData;
+var lastMenuApp;
 
 var lpGetRequestCompleted = false;
 var menuRequestCompleted = false;
@@ -37,7 +38,7 @@ getPageData();
 // }, refreshIntervalSeconds * 60 * 1000);
 
 $(function() {		
-	
+
 	// $('#done-edit-page').click(function() {
 	// 	originalLayout = cloneObject(uiLayout);
 	// 	$('.sort-area').sortable('destroy');
@@ -519,8 +520,8 @@ function setMenu(data) {
 		}
 	}
 	
-	// $('#menu-list > ul').remove();
-	
+	initSmartmenu();	
+
 	$('#menu-list > li:not(.search-app-li):last').attr('id', 'favorites-menu-item')
 											  											 .find('.add-to-favorites').remove();	
 
@@ -622,23 +623,23 @@ function setMenuSearch() {
 }
 
 function addToFavorites(itemToAdd) {	
-	uiLayout.shortcuts.data.push(itemToAdd);	
-	renderMenuFavorites();
+	// uiLayout.shortcuts.data.push(itemToAdd);	
+	// renderMenuFavorites();
 	
 	var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=SAVEDSK"; // &OPC=AMIRK
-    var data = JSON.stringify({ favorites: uiLayout.shortcuts.data }); 
+    var data = JSON.stringify({ favorites: [] /*uiLayout.shortcuts.data*/ }); 
     $.ajax({
-        type : 'POST',
-        url : url,
-        data: data,
-				contentType : 'application/json',
-        dataType : 'json',
-        success : function(data) {
-    		//debugger;
-    	},
-        error: function(data) {
-			//alert(data.responseText);    		
-		}
+			type : 'POST',
+			url : url,
+			data: data,
+			contentType : 'application/json',
+			dataType : 'json',
+			success : function(data) {
+				console.log(1234);
+			},
+			error: function(data) {
+				//alert(data.responseText);    		
+			}
     });  
 }
 
@@ -796,4 +797,70 @@ function requestCompleted() {
 			}, 300);
 		}, 300);
 	}
+}
+
+function initSmartmenu() {
+	$('#menu-list').smartmenus({
+		hideOnClick: false
+	});
+	
+	// Set proper max-height for sub menus in desktop view
+	$('#menu-list').bind('beforeshow.smapi', function(e, menu) {
+		var $sub = $(menu),
+			hasSubMenus = $sub.find('ul').length && !$sub.hasClass('mega-menu');
+		// if the sub doesn't have any deeper sub menus, apply max-height
+		if (!hasSubMenus) {
+			var obj = $(this).data('smartmenus');
+			if (obj.isCollapsible()) {
+				$sub.css({
+					'overflow-y': '',
+					'max-height': ''
+				});
+			} else {
+				var $a = $sub.dataSM('parent-a'),
+					$li = $a.closest('li'),
+					$ul = $li.parent(),
+					level = $sub.dataSM('level'),
+					$win = $(window),
+					winH = $win.height(),
+					winY = $win.scrollTop(),
+					subY = winY;
+				// if the parent menu is horizontal
+				if ($ul.parent().is('[data-sm-horizontal-sub]') || level == 2 && !$ul.hasClass('sm-vertical')) {
+					var itemY = $a.offset().top,
+						itemH = obj.getHeight($a),
+						subOffsetY = level == 2 ? obj.opts.mainMenuSubOffsetY : obj.opts.subMenusSubOffsetY,
+						subY = itemY + itemH + subOffsetY;
+				}
+				$sub.css({
+					'max-height': winH + winY - subY
+				});
+			}
+		}
+	});
+
+	// Set overflow-y: auto for sub menus in desktop view
+	// this needs to be done on the 'show.smapi' event because the script resets overflow on menu show
+	$('#menu-list').bind('show.smapi', function(e, menu) {
+		var $sub = $(menu),
+			hasSubMenus = $sub.find('ul').length && !$sub.hasClass('mega-menu');
+		// if the sub doesn't have any deeper sub menus, apply overflow-y: auto
+		if (!hasSubMenus) {
+			var obj = $(this).data('smartmenus');
+			if (!obj.isCollapsible()) {
+				$sub.css('overflow-y', 'auto');
+			}
+		}
+	});
+
+	$('#menu-list').unbind('click.smapi').bind('click.smapi', function(e, elem) {
+		// on click on app, close menu
+		if (!$(elem).hasClass('add-to-favorites')) {
+			$.SmartMenus.hideAll();
+		}
+		// click on mark as favorite, don't close menu,
+		else {
+			return false;
+		}
+	});
 }
