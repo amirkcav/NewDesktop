@@ -390,7 +390,8 @@ $(function () {
     var pmDataArr = [];
     docData.PM.forEach(pm => {
       pm.VAC.forEach(vac => {
-        pmDataArr.push(`${vac.name}=${vac.value}`);
+        var mask = vac.mask ? '~' + vac.mask : '';
+        pmDataArr.push(`${vac.name}=${vac.value}${mask}`);
       });
     });
     var pmString = pmDataArr.join('&');

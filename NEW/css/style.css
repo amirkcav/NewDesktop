@@ -224,7 +224,7 @@ nav li.disabled {
     padding-right: 5px!important;
 }
 
-#menu-list li.app > a.add-to-favorites {
+#menu-list li.app > a.add-to-favorites, #menu-list li.app > a.remove-from-favorites {
     float: right;
     padding-left: 5px !important;
     padding-right: 10px !important;
@@ -236,11 +236,11 @@ nav li.disabled {
     border: none;
 }
 
-#menu-list li.app > a.add-to-favorites > i {
+#menu-list li.app > a.add-to-favorites > i, #menu-list li.app > a.remove-from-favorites > i {
     margin-left: 0;
 }
 
-#menu-list li.app > a.add-to-favorites:hover > i {
+#menu-list li.app > a.add-to-favorites:hover > i, #menu-list li.app > a.remove-from-favorites:hover > i {
     /* font-size: 1.3em !important;     */
     /*font-weight: bold;*/
     /* top: 2px; */
@@ -248,7 +248,7 @@ nav li.disabled {
     text-shadow: #ddd 0 0 10px;
 }
 
-#menu-list li.app > a.add-to-favorites.favorite > i {
+#menu-list li.app > a.add-to-favorites.favorite > i, #menu-list li.app > a.remove-from-favorites.favorite > i {
     color: #9bb3e9;
     font-size: 1.2em !important;
     top: 1px;

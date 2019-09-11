@@ -7,7 +7,7 @@ var lastMenuApp;
 var lpGetRequestCompleted = false;
 var menuRequestCompleted = false;
 
-var menuFavorites;
+var menuFavorites = [];
 
 var shortcutsArea = {};
 var infoSquaresArea = {};
@@ -30,54 +30,14 @@ $.ajaxSetup({
 
 getPageData();
 
-// var lastRefresh = new Date();
-// // refresh page data every interval.
-// var refreshIntervalSeconds = 5;
-// setInterval(function() {
-// 	refreshPageData();	
-// }, refreshIntervalSeconds * 60 * 1000);
+var lastRefresh = new Date();
+// refresh page data every interval.
+var refreshIntervalMinutes = 5;
+setInterval(function() {
+	refreshPageData();	
+}, refreshIntervalMinutes * 60 * 1000);
 
 $(function() {		
-
-	// $('#done-edit-page').click(function() {
-	// 	originalLayout = cloneObject(uiLayout);
-	// 	$('.sort-area').sortable('destroy');
-	// 	$('body').removeClass('editing');
-
-	// 	var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPSAV";
-	// 	// don't save the current values, just the selected types.
-	// 	if (uiLayout.graphs.data) {
-	// 		uiLayout.graphs.data.map((g) => { g.data = undefined; });
-	// 	}
-	// 	if (uiLayout['info-squares'].data) {
-	// 		uiLayout['info-squares'].data.map((g) => { g.VAL = undefined; });
-	// 	}
-  //   var data = JSON.stringify({ data: uiLayout }); 
-  //   $.ajax({
-	// 		type : 'POST',
-	// 		url : url,
-	// 		data: data,
-	// 		contentType : 'application/json',
-	// 		// dataType : 'json',
-	// 		success : function(data) {
-	// 			// currently returning "*** OK ***"
-	// 			if (data && data.indexOf('OK') > -1) {
-	// 				$.smallBox({
-	// 					title : "המידע נשמר בהצלחה!",
-	// 					// content : "...",
-	// 					color : "#6a6",
-	// 					timeout: 3000,
-	// 					sound: false,
-	// 					iconSmall : "fa fa-check"
-	// 				});
-	// 			}
-  //   	},
-	// 		error: function(data) {
-	// 			alert(data.responseText);    		
-	// 		}
-  //   });  
-
-	// });	
 
 	//#region menu
 
@@ -119,6 +79,12 @@ $(function() {
 		}
 	});    
 
+	$('#menu-list').on('click', 'li.app > a.remove-from-favorites', function() {
+		var data = $(this).closest('li').data('data');
+		var item = JSON.parse(data);
+		removeFromFavorites(item);
+	});
+
 	//#endregion menu
 
 	lastAppsArea.on('click', 'li.last-app > a', function() {
@@ -151,7 +117,7 @@ function getPageData() {
 			// originalLayout = cloneObject(uiLayout);
 
 			// renderAllAreas(true);
-			menuFavorites = data[data.length - 1].MENU;
+			// menuFavorites = data[data.length - 1].MENU;
 
 			// to get a big menu
 			if (token === '1234') {
@@ -527,11 +493,10 @@ function setMenu(data) {
 		}
 	}
 	
+	$('#menu-list > li:not(.search-app-li):last').attr('id', 'favorites-menu-item');
+	
+	setMenuFavorites();
 	initSmartmenu();	
-
-	$('#menu-list > li:not(.search-app-li):last').attr('id', 'favorites-menu-item')
-											  											 .find('.add-to-favorites').remove();	
-
 	setMenuSearch();
 	
 	// moving the child menu so it won't get out of the bottom of the page. 
@@ -551,8 +516,10 @@ function setMenu(data) {
 	});
 }
 
-function addSubMenu(parent, childrenObj) {
-	$(parent).append('<ul></ul>');
+function addSubMenu(parent, childrenObj, editSubMenu = false) {
+	if (!editSubMenu) {
+		$(parent).append('<ul></ul>');
+	}
 	var childList = $(parent).find('> ul');
 	for (var i =0, len = childrenObj.length; i < len; i++) {
 		var a = childrenObj[i];			
@@ -585,7 +552,8 @@ function setMenuItem(itemObj) {
 		$(newItemElem).addClass('app')
 					  .data('data', JSON.stringify(itemObj))
 					  .data('apm', itemObj.APM)
-						.data('uci', itemObj.UCI);
+						.data('uci', itemObj.UCI)
+						.attr('data-id', `${itemObj.UCI}:${itemObj.APM}`);
 		if (itemObj.wCY) {
 			$(newItemElem).addClass('app').data('wcy', itemObj.wCY);
 		}
@@ -619,38 +587,36 @@ function setMenuSearch() {
 
 }
 
+function setMenuFavorites() {
+	var menuFavoritesString = localStorage.getItem('menuFavorites');
+	if (menuFavoritesString) {
+		menuFavorites = JSON.parse(menuFavoritesString);
+		renderMenuFavorites();		
+	}
+}
+
 function addToFavorites(itemToAdd) {	
-	// uiLayout.shortcuts.data.push(itemToAdd);	
-	// renderMenuFavorites();
-	
-	var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=SAVEDSK"; // &OPC=AMIRK
-    var data = JSON.stringify({ favorites: [] /*uiLayout.shortcuts.data*/ }); 
-    $.ajax({
-			type : 'POST',
-			url : url,
-			data: data,
-			contentType : 'application/json',
-			dataType : 'json',
-			success : function(data) {
-				console.log(1234);
-			},
-			error: function(data) {
-				//alert(data.responseText);    		
-			}
-    });  
+	menuFavorites.push(itemToAdd);
+	localStorage.setItem('menuFavorites', JSON.stringify(menuFavorites));
+	renderMenuFavorites();
 }
 
 function removeFromFavorites(itemToRemove) {	
-	uiLayout.shortcuts.data = $.grep(uiLayout.shortcuts.data, function(a) {
+	menuFavorites = $.grep(menuFavorites, function(a) {
 	    return a.TXT != itemToRemove.TXT;
 	});
+	localStorage.setItem('menuFavorites', JSON.stringify(menuFavorites));
 	renderMenuFavorites();
 }
 
 function renderMenuFavorites() {
-	$('#favorites-menu-item ul').remove();
-	addSubMenu($('#favorites-menu-item'), uiLayout.shortcuts.data);
-	$('#favorites-menu-item .add-to-favorites').remove();
+	$('#favorites-menu-item ul li').remove();
+	addSubMenu($('#favorites-menu-item'), menuFavorites, true);
+	$('#favorites-menu-item').find('.add-to-favorites').removeClass('add-to-favorites')
+																										 .addClass('remove-from-favorites favorite')
+													 .find('i').removeClass('fa-star-o').addClass('fa-star');
+	$('#menu-list').smartmenus('refresh');
+	markFavoritesInMenu();
 }
 
 function showLastMenuPosition() {
@@ -678,107 +644,12 @@ function showLastMenuPosition() {
 
 //#endregion menu
 
-// function addShortcut(data) {
-// 	var template = $('#shortcuts-section .template-item').clone();
-// 	template.removeClass('template-item');
-// 	$(template).find('.template-field[data-field="TXT"]').text(data.TXT); 
-// 	$(template).data('apm', data.APM)
-// 						 .data('uci', data.UCI);
-// 	if (data.wCY) {
-// 		$(template).data('wcy', data.wCY);
-// 	}
-// 	var placeholderItem = $('#shortcuts-section .editing-item-placeholder').first();
-// 	template.attr('original-position', placeholderItem.attr('original-position'))
-// 	placeholderItem.replaceWith(template);
-// }
-
-// function removeShortcut(elem) {
-// 	var parentElem = $(elem).closest('.department');
-// 	var data = JSON.parse(parentElem.data('data'));
-// 	var removedElemDataObject = uiLayout.shortcuts.data.filter(function(o) {
-// 		return o.LOC == data.LOC;
-// 	}); 
-// 	removedElemDataObject[0].LOC = notShortcutPos;
-// 	parentElem.fadeOut(function(){
-// 		renderArea(shortcutsArea, uiLayout.shortcuts);
-// 		sortArea(shortcutsArea);
-// 	});	
-// }
-
-// function removeInfoSquare(elem) {
-// 	var parentElem = $(elem).closest('.info-square');
-// 	parentElem.removeClass('active')
-// 						.addClass('editing-item-placeholder');
-// 	var data = JSON.parse(parentElem.data('data'));
-// 	uiLayout['info-squares'].data = $.grep(uiLayout['info-squares'].data, function(o) {
-// 		return o.LOC != data.LOC;
-// 	});
-// 	// parentElem.fadeOut(function(){
-// 	// 	// renderArea(infoSquaresArea, uiLayout['info-squares']);
-// 	// 	// sortArea(infoSquaresArea);
-// 	// });
-// }
-
-// function renderInfoSquares() {
-
-// 	var areaData = uiLayout['info-squares'];
-// 	var area = infoSquaresArea;
-
-// 	// area with sorting
-// 	$(area).find('.sort-item:not(.template-item)').remove();	
-// 	// area without sorting
-// 	$(area).find('.list-item:not(.template-item)').remove();	
-
-// 	// set area width
-// 	var newItem = $(area).find('.template-item');
-	
-// 	// add items
-// 	var itemsNumber = itemsCount['info-squares']; 
-// 	for (i = 1; i <= itemsNumber; i++) {
-// 		var template = newItem.clone();
-// 		template.removeClass('template-item');
-// 		var currPosition = i; //j * rows + i;
-// 		template.attr('id', 'info-' + i);
-// 		$(template).attr('original-position', currPosition);
-// 		$(template).find('.add-item-button').data('position', currPosition);
-// 		$(area).append(template);		
-// 		var existingItem = areaData.data.filter(function(a) { return a.LOC == currPosition });		
-// 		// add an existing item
-// 		if (existingItem.length > 0) {		
-// 			getInfoSquareData(existingItem[0], function(itemWithData) {
-// 				renderInfoSquareData(itemWithData);				
-// 		  });	
-// 		}
-// 		// add a placeholder for sorting
-// 		else {
-// 			$(template).addClass('editing-item-placeholder');								 
-// 			$(template).find('.set-tooltip-field').removeClass('set-tooltip-field');
-// 		}
-// 	}
-// 	$(area).find('.set-tooltip-field').each(function(i, o) {
-// 		setTooltip(o);
-// 	});
-	
-// }
-
 function getInfoSquareData(obj, handler) {
 	// value should come from server
 	const value = parseInt(Math.random() * 10000000).toLocaleString();
 	obj.VAL = value;
 	handler(value);
 }
-
-// function renderInfoSquareData(itemWithData) {
-// 	var elem = $('#info-' + itemWithData.LOC)
-// 	$(elem).addClass('active')
-// 					.data('data', JSON.stringify(itemWithData));
-// 	setTemplateFields(elem, itemWithData);
-// 	$(elem).find('a').data('apm', itemWithData.APM)
-// 									 .data('uci', itemWithData.UCI);
-// 	if (itemWithData.wCY) {
-// 		$(elem).find('a').data('wcy', itemWithData.wCY);
-// 	}
-// }
 
 function requestCompleted() {
 	if (menuRequestCompleted /*&& lpGetRequestCompleted*/) {
@@ -859,5 +730,17 @@ function initSmartmenu() {
 		else {
 			return false;
 		}
+	});
+}
+
+function markFavoritesInMenu() {
+	// "unmark" all marked favorites
+	$('.add-to-favorites.favorite').removeClass('favorite')
+																 .find('i').removeClass('fa-star').addClass('fa-star-o');
+	// $('i.fa-star').removeClass('fa-star').addClass('fa-star-o');
+	menuFavorites.forEach(favorite => {
+		var favElem = $(`[data-id="${favorite.UCI}:${favorite.APM}"]`);
+		$(favElem).find('.add-to-favorites').addClass('favorite')
+							.find('i').removeClass('fa-star-o').addClass('fa-star');
 	});
 }
