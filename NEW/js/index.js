@@ -58,7 +58,7 @@ $(function() {
 		}
 		lastMenuApp = parent;
 		var apm = parent.data('apm');
-		var uci = JSON.parse(parent.data('data')).SYS; //parent.data('uci');
+		var uci = JSON.parse(parent.data('data')).SYS; // parent.data('uci');
 		var wcy = parent.data('wcy');
 		var appText = JSON.parse(parent.data('data')).TXT;
 		runApp(apm, uci, wcy, appText);
@@ -110,12 +110,6 @@ function getPageData() {
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
-			// 	// get the shortcuts from the favorites
-			// uiLayout.shortcuts.data = data[data.length - 1].MENU;
-
-			// // save the original layout to be able to cancel changes.
-			// originalLayout = cloneObject(uiLayout);
-
 			// renderAllAreas(true);
 			// menuFavorites = data[data.length - 1].MENU;
 
@@ -249,26 +243,6 @@ function refreshPageData() {
 		}
 	});
 	
-	// // info squares
-	// for (i = 0; i < uiLayout['info-squares'].data.length; i++) { 
-	// 	var item = uiLayout['info-squares'].data[i];
-	// 	getInfoSquareData(item, function(itemWithData) {
-	// 		renderInfoSquareData(itemWithData);				
-	// 	});	
-	// }
-
-	// // graphs
-	// for (var i = 0; i < uiLayout.graphs.data.length; i++) {
-	// 	var graph = uiLayout.graphs.data[i];
-	// 	// var divId = $(graph).find('> .graph-div').attr('id');
-	// 	// var graphData = JSON.parse($(graph).data('data'));			
-	// 	// drawGraph(graphData, divId);
-	// 	getGrpahData(graph, function(graphWithData) {
-	// 		renderGraphData(graphWithData);
-	// 		// $('#' + divId).parent().removeClass('loading');
-	// 	});
-	// }
-
 	// set last refresh time
 	lastRefresh = new Date();
 	$('#last-update').text(dateFormat(lastRefresh, 'dd/mm/yyyy HH:MM'));
@@ -313,46 +287,6 @@ function resetArrayLocations(arr) {
 
 //#region graphs
 
-// function renderCharts(useTimeout) {
-// 	$('#graphs-section').find('.sort-item:not(.template-item)').remove();
-// 	var graphPosition = 0;
-// 	while (graphPosition < itemsCount['graphs']) {
-// 		renderChart(graphPosition);
-// 		graphPosition++;
-// 	}
-// 	// sortArea($('#graphs-section'));
-// 	//// set the width of the graphs
-// 	//// calculateChartsWidth();
-// 	//// rerender the graphs to fit the new size
-// 	//// refreshCharts(useTimeout);
-// }
-
-// function renderChart(graphPosition, atPosition) {
-// 	var newItem = $('#graphs-section').find('.template-item');
-// 	var template = newItem.clone();
-// 	template.removeClass('template-item');
-// 	var divId = 'graph' + (graphPosition + 1);
-// 	template.find('> .graph-div').attr('id', divId);
-// 	template.find('.add-item-button').data('position', graphPosition + 1);
-// 	template.data('position', graphPosition + 1);
-// 	var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == graphPosition + 1 })[0] : undefined;		
-// 	if (!graph) {
-// 		template.addClass('editing-item-placeholder');
-// 	}
-// 	else {
-// 		getGrpahData(graph, function(graphWithData) {
-// 			renderGraphData(graphWithData);
-// 		});
-// 	}
-// 	template.css('width', 'calc(' + 100 / itemsCount['graphs'] + '% - 20px)');
-// 	if (atPosition && $('#graph' + graphPosition)) {
-// 		$('#graph' + graphPosition).parent().after(template);
-// 	}
-// 	else {
-// 		$('#graphs-section').append(template);
-// 	}
-// }
-
 function renderGraphData(graph) {
 	template = $(`[data-id=${graph.id}]`) // $('#graph' + graph.LOC).parent();
 	template.addClass('active');			
@@ -370,42 +304,6 @@ function renderGraphData(graph) {
 		$(template).removeClass('table-graph');
 	}
 }
-
-// function calculateChartsWidth() {	
-//     // the percentage value of each width unit
-// 	var percent = 100 / itemsCount['graphs'];
-// 	// setting the width for each graph
-// 	for (var i = 0; i < itemsCount['graphs']; i++) {
-// 		var graph = uiLayout.graphs.data ? uiLayout.graphs.data.filter(function(a) { return a.LOC == i + 1 })[0] : undefined;
-// 		var _width;
-// 		if (graph && graph.data.chartSize == 'large') {
-// 			_width = 2 * percent + '%';
-// 		}
-// 		else {
-// 			_width = percent + '%';
-// 		}	
-// 		// 20px is for the radius (10px each size).
-// 		$('#graph' + (i + 1)).parent().css('width', 'calc(' + _width + ' - 20px)');
-		
-// 		if (graph && graph.data.chartSize == 'large') {
-// 			i++;
-// 		}		
-// 	}
-// }
-
-// function setChartWidth(currGraph) {	
-// 	// the percentage value of each width unit
-// 	var percent = 100 / itemsCount['graphs'];
-// 	var _width;
-// 	if (currGraph && currGraph.data.chartSize == 'large') {
-// 		_width = 2 * percent + '%';
-// 	}
-// 	else {
-// 		_width = percent + '%';
-// 	}	
-// 	// 20px is for the radius (10px each size).
-// 	$('#graph' + currGraph.LOC).parent().css('width', 'calc(' + _width + ' - 20px)');
-// }
 
 // get graph data from server.
 function getGrpahData(graph, handler) {
@@ -478,6 +376,9 @@ function drawGraph(graphData, canvasElem, graphHeight) {
 //#region menu
 
 function setMenu(data) {		    	
+	console.log(`setMenu started: ${new Date()}`);
+	
+	var menuItems = [];
 	for (let i = 0; i < data.length; i++) {
 		const rootItem = data[i];
 		// if there's only one company, skip companys level
@@ -486,13 +387,16 @@ function setMenu(data) {
 		}
 		var liElement = $(`<li><a href="javascript:;"><i class="fa fa-lg fa-home"></i> <span class="menu-item-parent">${rootItem.TXT}</span></a></li>`); 		    		
 		addSubMenu(liElement, rootItem.MENU);
-		$('#menu-list > .search-app-li').before(liElement);
+		menuItems.push(liElement);
 		// set tooltip
 		if (liElement.find('.menu-item-parent').prop('offsetWidth') < liElement.find('.menu-item-parent').prop('scrollWidth')) {
 			liElement.find('.menu-item-parent').attr('title', rootItem.TXT);
 		}
 	}
-	
+	$('#menu-list > .search-app-li').before(menuItems);
+
+	console.log(`setMenu finsihed: ${new Date()}`);
+
 	$('#menu-list > li:not(.search-app-li):last').attr('id', 'favorites-menu-item');
 	
 	setMenuFavorites();
@@ -529,16 +433,21 @@ function addSubMenu(parent, childrenObj, editSubMenu = false) {
 }
 
 function setMenuItem(itemObj) { 
-	var newItemElem = $(menuItemTemplate).clone();
-	// set name
-	if (itemObj.TXT) {
-		//$(newItemElem).find('.name').html(getHebrew(itemObj.TXT));//stringFormat('[{0}] {1}', itemObj.number, itemObj.name));
-		$(newItemElem).find('.name').html(itemObj.TXT);
-	}	
-	// set icon
-	if (itemObj.icon) {
-		$(newItemElem).find('.name').prepend('<i class="' + itemObj.icon + '"><i/>');
+	var appClass = '';
+	var addToFavorites = '';
+	var itemData = '';
+	// if it's an app
+	if (!itemObj.MENU || itemObj.MENU.length === 0) {
+		appClass = 'app'
+		addToFavorites = `<a href="javascript:;" class="add-to-favorites" title="הוסף למועדפים"><i class="fa fa-star-o"></i></a>`;
+		itemData = `data-item-id="${itemObj.UCI}:${itemObj.APM}" data-apm="${itemObj.APM}" data-uci="${itemObj.SYS}" ${ itemObj.wCY ? ` data-wcy="${itemObj.wCY}" ` : '' }`;
 	}
+	var newElemString = `<li class="${appClass}" ${itemData}>
+												 ${ addToFavorites }
+												 ${ itemObj.icon ? '<i class="' + itemObj.icon + '"><i/>' : '' }
+												 <a class="name" href="javascript:;">${itemObj.TXT}</a>
+									 		 </li>`;
+	var newItemElem = htmlToElement(newElemString);
 	// set children (recursive)
 	if (itemObj.MENU && itemObj.MENU.length > 0) {
 		addSubMenu(newItemElem, itemObj.MENU);
@@ -548,26 +457,9 @@ function setMenuItem(itemObj) {
 		// search in menu array. add only if not exist.
 		if (menuApps.indexOfByProperty('TXT', itemObj.TXT) < 0) {				
 			menuApps.push(itemObj);		
-		}		
-		$(newItemElem).addClass('app')
-					  .data('data', JSON.stringify(itemObj))
-					  .data('apm', itemObj.APM)
-						.data('uci', itemObj.UCI)
-						.attr('data-id', `${itemObj.UCI}:${itemObj.APM}`);
-		if (itemObj.wCY) {
-			$(newItemElem).addClass('app').data('wcy', itemObj.wCY);
-		}
-		
-		var favoriteClass = '';
-		var favoriteIconClass = 'fa-star-o';
-		// is favorite
-		// if (uiLayout.shortcuts.data && uiLayout.shortcuts.data.indexOfByProperty('TXT', itemObj.TXT) >= 0) {				
-		// 	favoriteIconClass = 'fa-star';
-		// 	favoriteClass = 'favorite';
-		// }
-		$(newItemElem).prepend('<a href="javascript:;" class="add-to-favorites ' + favoriteClass + '" title="הוסף למועדפים"><i class="fa ' + favoriteIconClass +'"></i></a>');
-	}	
-	
+		}	
+		$(newItemElem).data('data', JSON.stringify(itemObj));	
+	}		
 	return newItemElem;
 }
 
@@ -615,32 +507,32 @@ function renderMenuFavorites() {
 	$('#favorites-menu-item').find('.add-to-favorites').removeClass('add-to-favorites')
 																										 .addClass('remove-from-favorites favorite')
 													 .find('i').removeClass('fa-star-o').addClass('fa-star');
-	$('#menu-list').smartmenus('refresh');
+	// $('#menu-list').smartmenus('refresh');
 	markFavoritesInMenu();
 }
 
-function showLastMenuPosition() {
-	if (lastMenuApp) {
-		lastMenuApp.parentsUntil('nav', 'li').addClass('show-list');
+// function showLastMenuPosition() {
+// 	if (lastMenuApp) {
+// 		lastMenuApp.parentsUntil('nav', 'li').addClass('show-list');
 		
-		// disabling the menu for 2 seconds except the last menu position.
-		$('#menu-list li:visible').addClass('disabled');
-		$('#menu-list').addClass('disabled');
-		// removeing disalbe from the "siblings" of last app
-		lastMenuApp.parent().find('li:visible').removeClass('disabled');
-		lastMenuApp.parentsUntil('nav', 'li').removeClass('disabled');
-		setTimeout(function() {
-			$('nav li.disabled').removeClass('disabled');
+// 		// disabling the menu for 2 seconds except the last menu position.
+// 		$('#menu-list li:visible').addClass('disabled');
+// 		$('#menu-list').addClass('disabled');
+// 		// removeing disalbe from the "siblings" of last app
+// 		lastMenuApp.parent().find('li:visible').removeClass('disabled');
+// 		lastMenuApp.parentsUntil('nav', 'li').removeClass('disabled');
+// 		setTimeout(function() {
+// 			$('nav li.disabled').removeClass('disabled');
 			
-			$('nav').on('mouseenter', 'li:not(.disabled)', function() {
-				$('nav li.show-list').removeClass('show-list');
-				$('nav').off('mouseenter', 'li:not(.disabled)');
-			});
+// 			$('nav').on('mouseenter', 'li:not(.disabled)', function() {
+// 				$('nav li.show-list').removeClass('show-list');
+// 				$('nav').off('mouseenter', 'li:not(.disabled)');
+// 			});
 			
-			$('nav li.show-list').removeClass('show-list');
-		}, 2000);
-	}		
-}
+// 			$('nav li.show-list').removeClass('show-list');
+// 		}, 2000);
+// 	}		
+// }
 
 //#endregion menu
 
@@ -652,7 +544,7 @@ function getInfoSquareData(obj, handler) {
 }
 
 function requestCompleted() {
-	if (menuRequestCompleted /*&& lpGetRequestCompleted*/) {
+	if (menuRequestCompleted && lpGetRequestCompleted) {
 		// // if no shortcuts data is saved, render favorites.
 		// if (uiLayout.shortcuts.data.length === 0) {
 		// 	renderArea(shortcutsArea, { data: menuFavorites });
@@ -739,7 +631,7 @@ function markFavoritesInMenu() {
 																 .find('i').removeClass('fa-star').addClass('fa-star-o');
 	// $('i.fa-star').removeClass('fa-star').addClass('fa-star-o');
 	menuFavorites.forEach(favorite => {
-		var favElem = $(`[data-id="${favorite.UCI}:${favorite.APM}"]`);
+		var favElem = $(`[data-item-id="${favorite.UCI}:${favorite.APM}"]`);
 		$(favElem).find('.add-to-favorites').addClass('favorite')
 							.find('i').removeClass('fa-star-o').addClass('fa-star');
 	});
