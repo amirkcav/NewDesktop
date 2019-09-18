@@ -46,6 +46,12 @@ label {
 .grid-stack-item-content {
   border: 1px solid #333;
   background: #eee;
+  box-shadow: #aaa 0 0 5px;
+  transition: box-shadow 0.3s;
+}
+
+.grid-stack-item-content:hover {
+  box-shadow: #777 0 0 10px;
 }
  
 .grid-stack>.grid-stack-item>.grid-stack-item-content {
@@ -105,7 +111,9 @@ body.editing .grid-stack-item-content {
 }
 
 body:not(.editing) .item-shortcut .grid-stack-item-content,
-body:not(.editing) .item-data-cube .grid-stack-item-content {
+body:not(.editing) .item-shortcut .grid-stack-item-content label,
+body:not(.editing) .item-data-cube .grid-stack-item-content,
+body:not(.editing) .item-data-cube .grid-stack-item-content label {
   cursor: pointer;
 }
 
@@ -254,4 +262,9 @@ ul.ui-autocomplete {
 
 #menu-list.sm li.app:active {
   background: #ddd;
+}
+
+#menu-list > li > a.highlighted {
+  transition: 0.3s;
+  background: rgba(255,255,255,0.2);  
 }
