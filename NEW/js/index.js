@@ -87,12 +87,12 @@ $(function() {
 
 	//#endregion menu
 
-	lastAppsArea.on('click', 'li.last-app > a', function() {
-		var apm = $(this).data('apm');
-		var uci = $(this).data('uci');
-		var wcy = $(this).data('wcy');
-		runApp(apm, uci, wcy);
-	});
+	// lastAppsArea.on('click', 'li.last-app > a', function() {
+	// 	var apm = $(this).data('apm');
+	// 	var uci = $(this).data('uci');
+	// 	var wcy = $(this).data('wcy');
+	// 	runApp(apm, uci, wcy);
+	// });
 
 	$('#refresh-page-data-button').on('click', function() {
 		refreshPageData();
@@ -139,11 +139,9 @@ function getPageData() {
 	
 	// get page data
 	var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPGET";    	
-	// var data = JSON.stringify({ data: uiLayout }); 
 	$.ajax({
 		type : 'POST',
 		url : url,
-		// data: data,
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {			
@@ -213,7 +211,7 @@ function getPageData() {
 		success : function(data) {
 			var docs = [];
 			data.document.forEach(doc => {
-				var template = `<li class="last-doc list-item" data-doc-dataa="${doc}" data-a="{"name": "AMIR"}">
+				var template = `<li class="last-doc list-item">
 													<a href="javascript:;" class="set-tooltip-field">${doc.description}</a>
 												</li>`;
 				var elem = htmlToElement(template);
@@ -221,6 +219,29 @@ function getPageData() {
 				docs.push(elem);
 			});
 			$('#last-docs-section > ul').append(docs);
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
+	});
+
+	// get last apps
+	$.ajax({
+		type : 'GET',
+		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RAPPS",
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			var apps = [];
+			data[0].MENU.forEach(app => {
+				var template = `<li class="last-app list-item">
+													<a href="javascript:;" class="set-tooltip-field">${app.TXT}</a>
+												</li>`;
+				var elem = htmlToElement(template);
+				$(elem).data('app-data', JSON.stringify(app));
+				apps.push(elem);
+			});
+			$('#last-apps-section > ul').append(apps);
 		},
 		error: function(data) {
 			alert(data.responseText);    		

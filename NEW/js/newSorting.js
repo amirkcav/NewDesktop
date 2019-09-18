@@ -4,21 +4,6 @@ var gridStackObj;
 var itemsData;
 
 $(function () {
-  // var gridstackOptions = {
-  //     cellHeight: 'auto',
-  //     staticGrid: true,
-  //     resizable: {
-  //       handles: 'se, sw'
-  //     }
-  // };
-  // $('.grid-stack').gridstack(gridstackOptions);
-  // gridStackObj = $('.grid-stack').data('gridstack');
-
-  // itemsData = localStorage.getItem('itemsData');
-  // if (itemsData) {
-  //   itemsData = JSON.parse(itemsData);
-  //   renderItems(itemsData);    
-  // }
 
   $('#items-container').on('click', '.remove-item', function(event) {
     
@@ -398,6 +383,15 @@ $(function () {
     runApp(apm, uci, cy, '', pmString);
   });
 
+  $('#last-apps-section > ul').on('click', '.last-app.list-item', function() {
+    var appData = JSON.parse($(this).data('app-data'));
+    // runApp
+    var apm = appData.APM;
+    var uci = appData.SYS;
+    var cy = appData.wCY;
+    runApp(apm, uci, cy);
+  });
+
 });
 
 function addItem(width, height, type, dataObj, id, x, y) {
@@ -453,26 +447,6 @@ function getItemTemplate(type, id, itemData) {
   return template;
 }
 
-// function _addItem(width, height, type, id, x, y) {
-//   if (!id) {
-//     if ($('#items-container .grid-stack-item').length === 0) {
-//       id = 1;
-//     }
-//     else {
-//       var ids = $('#items-container .grid-stack-item').map((i,o) => $(o).data('id'));
-//       id = Math.max.apply(0, ids) + 1;
-//     }
-//   }
-//   var template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}" data-gs-x="${x}" data-gs-y="${y}" data-gs-width="${width}" data-gs-height="${height}">
-//                     <div class="grid-stack-item-content">
-//                       <a class="remove-item" href="javascript:;">X</a>
-//                       <h3>${id}</h3>
-//                     </div>
-//                   </div>`;
-//   var hasPosition = x != null && y != null;                
-//   var widget = gridStackObj.addWidget(htmlToElement(template), x, y, width, height, !hasPosition);
-// }
-
 function addShortcut(data) {
   addItem(1, 1, 'shortcut', data);
 }
@@ -524,14 +498,14 @@ function renderItems(data) {
           item.data = item.data;
           item.data.VAL = value;
         }
-        // addItem(itemWithData.width, itemWithData.height, itemWithData.type, itemWithData.data ? JSON.parse(itemWithData.data) : null, itemWithData.id, itemWithData.x, itemWithData.y);
         addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
+        if (item.APM && item.APM !== 'null') {
+          $(`[data-id="${item.id}"]`).addClass('has-app');
+        }
       });
     }
     else if (item.type === 'graph') {
-      // item.data = JSON.parse(item.data);
       addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
-      // renderGraphData(item.data);
       getGrpahData(item.data, function(graphWithData) {
         renderGraphData(graphWithData);
       });
