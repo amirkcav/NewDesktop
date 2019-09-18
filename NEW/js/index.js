@@ -36,6 +36,10 @@ var refreshIntervalMinutes = 5;
 setInterval(function() {
 	refreshPageData();	
 }, refreshIntervalMinutes * 60 * 1000);
+// refresh recent apps and documents (every 8 seconds)
+setInterval(function() {
+	refreshRecentData();
+}, 8 * 1000);
 
 $(function() {		
 
@@ -202,51 +206,9 @@ function getPageData() {
 		return obj;
 	});
 
-	// get last documents
-	$.ajax({
-		type : 'GET',
-		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RDOCS",
-		contentType : 'application/json',
-		dataType : 'json',
-		success : function(data) {
-			var docs = [];
-			data.document.forEach(doc => {
-				var template = `<li class="last-doc list-item">
-													<a href="javascript:;" class="set-tooltip-field">${doc.description}</a>
-												</li>`;
-				var elem = htmlToElement(template);
-				$(elem).data('doc-data', JSON.stringify(doc));
-				docs.push(elem);
-			});
-			$('#last-docs-section > ul').append(docs);
-		},
-		error: function(data) {
-			alert(data.responseText);    		
-		}
-	});
-
-	// get last apps
-	$.ajax({
-		type : 'GET',
-		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RAPPS",
-		contentType : 'application/json',
-		dataType : 'json',
-		success : function(data) {
-			var apps = [];
-			data[0].MENU.forEach(app => {
-				var template = `<li class="last-app list-item">
-													<a href="javascript:;" class="set-tooltip-field">${app.TXT}</a>
-												</li>`;
-				var elem = htmlToElement(template);
-				$(elem).data('app-data', JSON.stringify(app));
-				apps.push(elem);
-			});
-			$('#last-apps-section > ul').append(apps);
-		},
-		error: function(data) {
-			alert(data.responseText);    		
-		}
-	});
+	// get recent documents and apps	
+	refreshRecentData();
+	
 }
 
 function refreshPageData() {
@@ -273,12 +235,6 @@ function runApp(apm, uci, companyCode, text, params = '') {
 	var apmArr = apm.split(':');
 	var ap = apmArr[0];
 	var pm = apmArr[1];
-	// // add to last apps
-	// if (text && text.length > 0) {
-	// 	var currApp = { TXT: text, UCI: uci, APM: apm, wCY: companyCode };
-	// 	addToLastApps(currApp);		
-	// 	renderArea(lastAppsArea, uiLayout['last-apps']);
-	// }
 	// run app.
 	if (window.app) {
 		app.openApplication(ap, pm, uci, companyCode ? companyCode.toString() : '', params);
@@ -655,5 +611,53 @@ function markFavoritesInMenu() {
 		var favElem = $(`[data-item-id="${favorite.UCI}:${favorite.APM}"]`);
 		$(favElem).find('.add-to-favorites').addClass('favorite')
 							.find('i').removeClass('fa-star-o').addClass('fa-star');
+	});
+}
+
+function refreshRecentData() {
+	// get last documents
+	$.ajax({
+		type : 'GET',
+		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RDOCS",
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			var docs = [];
+			data.document.forEach(doc => {
+				var template = `<li class="last-doc list-item">
+													<a href="javascript:;" class="set-tooltip-field">${doc.description}</a>
+												</li>`;
+				var elem = htmlToElement(template);
+				$(elem).data('doc-data', JSON.stringify(doc));
+				docs.push(elem);
+			});
+			$('#last-docs-section > ul').html(docs);
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
+	});
+
+	// get last apps
+	$.ajax({
+		type : 'GET',
+		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RAPPS",
+		contentType : 'application/json',
+		dataType : 'json',
+		success : function(data) {
+			var apps = [];
+			data[0].MENU.forEach(app => {
+				var template = `<li class="last-app list-item">
+													<a href="javascript:;" class="set-tooltip-field">${app.TXT}</a>
+												</li>`;
+				var elem = htmlToElement(template);
+				$(elem).data('app-data', JSON.stringify(app));
+				apps.push(elem);
+			});
+			$('#last-apps-section > ul').html(apps);
+		},
+		error: function(data) {
+			alert(data.responseText);    		
+		}
 	});
 }

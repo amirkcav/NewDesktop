@@ -178,6 +178,10 @@ body:not(.editing) .item-data-cube .grid-stack-item-content label {
   display: block;
 }
 
+.bootstrap-table table thead th {
+  text-align: right;
+}
+
 /*#region jquery ui autocomplete*/ 
 /*from https://jsfiddle.net/gotemkfr/*/
 .ui-autocomplete {
