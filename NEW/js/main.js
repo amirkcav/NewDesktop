@@ -39,9 +39,11 @@ $(function() {
 	// reset form data when modal is closed
 	$('.modal.reset-on-close').on('hidden.bs.modal', function(){
 		var form = $(this).find('form');
-		resetFormValues(form);
-		$(form).validate().resetForm();
-		$(form).find('.form-control.error').removeClass('error');
+		if (form.length > 0) {
+			resetFormValues(form);
+			$(form).validate().resetForm();
+			$(form).find('.form-control.error').removeClass('error');
+		}
 	});
 
 });

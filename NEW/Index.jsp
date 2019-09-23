@@ -191,34 +191,34 @@
                 </div>
                 <div class="modal-footer">
                     <button id="add-graph-modal-button" class="btn btn-lg modal-submit-button">הוסף</button>
-				          	<button id="add-graph-modal-cancel-button" class="btn btn-lg modal-cancel-button" data-dismiss="modal">בטל</button>
+                    <button id="add-graph-modal-cancel-button" class="btn btn-lg modal-cancel-button" data-dismiss="modal">בטל</button>
                 </div>
             </div>
         </div>
     </div>
 
-	<div id="large-graph-modal" class="modal fade" role="dialog">
-		<div class="modal-dialog">
+    <div id="manage-favorites-modal" class="modal fade reset-on-close" role="dialog">
+        <div class="modal-dialog">
             <div class="modal-content">
-            	<div class="modal-header">
-                    <h3></h3>
+                <div class="modal-header">
+                    <h3>נהל מועדפים</h3>
                 </div>
-                <div class="modal-body graph-mode loading">
-                	<img id="graph-loading-image" src="img/loading.gif" />
-                	<a href="javascript:;" id="change-graph-mode-button">
-                		<i class="fa fa-table table-icon"></i>
-                		<i class="fa fa-bar-chart-o graph-icon"></i>
-                	</a>
-                	<div id="large-graph-div">
-						<canvas></canvas>
-					</div>
+                <div class="modal-body">
+                    <ul id="favorites-list" class="jq-sortable">
+
+                    </ul>
+                    <div class="clearfix">
+                        <button id="add-directory-button" class="pull-right" disabled>הוסף ספרייה</button>
+                        <input id="add-directory-name" class="pull-right" />
+                    </div>
                 </div>
-				<div class="modal-footer">
-					<button class="btn btn-lg btn-default" data-dismiss="modal">סגור</button>
-				</div>
-			</div>
-        </div>		
-	</div>
+                <div class="modal-footer">
+                    <button id="manage-favorites-modal-button" class="btn btn-lg modal-submit-button" data-dismiss="modal">שמור</button>
+                    <button id="manage-favorites-cancel-button" class="btn btn-lg modal-cancel-button" data-dismiss="modal">בטל</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 

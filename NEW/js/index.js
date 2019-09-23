@@ -19,6 +19,8 @@ var hebrewPeriods = {
 	daily: 'יומי'
 }
 
+var oldContainer;
+
 // set token header (from query string).
 var urlParams = new URLSearchParams(window.location.search);
 var token = urlParams.has('token') ? urlParams.get('token') : null;
@@ -91,15 +93,27 @@ $(function() {
 
 	//#endregion menu
 
-	// lastAppsArea.on('click', 'li.last-app > a', function() {
-	// 	var apm = $(this).data('apm');
-	// 	var uci = $(this).data('uci');
-	// 	var wcy = $(this).data('wcy');
-	// 	runApp(apm, uci, wcy);
-	// });
-
 	$('#refresh-page-data-button').on('click', function() {
 		refreshPageData();
+	});
+
+	$('#add-directory-button').on('click', function() {
+		var directoryName = $('#add-directory-name').val();
+		// $('#favorites-list').append(`<li data-data='{ "TXT": "${directoryName}", "TYP": "M" }'><label>${directoryName}</label><ul class="favorites-nested-list jq-sortable"></ul></li>`)
+		$('#favorites-list').append(`<li ><label>${directoryName}</label><ul class="favorites-nested-list jq-sortable"></ul></li>`); //data-data='${ JSON.stringify({ 'TXT': directoryName, 'TYP': 'M' }) }'
+		$('#favorites-list li:last-child').data('data', JSON.stringify({ 'TXT': directoryName, 'TYP': 'M' }));
+		$('#add-directory-name').val('');
+		$('#add-directory-button').attr('disabled', true);
+	});
+
+	$('#add-directory-name').on('input', function() {
+		$('#add-directory-button').attr('disabled', $(this).val().length === 0);
+	});
+
+	$('#manage-favorites-modal').on('click', '#manage-favorites-modal-button', function() {
+		menuFavorites = $.makeArray($('#favorites-list').nestedSortable('serialize'));
+		renderMenuFavorites();
+		// $('#menu-list').smartmenus('refresh');
 	});
 
 });
@@ -457,17 +471,52 @@ function setMenuSearch() {
 }
 
 function setMenuFavorites() {
+	// get favorites from server
 	var menuFavoritesString = localStorage.getItem('menuFavorites');
 	if (menuFavoritesString) {
 		menuFavorites = JSON.parse(menuFavoritesString);
 		renderMenuFavorites();		
 	}
+	// manage favorites
+	setManageFavorites();
+	// var favoritesItems = [];
+	// menuFavorites.forEach((fav, i) => {
+	// 	var mi = setMenuItem(fav);
+	// 	favoritesItems.push(mi);
+	// });
+	// $('#favorites-list').html(favoritesItems);
+	$('#favorites-list').nestedSortable({
+		group: 'nested',
+		afterMove: function (placeholder, container) {
+			if(oldContainer != container){
+				if(oldContainer)
+					oldContainer.el.removeClass("active");
+				container.el.addClass("active");
+	
+				oldContainer = container;
+			}
+		},
+		onDrop: function ($item, container, _super) {
+			container.el.removeClass("active");
+			_super($item, container);
+		},
+		serialize: function ($item, $children, parentIsContainer) {
+			var result = $item.data('data') ? JSON.parse($item.data('data')) : {}; // $.extend({}, $item.data('data'))
+			 if(parentIsContainer)
+				return $children;
+			else if ($children[0]){
+				result.MENU = $children
+			}
+			return result;
+		}
+	});
 }
 
 function addToFavorites(itemToAdd) {	
 	menuFavorites.push(itemToAdd);
 	localStorage.setItem('menuFavorites', JSON.stringify(menuFavorites));
 	renderMenuFavorites();
+	setManageFavorites();
 }
 
 function removeFromFavorites(itemToRemove) {	
@@ -476,6 +525,7 @@ function removeFromFavorites(itemToRemove) {
 	});
 	localStorage.setItem('menuFavorites', JSON.stringify(menuFavorites));
 	renderMenuFavorites();
+	setManageFavorites();
 }
 
 function renderMenuFavorites() {
@@ -484,32 +534,15 @@ function renderMenuFavorites() {
 	$('#favorites-menu-item').find('.add-to-favorites').removeClass('add-to-favorites')
 																										 .addClass('remove-from-favorites favorite')
 													 .find('i').removeClass('fa-star-o').addClass('fa-star');
-	// $('#menu-list').smartmenus('refresh');
 	markFavoritesInMenu();
-}
 
-// function showLastMenuPosition() {
-// 	if (lastMenuApp) {
-// 		lastMenuApp.parentsUntil('nav', 'li').addClass('show-list');
-		
-// 		// disabling the menu for 2 seconds except the last menu position.
-// 		$('#menu-list li:visible').addClass('disabled');
-// 		$('#menu-list').addClass('disabled');
-// 		// removeing disalbe from the "siblings" of last app
-// 		lastMenuApp.parent().find('li:visible').removeClass('disabled');
-// 		lastMenuApp.parentsUntil('nav', 'li').removeClass('disabled');
-// 		setTimeout(function() {
-// 			$('nav li.disabled').removeClass('disabled');
-			
-// 			$('nav').on('mouseenter', 'li:not(.disabled)', function() {
-// 				$('nav li.show-list').removeClass('show-list');
-// 				$('nav').off('mouseenter', 'li:not(.disabled)');
-// 			});
-			
-// 			$('nav li.show-list').removeClass('show-list');
-// 		}, 2000);
-// 	}		
-// }
+	// add "manage favorites" to menu
+	$('#favorites-menu-item > ul').prepend(`<li class="app manage-favorites">
+																						<a href="#manage-favorites-modal" data-toggle="modal">נהל מועדפים</a>
+																					<li>`);
+
+	$('#menu-list').smartmenus('refresh');
+}
 
 //#endregion menu
 
@@ -660,4 +693,14 @@ function refreshRecentData() {
 			alert(data.responseText);    		
 		}
 	});
+}
+
+function setManageFavorites() {
+	// manage favorites
+	var favoritesItems = [];
+	menuFavorites.forEach((fav, i) => {
+		var mi = setMenuItem(fav);
+		favoritesItems.push(mi);
+	});
+	$('#favorites-list').html(favoritesItems);
 }
