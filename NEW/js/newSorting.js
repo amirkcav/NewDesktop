@@ -537,5 +537,8 @@ function getSystemClass(sys) {
   else if (sys === 'CAV' || sys === 'SYS') {
     systemClass = 'service';
   }
+  else {
+    systemClass = sys.toLowerCase();
+  }
   return systemClass;
 }

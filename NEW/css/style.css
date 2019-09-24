@@ -292,6 +292,16 @@ form input.error + label.error[for] {
     color: inherit;
 }
 
+.list-section > ul > li {
+    transition: 0.2s;
+}
+
+.list-section > ul > li:hover {
+    transform: scale(1.1);
+    transform-origin: right;
+    font-weight: bold;
+}
+
 .list-section .list-count {
     background: #e4e4ee;
     color: #377DE5;

@@ -62,11 +62,43 @@ label {
 /* #region system colors */
 
 .item-data-cube .grid-stack-item-content {
-  border-top: 4px solid #377DE5;
+  border-top: 4px solid #666;
 }
 
 .item-data-cube .grid-stack-item-content .sum {
-  color: #377DE5;
+  color: #666;
+}
+
+.item-data-cube.finance .grid-stack-item-content {
+  border-top: 4px solid var(--finance-color);
+}
+
+.item-data-cube.finance .grid-stack-item-content .sum {
+  color: var(--finance-color);
+}
+
+.item-data-cube.mlid .grid-stack-item-content {
+  border-top: 4px solid var(--mlid-color);
+}
+
+.item-data-cube.mlid .grid-stack-item-content .sum {
+  color: var(--mlid-color);
+}
+
+.item-data-cube.bank .grid-stack-item-content {
+  border-top: 4px solid var(--bank-color);
+}
+
+.item-data-cube.bank .grid-stack-item-content .sum {
+  color: var(--bank-color);
+}
+
+.item-data-cube.touring .grid-stack-item-content {
+  border-top: 4px solid var(--touring-color);
+}
+
+.item-data-cube.touring .grid-stack-item-content .sum {
+  color: var(--touring-color);
 }
 
 .item-shortcut.finance .shortcut-text {

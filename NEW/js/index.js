@@ -211,7 +211,7 @@ function getPageData() {
 	});
 
 	// get available info squares.
-  allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099' } ];
+  allInfoSquaresOptions = [ { COD: 1, TXT: 'מכירות יומי', VAL: '72,527', SYS: 'SVK' }, { COD: 2, TXT: 'מכירות חודשי', VAL: '1,211,422', SYS: 'SVK' }, { COD: 3, TXT: 'מכירות שבועי', VAL: '24,053', SYS: 'MLID' }, { COD: 4, TXT: 'החזרות חודשי', VAL: '6,320', SYS: 'TOURING' }, { COD: 5, TXT: 'מוצרים פגומים חודשי', VAL: '5,245', SYS: 'BANK' }, { COD: 6, TXT: 'מכירות שנתי', VAL: '14,310,558', SYS: 'TOURING' }, { COD: 7, TXT: 'רווחים חודשי עם כותרת ארוכה', VAL: '342,099', SYS: 'BANK' } ];
 	allInfoSquaresOptions = allInfoSquaresOptions.sort((isa, isb) => isa.TXT.localeCompare(isb.TXT) );
 	allInfoSquaresOptions = $.map(allInfoSquaresOptions, function (obj) {
 		obj.id = obj.id || obj.COD;
