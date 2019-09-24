@@ -1,34 +1,5 @@
-html {
-    /* override smartadmin background image */
-    background: white;
-}
-
-body.background1 {
-    background: linear-gradient(to right bottom, rgb(235, 237, 244), rgb(171, 175, 190), rgb(235, 237, 244));
-}
-
-body.background2 {
-    background: linear-gradient(0deg, #949494 10%, #efefef 90%);
-}
-
-body.background3 {
-    background: linear-gradient(to right top, rgb(253, 219, 146) 0%, rgb(209, 253, 255) 100%)
-}
-
-body.background4 {
-    background: linear-gradient(-20deg, rgb(233, 222, 250) 0%, rgb(251, 252, 219) 100%)
-}
-
-body.background5 {
-    background: linear-gradient(-20deg, rgb(220, 176, 237) 0%, rgb(153, 201, 156) 100%)
-}
-
 #header #logo {
     overflow: hidden;
-}
-
-#left-panel > nav > ul a > i {
-    margin-left: 5px;
 }
 
 .item-scale {
@@ -40,13 +11,13 @@ body.background5 {
     box-shadow: #ccc 0 0 3px 3px;
 }
 
-#edit-page, #done-edit-page, #cancel-edit-page {
+/* #edit-page-button, #cancel-edit-page-button {
     float: left;    
-}
+} */
 
 #manage-edit-div {
-    float: left;
-    margin: 18px 10px;
+    margin: 20px 30px 10px 30px;
+    text-align: left;
 }
 
 .sorting-placeholder {
@@ -88,8 +59,8 @@ body.editing .regular-state, .edit-state {
     display: none;
 }
 
-body.editing .edit-state {
-    display: inline;
+body.editing .edit-state, body:not(.editing) .regular-state {
+    display: inline-block;
 }
 
 body.editing #manage-edit-div label.edit-state {
@@ -102,9 +73,44 @@ body.editing #manage-edit-div label.edit-state {
     display: none !important;
 }
 
-#left-panel #cancel-edit-page {
-    margin-left: 15px;
+form input.error {
+    border-color: red;
+    border-width: 2px;
+    background: #fadfdf;    
 }
+
+form input.error + label.error[for] {
+    display: none !important;
+}
+
+#add-shortcut-form ul.ui-autocomplete {
+    max-height: 500px;
+    overflow: auto;
+}
+
+.popover {
+    max-width: none;
+}
+
+.popover .popover-title {
+    direction: rtl;
+}
+
+.popover .confirmation-popover-content {
+    width: 125px;
+}
+
+.department.deleting {
+    background: #fdd;
+}
+
+.set-tooltip-field {
+    text-overflow: ellipsis;
+    /*white-space: nowrap;*/
+    overflow-x: hidden;
+}
+
+/* #region menu */
 
 #menu-list .search-app-li > input.search-app {
     display: inline-block;
@@ -158,63 +164,6 @@ body.editing #manage-edit-div label.edit-state {
     color: #333;
 }
 
-#top-row {
-    /* height: calc(100% - 375px); */
-    /* height: 50%; */
-    height: 390px;
-}
-
-#bottom-row {
-    /* height: 50%; */
-    height: 390px;
-}
-
-#content > *[id] {
-    height: 390px;
-}
-
-form input.error {
-    border-color: red;
-    border-width: 2px;
-    background: #fadfdf;    
-}
-
-form input.error + label.error[for] {
-    display: none !important;
-}
-
-#add-shortcut-form ul.ui-autocomplete {
-    max-height: 500px;
-    overflow: auto;
-}
-
-nav li.disabled {
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-.popover {
-    max-width: none;
-}
-
-.popover .popover-title {
-    direction: rtl;
-}
-
-.popover .confirmation-popover-content {
-    width: 125px;
-}
-
-.department.deleting {
-    background: #fdd;
-}
-
-.set-tooltip-field {
-    text-overflow: ellipsis;
-    /*white-space: nowrap;*/
-    overflow-x: hidden;
-}
-
 #menu-list li.app {
     display: flex;
 }
@@ -255,6 +204,41 @@ nav li.disabled {
     position: relative;
 }
 
+#menu-list > li > ul {
+    z-index: 1111;
+}
+
+#menu-list.sm ul a.highlighted, #menu-list.sm li.app:hover {
+    background: #2F3A4A;
+}
+
+#menu-list.sm li.app:active {
+    background: #ddd;
+}
+
+#menu-list > li > a.highlighted {
+    transition: 0.3s;
+    background: #C12026;  
+}
+
+#menu-list li.manage-favorites {
+    font-weight: bold;
+}
+
+#menu-list li.manage-favorites > a {
+    width: 100%;
+}
+
+#menu-list > li > a > .sub-arrow {
+    display: none;
+}
+
+#menu-list > li > a {
+    height: var(--menu-row-height);
+}
+
+/* #endregion menu */
+
 #add-graph-modal .add-graph-error {
     display: none;
     color: red;
@@ -266,7 +250,7 @@ nav li.disabled {
     display: block;
 }
 
-#large-graph-modal .modal-body #graph-loading-image, #graph-loading-image {
+#graph-loading-image {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -274,67 +258,48 @@ nav li.disabled {
     display: none;
 }
 
-#large-graph-modal .modal-body.loading #graph-loading-image, 
 .loading:not(.editing-item-placeholder) #graph-loading-image { 
     display: block;
 }
 
-.list-section > ul.bordered-list {
-    background: #f6f6f6;
-    border: 1px solid #666;
-    height: calc(100% - 35px);
-    padding-top: 12px;
-    margin-top: -1.7rem;
-    border-radius: 10px;
+/* #region right side lists */
+
+.list-section {
+    padding: 50px 10px 30px 10px;
 }
 
-.list-section > .section-title {
-    background: #f6f6f6;
-    padding: 2px 5px;
-    font-weight: bold;
-    font-size: 1.7rem;
-    margin-right: 10px;
+.list-section + .list-section {
+    border-top: 1px solid #12171F;
 }
 
 .list-section > ul {
-    list-style: none;
-    padding-right: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+    padding-right: 25px;
 }
 
-.list-section.menu-style li {
-    font-size: 13px;
-    border-bottom: 1px solid #999;
-    transition: 0.3s;
+.list-section > .section-title {
+    color: #fff;
+    font-weight: bold;
+    margin-bottom: 17px;
+    margin-right: 10px;
 }
 
-.list-section.menu-style li > a {
-    width: 100%;
-    display: inline-block;
-    padding: 10px 15px 10px 5px;
+.list-section > ul > li {
+    color: #D7D7D7;
+    margin-bottom: 4px;
 }
 
-.list-section.menu-style li:hover {
-    background: #eee;
+.list-section > ul > li > a {
+    color: inherit;
 }
 
-.list-section.list-style li {
-    font-size: 13px;
-    transform-origin: right;
-    transition: transform 0.3s;
+.list-section .list-count {
+    background: #e4e4ee;
+    color: #377DE5;
+    border-radius: 10px;
+    padding: 0px 10px;
 }
 
-.list-section.list-style li > a {
-    width: 100%;
-    display: inline-block;
-    padding: 6px 25px 6px 5px;
-}
-
-.list-section.list-style li:hover {
-    /* background: #eee; */
-    transform: scale(1.1);
-}
+/* #endregion right side lists */
 
 .sort-area {
     direction: rtl;
@@ -351,7 +316,6 @@ nav li.disabled {
 #add-graph-modal .graph-option-label i.fa {
     font-size: 1.5rem;
 }
-
 
 /* smart notifications */
 #divSmallBoxes {
@@ -379,10 +343,6 @@ nav li.disabled {
 
 #divSmallBoxes .SmallBox .miniPic {
     bottom: 13px;
-}
-
-.smart-rtl .page-footer {
-    padding: 15px 25px;
 }
 
 #last-update-div {
@@ -531,10 +491,6 @@ nav li.disabled {
     background: #bfcabf;
 }
 
-#menu-list > li > ul {
-    z-index: 1111;
-}
-
 .shortcut-text {
     position: absolute;
     top: 50%;
@@ -543,7 +499,7 @@ nav li.disabled {
     width: 100%;
     padding: 7px;
     direction: rtl;
-    font-size: var(--main-text);
+    font-size: var(--secondary-text);
     text-align: center;
     font-weight: bold;
 }

@@ -18,18 +18,7 @@
 	<!--HEADER-->
 	
 	<!-- menu -->
-	<div id="menu-row" class="clearfix">
-		<div id="manage-edit-div">			
-			<button id="save-button" class="btn btn-default edit-state">SAVE</button>      
-			<button id="cancel-edit-page" class="btn btn-default edit-state">בטל</button> 
-			<button id="edit-page" class="btn btn-default regular-state">מצב עריכה</button>
-			
-			<button id="delete-all-button" class="edit-state">DELETE ALL</button>      
-			<button href="#add-graph-modal" data-toggle="modal" class="edit-state" data-type="graph">Add graph</button>
-			<button href="#add-info-square-modal" data-toggle="modal" class="edit-state" data-type="data-cube">Add data cube</button>
-			<button href="#add-shortcut-modal" data-toggle="modal" class="edit-state" data-type="shortcut">Add shortcut</button>
-			<span style="margin: 25px;"></span>
-		</div>
+	<div id="menu-row" class="clearfix">		
 		<ul id="menu-list" class="sm sm-rtl sm-blue">
 			<li class="search-app-li">
 				<a href="javascript:;"><i class="fa fa-lg fa-search"></i> <span class="menu-item-parent">חפש בתפריט</span></a>
@@ -43,18 +32,20 @@
 
       <div id="content" class="_row">					
 
-        <div class="col-lg-2 col-md-3">
-          <div id="last-apps-section" class="list-section menu-style">
+        <div id="right-side" class="col-lg-2 col-md-3">
+          <div id="last-apps-section" class="list-section _menu-style">
             <label class="section-title">יישומים אחרונים</label>	
-            <ul class=" bordered-list" data-area-name="last-apps">
+            <span class="list-count pull-left"></span>
+            <ul class="_bordered-list">
               <li class="last-app list-item template-item">
                 <a href="javascript:;" class="template-field set-tooltip-field" data-field="TXT"></a>
               </li>
             </ul>			
           </div>
-          <div id="last-docs-section" class="list-section menu-style" >
+          <div id="last-docs-section" class="list-section _menu-style" >
             <label class="section-title">מסמכים אחרונים</label>	
-            <ul class="bordered-list" data-area-name="last-docs">
+            <span class="list-count pull-left"></span>
+            <ul class="_bordered-list">
               <li class="last-app list-item template-item">
                 <a href="javascript:;" class="template-field set-tooltip-field" data-field="TXT"></a>
               </li>
@@ -63,18 +54,37 @@
         </div>
             
         <div class="col-lg-10 col-md-9">
-          
-          <div id="items-container">
-            <div class="grid-stack">
-
-
-
+            <div id="manage-edit-div" class="clearfix">			
+                <a id="edit-page-button" class="button regular-state">
+                    <span class="icon"></span>
+                    <span class="text">עריכה</span>
+                </a>                
+                <a id="save-button" class="button edit-state">
+                    <span class="icon"></span>
+                    <span class="text">שמירה</span>
+                </a>      
+                <a href="#add-shortcut-modal" data-toggle="modal" class="button edit-state" data-type="shortcut">
+                    <span class="text">Add shortcut</span>
+                </a>
+                <a href="#add-info-square-modal" data-toggle="modal" class="button edit-state" data-type="data-cube">
+                    <span class="text">Add data cube</span>
+                </a>
+                <a href="#add-graph-modal" data-toggle="modal" class="button edit-state" data-type="graph">
+                    <span class="text">Add graph</span>
+                </a>
+                <a id="cancel-edit-page-button" class="button edit-state">
+                    <span class="icon"></span>
+                    <span class="text">חזרה</span>
+                </a> 
             </div>
-          </div>
+            <div id="items-container">
+                <div class="grid-stack">
 
+                </div>
+            </div>
         </div>				
 							
-		</div>       
+	  </div>       
 
     </div>
 

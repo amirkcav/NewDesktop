@@ -35,14 +35,14 @@ $(function () {
 
   //#region top row buttons
 
-  $('#edit-page').click(function() {
+  $('#edit-page-button').click(function() {
 		// save the original items to be able to cancel changes.
 		originalItemsData = serializeItems();
 		$('body').addClass('editing');
 		gridStackObj.setStatic(false);
 	});
 
-  $('#cancel-edit-page').click(function() {
+  $('#cancel-edit-page-button').click(function() {
 		renderItems(originalItemsData);
 		cancelEditing();
 	});
@@ -425,8 +425,8 @@ function getItemTemplate(type, id, itemData) {
       temlpateContent = `<label class="shortcut-text">${itemData ? itemData.TXT : id}</label>`;
       break;  
     case 'data-cube':
-      temlpateContent = `<label class="title set-tooltip-field">${itemData.TXT}</label>
-                         <label class="sum"><span class="sign">₪</span><span>${itemData.VAL}</span></label>`;
+      temlpateContent = `<label class="sum"><span class="sign">₪</span><span>${itemData.VAL}</span></label>
+                         <label class="title set-tooltip-field">${itemData.TXT}</label>`;
       break;
     case 'graph': 
       temlpateContent = `<div class="graph-title"><label></label></div>
@@ -436,9 +436,9 @@ function getItemTemplate(type, id, itemData) {
                          </div>`;
       break;
   }  
-  var template = `<div class="grid-stack-item item-${type}" data-id="${id}" data-item-type="${type}">
+  var template = `<div class="grid-stack-item item-${type} ${getSystemClass(itemData.SYS)}" data-id="${id}" data-item-type="${type}">
+                    <a class="remove-item" href="javascript:;" data-toggle="popover" data-trigger="focus">X</a>
                     <div class="grid-stack-item-content">
-                      <a class="remove-item" href="javascript:;" data-toggle="popover" data-trigger="focus">X</a>
                       <div class="template-content">
                         ${temlpateContent}
                       </div>
@@ -486,8 +486,8 @@ function serializeItems() {
 }
 
 function renderItems(data) {
-  $('.grid-stack').html('');
-  // itemsData.forEach(item => {
+  console.log(`start rendering items: ${new Date()}`)
+  gridStackObj.removeAll();
   data.forEach(item => {
     if (item.type === 'shortcut') {
       addItem(item.width, item.height, item.type, item.data, item.id, item.x, item.y);
@@ -511,6 +511,7 @@ function renderItems(data) {
       });
     }
   });
+  console.log(`finish rendering items: ${new Date()}`)
 }
 
 function cancelEditing() {
@@ -520,4 +521,21 @@ function cancelEditing() {
 
 function updateDataCubeValue(elem, value) {
   $(elem).find('.sum span:not(.sign)').text(value);
+}
+
+function getSystemClass(sys) {
+  var systemClass = '';
+  if (!sys) {
+    
+  }
+  else if (sys.indexOf('ACCD') >= 0 || sys.indexOf('SVK') >= 0) {
+    systemClass = 'finance';
+  }
+  else if (sys.indexOf('MLID') >= 0) {
+    systemClass = 'mlid';
+  }
+  else if (sys === 'CAV' || sys === 'SYS') {
+    systemClass = 'service';
+  }
+  return systemClass;
 }

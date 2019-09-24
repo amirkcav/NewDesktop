@@ -39,9 +39,9 @@ setInterval(function() {
 	refreshPageData();	
 }, refreshIntervalMinutes * 60 * 1000);
 // refresh recent apps and documents (every 8 seconds)
-setInterval(function() {
-	refreshRecentData();
-}, 8 * 1000);
+// setInterval(function() {
+// 	refreshRecentData();
+// }, 8 * 1000);
 
 $(function() {		
 
@@ -163,16 +163,15 @@ function getPageData() {
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {			
-
-		var gridstackOptions = {
-			cellHeight: 'auto',
-			staticGrid: true,
-			resizable: {
-				handles: 'se, sw'
-			}
-		};
-		$('.grid-stack').gridstack(gridstackOptions);
-		gridStackObj = $('.grid-stack').data('gridstack');
+			var gridstackOptions = {
+				cellHeight: 'auto',
+				staticGrid: true,
+				resizable: {
+					handles: 'se, sw'
+				}
+			};
+			$('.grid-stack').gridstack(gridstackOptions);
+			gridStackObj = $('.grid-stack').data('gridstack');
 
 			renderItems(data.data);
 
@@ -665,6 +664,7 @@ function refreshRecentData() {
 				docs.push(elem);
 			});
 			$('#last-docs-section > ul').html(docs);
+			$('#last-docs-section .list-count').text(data.document.length);
 		},
 		error: function(data) {
 			alert(data.responseText);    		
@@ -688,6 +688,7 @@ function refreshRecentData() {
 				apps.push(elem);
 			});
 			$('#last-apps-section > ul').html(apps);
+			$('#last-apps-section .list-count').text(data[0].MENU.length);
 		},
 		error: function(data) {
 			alert(data.responseText);    		
