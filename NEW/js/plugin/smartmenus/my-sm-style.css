@@ -1,18 +1,4 @@
 /* @import url(https://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700); */
-#menu-row {
-  background: #2F3A4A;
-}
-
-#menu-list {
-  float: right;
-  direction: rtl;
-  background: #333;
-}
-
-#menu-list > li > a > i.fa {
-  display: block;
-  text-align: center;
-}
 
 .sm {
   background: transparent;

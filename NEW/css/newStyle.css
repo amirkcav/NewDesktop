@@ -1,7 +1,7 @@
 :root {
   --main-text: 36px;
   --secondary-text: 14px;
-  --menu-row-height: 65px;
+  --menu-row-height: 74px;
   --graph-title-height: 35px;
   --finance-color: #39D06D;
   --mlid-color: #CF795D;
@@ -17,6 +17,7 @@ body {
   background: #DADADA;
   direction: rtl;
   font-size: var(--secondary-text);
+  font-family: Assistant;
 }
 
 @media (min-width: 768px) {

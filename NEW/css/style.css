@@ -112,6 +112,17 @@ form input.error + label.error[for] {
 
 /* #region menu */
 
+#menu-row {
+    background: #2F3A4A;
+}
+
+#menu-list {
+    float: right;
+    direction: rtl;
+    background: #333;
+    max-width: 80%;
+}
+
 #menu-list .search-app-li > input.search-app {
     display: inline-block;
     float: left;
@@ -235,6 +246,30 @@ form input.error + label.error[for] {
 
 #menu-list > li > a {
     height: var(--menu-row-height);
+    line-height: var(--menu-row-height);
+    padding: 0;
+}
+
+#menu-list > li > a > .menu-item-parent {
+    padding: 0 0 0 20px;
+    max-width: 125px;
+    display: inline-block;
+    white-space: normal;
+    line-height: 20px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+#menu-list > li > a > i {
+    margin: 0 10px;
+}
+
+#menu-list > .more-items-li .menu-item-parent {
+    padding: 0 20px;
+}
+
+#menu-list > .more-items-li .caret {
+    margin-left: 6px;
 }
 
 /* #endregion menu */
@@ -376,7 +411,7 @@ form input.error + label.error[for] {
 /* #region Loading animation */
 
 #loading-animation-div {
-    position: absolute;
+    position: fixed; /*absolute*/
     height: 100%;
     width: 100%;
     background: rgba(0,0,0,0.5);

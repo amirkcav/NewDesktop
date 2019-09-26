@@ -20,7 +20,10 @@
 	<!-- menu -->
 	<div id="menu-row" class="clearfix">		
 		<ul id="menu-list" class="sm sm-rtl sm-blue">
-			<li class="search-app-li">
+            <li class="cav-logo-li">
+                <img src="img/cav_logo.jpg"/>
+            </li>
+			<li class="search-app-li app">
 				<a href="javascript:;"><i class="fa fa-lg fa-search"></i> <span class="menu-item-parent">חפש בתפריט</span></a>
 				<input id="search-in-menu" class="search-app form-control" type="text" name="param" placeholder="חפש בתפריט">
 			</li>
