@@ -27,7 +27,11 @@
 				<a href="javascript:;"><i class="fa fa-lg fa-search"></i> <span class="menu-item-parent">חפש בתפריט</span></a>
 				<input id="search-in-menu" class="search-app form-control" type="text" name="param" placeholder="חפש בתפריט">
 			</li>
-		</ul>        
+        </ul>        
+        <label id="user-name-label" class="pull-left">
+            Amir Karasik
+            <i class="fa fa-user"></i>
+        </label>
 	</div>
 
     <!-- MAIN PANEL -->

@@ -42,6 +42,18 @@ label {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
 }
 
+#user-name-label {
+  color: white;
+  line-height: var(--menu-row-height);
+  padding-left: 20px;
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+#user-name-label > i {
+  margin-right: 10px;
+}
+
 .grid-stack-item-content {
   background: white;
   box-shadow: 0px 2px 10px rgba(85, 117, 166, 0.15);
