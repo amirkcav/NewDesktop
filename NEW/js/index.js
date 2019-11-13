@@ -64,30 +64,28 @@ $(function() {
 		}
 		lastMenuApp = parent;
 		var apm = parent.data('apm');
-		var uci = JSON.parse(parent.data('data')).SYS; // parent.data('uci');
+		var uci = parent.data('data').SYS; // JSON.parse(
 		var wcy = parent.data('wcy');
-		var appText = JSON.parse(parent.data('data')).TXT;
+		var appText = parent.data('data').TXT; // JSON.parse(
 		runApp(apm, uci, wcy, appText);
 	});
 
 	$('#menu-list').on('click', 'li.app > a.add-to-favorites', function() {
 		var data = $(this).closest('li').data('data');
-		var item = JSON.parse(data);
 		if (!$(this).hasClass('favorite')) {
-			addToFavorites(item);
+			addToFavorites(data);
 			$(this).addClass('favorite');
 			$(this).find('i').removeClass('fa-star-o').addClass('fa-star');
 		}
 		else {
-			removeFromFavorites(item);
+			removeFromFavorites(data);
 			$(this).removeClass('favorite');
 			$(this).find('i').addClass('fa-star-o').removeClass('fa-star');
 		}
 	});    
 
 	$('#menu-list').on('click', 'li.app > a.remove-from-favorites', function() {
-		var data = $(this).closest('li').data('data');
-		var item = JSON.parse(data);
+		var item = $(this).closest('li').data('data');
 		removeFromFavorites(item);
 	});
 
@@ -100,20 +98,40 @@ $(function() {
 	$('#add-directory-button').on('click', function() {
 		var directoryName = $('#add-directory-name').val();
 		// $('#favorites-list').append(`<li data-data='{ "TXT": "${directoryName}", "TYP": "M" }'><label>${directoryName}</label><ul class="favorites-nested-list jq-sortable"></ul></li>`)
-		$('#favorites-list').append(`<li ><label>${directoryName}</label><ul class="favorites-nested-list jq-sortable"></ul></li>`); //data-data='${ JSON.stringify({ 'TXT': directoryName, 'TYP': 'M' }) }'
-		$('#favorites-list li:last-child').data('data', JSON.stringify({ 'TXT': directoryName, 'TYP': 'M' }));
+		$('#favorites-list').append(`<li class="folder-item"><label>${directoryName}</label><ul class="favorites-nested-list jq-sortable"></ul></li>`); //data-data='${ JSON.stringify({ 'TXT': directoryName, 'TYP': 'M' }) }'
+		// $('#favorites-list > li:last-child').data('data', JSON.stringify({ 'TXT': directoryName, 'TYP': 'M', 'MENU': [] }));
+		$('#favorites-list > li:last-child')[0].dataset['data'] = JSON.stringify({ 'TXT': directoryName, 'TYP': 'M', 'MENU': [] });
 		$('#add-directory-name').val('');
 		$('#add-directory-button').attr('disabled', true);
+		$('#favorites-list').nestedSortable('refresh');
 	});
 
 	$('#add-directory-name').on('input', function() {
 		$('#add-directory-button').attr('disabled', $(this).val().length === 0);
 	});
 
-	$('#manage-favorites-modal').on('click', '#manage-favorites-modal-button', function() {
+	$('#manage-favorites-modal').on('click', '#manage-favorites-submit-button', function() {
 		menuFavorites = $.makeArray($('#favorites-list').nestedSortable('serialize'));
 		renderMenuFavorites();
+		localStorage.setItem('menuFavorites', JSON.stringify(menuFavorites));
 		// $('#menu-list').smartmenus('refresh');
+	});
+
+	$('#manage-favorites-modal').on('click', '#manage-favorites-cancel-button', function() { 
+		// timeout is so the change won't be visible before the modal disapears.
+		setTimeout(() => {
+			setManageFavorites();
+		}, 300);
+	});
+
+	$('#favorites-list').on('click', '.remove-fav-button', function() {
+		// var favId = $(this).data('item-id');
+		var favEleme = $(this).closest('li');
+		var item = favEleme.data('data');
+		favEleme.fadeOut(function(elem) {
+			this.remove();
+		});
+
 	});
 
 });
@@ -124,7 +142,7 @@ function getPageData() {
 	// get menu data
 	$.ajax({
 		type : 'POST',
-		url : "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=ZZ",
+		url : "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=ZZ",
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -156,7 +174,7 @@ function getPageData() {
 	});
 	
 	// get page data
-	var url = "../mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPGET";    	
+	var url = "mcall?_ROUTINE=%25JMUJSON&_NS=CAV&_LABEL=LPGET";    	
 	$.ajax({
 		type : 'POST',
 		url : url,
@@ -193,7 +211,7 @@ function getPageData() {
 	// get available graphs (for add graph popup)
 	$.ajax({
 		type : 'GET',
-		url : "../mcall?_NS=CAV&_ROUTINE=CBIGRF&_LABEL=GETALLGRF",
+		url : "mcall?_NS=CAV&_ROUTINE=CBIGRF&_LABEL=GETALLGRF",
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -297,7 +315,7 @@ function renderGraphData(graph) {
 
 // get graph data from server.
 function getGrpahData(graph, handler) {
-	var url = `../mcall?_ROUTINE=CBIGRF&_NS=CAV&_LABEL=RUN&GRF=${ graph.code }&TFK=MNG&USERNAME=SID`;    	
+	var url = `mcall?_ROUTINE=CBIGRF&_NS=CAV&_LABEL=RUN&GRF=${ graph.code }&TFK=MNG&USERNAME=SID`;    	
 	$.ajax({
 		type : 'GET',
 		url : url,
@@ -427,10 +445,13 @@ function setMenuItem(itemObj) {
 	var addToFavorites = '';
 	var itemData = '';
 	// if it's an app
-	if (!itemObj.MENU || itemObj.MENU.length === 0) {
+	if (!itemObj.MENU) { // || itemObj.MENU.length === 0
 		appClass = 'app'
 		addToFavorites = `<a href="javascript:;" class="add-to-favorites" title="הוסף למועדפים"><i class="fa fa-star-o"></i></a>`;
 		itemData = `data-item-id="${itemObj.UCI}:${itemObj.APM}" data-apm="${itemObj.APM}" data-uci="${itemObj.SYS}" ${ itemObj.wCY ? ` data-wcy="${itemObj.wCY}" ` : '' }`;
+	}
+	else {
+		appClass = 'folder-item';
 	}
 	var newElemString = `<li class="${appClass}" ${itemData}>
 												 ${ addToFavorites }
@@ -438,17 +459,21 @@ function setMenuItem(itemObj) {
 												 <a class="name" href="javascript:;">${itemObj.TXT}</a>
 									 		 </li>`;
 	var newItemElem = htmlToElement(newElemString);
+	
+	// $(newItemElem).data('dataa', JSON.stringify(itemObj));	
+	newItemElem.dataset['data'] = JSON.stringify(itemObj);
+
 	// set children (recursive)
-	if (itemObj.MENU && itemObj.MENU.length > 0) {
+	if (itemObj.MENU) { /* && itemObj.MENU.length > 0 */
 		addSubMenu(newItemElem, itemObj.MENU);
 	}
 	// add to the apps array (for the menu search).
 	else {
 		// search in menu array. add only if not exist.
 		if (menuApps.indexOfByProperty('TXT', itemObj.TXT) < 0) {				
-			menuApps.push(itemObj);		
-		}	
-		$(newItemElem).data('data', JSON.stringify(itemObj));	
+			menuApps.push(itemObj);
+		}
+		// $(newItemElem).data('data', JSON.stringify(itemObj));	
 	}		
 	return newItemElem;
 }
@@ -476,14 +501,7 @@ function setMenuFavorites() {
 		menuFavorites = JSON.parse(menuFavoritesString);
 		renderMenuFavorites();		
 	}
-	// manage favorites
 	setManageFavorites();
-	// var favoritesItems = [];
-	// menuFavorites.forEach((fav, i) => {
-	// 	var mi = setMenuItem(fav);
-	// 	favoritesItems.push(mi);
-	// });
-	// $('#favorites-list').html(favoritesItems);
 	$('#favorites-list').nestedSortable({
 		group: 'nested',
 		afterMove: function (placeholder, container) {
@@ -498,12 +516,13 @@ function setMenuFavorites() {
 		onDrop: function ($item, container, _super) {
 			container.el.removeClass("active");
 			_super($item, container);
+			$('#favorites-list').nestedSortable('refresh');
 		},
 		serialize: function ($item, $children, parentIsContainer) {
-			var result = $item.data('data') ? JSON.parse($item.data('data')) : {}; // $.extend({}, $item.data('data'))
+			var result = $item.data('data') ? $item.data('data') : {}; // JSON.parse( // $.extend({}, $item.data('data'))
 			 if(parentIsContainer)
 				return $children;
-			else if ($children[0]){
+			else if ($item.hasClass('folder-item')) { //($children[0]){
 				result.MENU = $children
 			}
 			return result;
@@ -519,12 +538,32 @@ function addToFavorites(itemToAdd) {
 }
 
 function removeFromFavorites(itemToRemove) {	
-	menuFavorites = $.grep(menuFavorites, function(a) {
-	    return a.TXT != itemToRemove.TXT;
-	});
+	// menuFavorites = $.grep(menuFavorites, function(a) {
+	//     return a.TXT != itemToRemove.TXT;
+	// });
+	removeFavorite(menuFavorites, itemToRemove);
 	localStorage.setItem('menuFavorites', JSON.stringify(menuFavorites));
 	renderMenuFavorites();
 	setManageFavorites();
+}
+
+function removeFavorite(group, itemToRemove) {
+	var favToDelete = null;
+	group.forEach(o => {
+		if (o.TXT == itemToRemove.TXT)
+		{
+				favToDelete = o;
+		}
+		if (o.MENU && !favToDelete) {
+			removeFavorite(o.MENU, itemToRemove);
+		}
+	});			
+	if (favToDelete != null)
+	{
+		console.log('DELETE');
+		var index = group.indexOf(favToDelete);
+		group.splice(index, 1);
+	}
 }
 
 function renderMenuFavorites() {
@@ -537,7 +576,7 @@ function renderMenuFavorites() {
 
 	// add "manage favorites" to menu
 	$('#favorites-menu-item > ul').prepend(`<li class="app manage-favorites">
-																						<a href="#manage-favorites-modal" data-toggle="modal">נהל מועדפים</a>
+																						<a href="#manage-favorites-modal" data-toggle="modal" data-backdrop="static">נהל מועדפים</a>
 																					<li>`);
 
 	$('#menu-list').smartmenus('refresh');
@@ -702,17 +741,28 @@ function markFavoritesInMenu() {
 																 .find('i').removeClass('fa-star').addClass('fa-star-o');
 	// $('i.fa-star').removeClass('fa-star').addClass('fa-star-o');
 	menuFavorites.forEach(favorite => {
-		var favElem = $(`[data-item-id="${favorite.UCI}:${favorite.APM}"]`);
+		markFavorite(favorite);
+	});
+}
+
+function markFavorite(favorite) {
+	if (!favorite.MENU) {
+		var favElem = $(`#menu-list [data-item-id="${favorite.UCI}:${favorite.APM}"]`);
 		$(favElem).find('.add-to-favorites').addClass('favorite')
 							.find('i').removeClass('fa-star-o').addClass('fa-star');
-	});
+	}
+	else {
+		favorite.MENU.forEach(fav => {
+			markFavorite(fav);
+		});
+	}
 }
 
 function refreshRecentData() {
 	// get last documents
 	$.ajax({
 		type : 'GET',
-		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RDOCS",
+		url : "mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RDOCS",
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -736,7 +786,7 @@ function refreshRecentData() {
 	// get last apps
 	$.ajax({
 		type : 'GET',
-		url : "../mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RAPPS",
+		url : "mcall?_NS=CAV&_ROUTINE=%25JMUJSON&_LABEL=RAPPS",
 		contentType : 'application/json',
 		dataType : 'json',
 		success : function(data) {
@@ -763,6 +813,12 @@ function setManageFavorites() {
 	var favoritesItems = [];
 	menuFavorites.forEach((fav, i) => {
 		var mi = setMenuItem(fav);
+		$(mi).addClass(fav.MENU ? 'folder-item' : 'app-item'); /* && fav.MENU.length > 0 */
+		var deleteButton = `<a href="javascript:;" class="pull-left remove-fav-button" data-item-id="${fav.UCI}:${fav.APM}">x</a>`;
+		$(mi).append(deleteButton);
+		if (fav.MENU) { //  && fav.MENU.length
+			$(mi).find('li').append(deleteButton);
+		}
 		favoritesItems.push(mi);
 	});
 	$('#favorites-list').html(favoritesItems);

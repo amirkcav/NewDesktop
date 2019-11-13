@@ -316,8 +316,18 @@ ul.ui-autocomplete {
   padding: 0;
 }
 
-#favorites-list .favorites-nested-list {
+#favorites-list .folder-item > ul { /* #favorites-list .favorites-nested-list */
   min-height: 50px;
+}
+
+#favorites-list li {
+  position: relative;
+}
+
+#favorites-list .folder-item .remove-fav-button {
+  position: absolute;
+  top: 0;
+  left: 5px;
 }
 
 #add-directory-button[disabled] {
@@ -344,7 +354,14 @@ ul.jq-sortable li {
   padding: 5px;
   border: 1px solid #cccccc;
   color: #0088cc;
-  background: #eeeeee; }
+  background: rgba(150, 150, 150, 0.1);
+  box-shadow: #ddd 0 0 1px;
+}
+
+ul.active {
+  border: 1px solid #999;
+}
+
 ul.jq-sortable li.placeholder {
   position: relative;
   margin: 0;

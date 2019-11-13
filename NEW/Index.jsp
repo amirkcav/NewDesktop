@@ -29,8 +29,10 @@
 			</li>
         </ul>        
         <label id="user-name-label" class="pull-left">
-            Amir Karasik
-            <i class="fa fa-user"></i>
+            <a href="https://www.google.com" target="_blank" style="color: inherit;">
+                Amir Karasik
+                <i class="fa fa-user"></i>
+            </a>
         </label>
 	</div>
 
@@ -230,7 +232,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="manage-favorites-modal-button" class="btn btn-lg modal-submit-button" data-dismiss="modal">שמור</button>
+                    <button id="manage-favorites-submit-button" class="btn btn-lg modal-submit-button" data-dismiss="modal">שמור</button>
                     <button id="manage-favorites-cancel-button" class="btn btn-lg modal-cancel-button" data-dismiss="modal">בטל</button>
                 </div>
             </div>
